@@ -1,0 +1,10 @@
+.github export-ignore
+.openai export-ignore
+release export-ignore
+marketing export-ignore
+docs/RTL_THEME_LISTING_FA.md export-ignore
+docs/RELEASE_CHECKLIST_FA.md export-ignore
+examples export-ignore
+app/chatgpt-auth.ts export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
