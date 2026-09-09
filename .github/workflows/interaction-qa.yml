@@ -1,0 +1,177 @@
+name: Loraniq Interaction QA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loraniq-interaction-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-interactions:
+    name: Dark mode, search, mobile menu and console QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Start preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run start -- --port 8788 > /tmp/loraniq-interaction-preview.log 2>&1 &
+          echo $! > /tmp/loraniq-interaction-preview.pid
+          for i in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:8788/demo/commerce >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/loraniq-interaction-preview.log
+          exit 1
+
+      - name: Install browser QA helper
+        run: npm install --no-save --package-lock=false puppeteer-core@24 --no-audit --no-fund
+
+      - name: Run interactive browser QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/interaction/dark-mobile artifacts/interaction/dark-desktop
+          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome" ]; then
+            echo "Chrome executable not available on runner." >&2
+            exit 1
+          fi
+          CHROME_PATH="$chrome" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import puppeteer from 'puppeteer-core';
+
+          const routes = ['commerce','analytics','projects','finance','crm','academy','calendar','inbox','components','settings'];
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          });
+          const report = {};
+          let failed = false;
+
+          async function inspect(route, mobile) {
+            const page = await browser.newPage();
+            await page.setViewport(mobile
+              ? { width: 390, height: 844, deviceScaleFactor: 1 }
+              : { width: 1440, height: 1000, deviceScaleFactor: 1 });
+
+            const pageErrors = [];
+            const consoleErrors = [];
+            page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+            page.on('console', message => {
+              if (message.type() === 'error') consoleErrors.push(message.text());
+            });
+
+            const response = await page.goto(`http://127.0.0.1:8788/demo/${route}`, {
+              waitUntil: 'networkidle2',
+              timeout: 30000
+            });
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const themeButton = await page.$('button[aria-label="تغییر تم"]');
+            if (!themeButton) throw new Error(`Theme toggle missing on ${route}`);
+            await themeButton.click();
+            await page.waitForFunction(() => document.querySelector('main.admin')?.classList.contains('a-dark'));
+
+            const darkApplied = await page.$eval('main.admin', el => el.classList.contains('a-dark'));
+            const screenshot = `artifacts/interaction/${mobile ? 'dark-mobile' : 'dark-desktop'}/${route}.png`;
+            await page.screenshot({ path: screenshot, fullPage: false });
+
+            const search = await page.$('.admin-search input');
+            if (!search) throw new Error(`Search input missing on ${route}`);
+            await search.type('نمونه');
+            await page.waitForSelector('.search-result', { visible: true });
+            const searchResult = await page.$eval('.search-result', el => (el.textContent || '').includes('نمونه'));
+
+            let mobileMenuPassed = true;
+            if (mobile) {
+              const menu = await page.$('button.admin-menu');
+              if (!menu) throw new Error(`Mobile menu button missing on ${route}`);
+              await menu.click();
+              await page.waitForFunction(() => document.querySelector('.admin-side')?.classList.contains('show'));
+              const opened = await page.$eval('.admin-side', el => el.classList.contains('show'));
+              const close = await page.$('button[aria-label="بستن منو"]');
+              if (!close) throw new Error(`Mobile close button missing on ${route}`);
+              await close.click();
+              await page.waitForFunction(() => !document.querySelector('.admin-side')?.classList.contains('show'));
+              const closed = await page.$eval('.admin-side', el => !el.classList.contains('show'));
+              mobileMenuPassed = opened && closed;
+            }
+
+            const geometry = await page.evaluate(() => ({
+              viewport: innerWidth,
+              documentClient: document.documentElement.clientWidth,
+              documentScroll: document.documentElement.scrollWidth,
+              bodyClient: document.body.clientWidth,
+              bodyScroll: document.body.scrollWidth
+            }));
+            const noOverflow = geometry.documentScroll - geometry.documentClient <= 1 && geometry.bodyScroll - geometry.bodyClient <= 1;
+            const status = response?.status() ?? 0;
+            const passed = status === 200 && darkApplied && searchResult && mobileMenuPassed && noOverflow && pageErrors.length === 0 && consoleErrors.length === 0;
+
+            await themeButton.click();
+            await page.waitForFunction(() => !document.querySelector('main.admin')?.classList.contains('a-dark'));
+            const lightRestored = await page.$eval('main.admin', el => !el.classList.contains('a-dark'));
+            if (!lightRestored) failed = true;
+
+            await page.close();
+            return { status, passed: passed && lightRestored, darkApplied, lightRestored, searchResult, mobileMenuPassed, noOverflow, pageErrors, consoleErrors, geometry };
+          }
+
+          for (const route of routes) {
+            const mobile = await inspect(route, true);
+            const desktop = await inspect(route, false);
+            report[route] = { mobile, desktop };
+            if (!mobile.passed || !desktop.passed) failed = true;
+            console.log(`${mobile.passed && desktop.passed ? 'PASS' : 'FAIL'} ${route}`);
+          }
+
+          await browser.close();
+          fs.writeFileSync('artifacts/interaction/INTERACTION_QA.json', `${JSON.stringify(report, null, 2)}\n`);
+          if (failed) process.exit(1);
+          NODE
+
+      - name: Save preview log
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts/interaction
+          cp /tmp/loraniq-interaction-preview.log artifacts/interaction/PREVIEW.log 2>/dev/null || true
+          if [ -f /tmp/loraniq-interaction-preview.pid ]; then
+            kill "$(cat /tmp/loraniq-interaction-preview.pid)" 2>/dev/null || true
+          fi
+
+      - name: Upload interaction QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loraniq-interaction-qa-${{ github.run_id }}
+          path: artifacts/interaction
+          if-no-files-found: warn
+          retention-days: 30
