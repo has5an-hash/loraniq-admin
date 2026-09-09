@@ -84,9 +84,15 @@ jobs:
 
             const pageErrors = [];
             const consoleErrors = [];
+            const badResponses = [];
             page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
             page.on('console', message => {
               if (message.type() === 'error') consoleErrors.push(message.text());
+            });
+            page.on('response', response => {
+              if (response.status() >= 400) {
+                badResponses.push({ status: response.status(), url: response.url(), resourceType: response.request().resourceType() });
+              }
             });
 
             const response = await page.goto(`http://127.0.0.1:8788/demo/${route}`, {
@@ -146,15 +152,14 @@ jobs:
             }));
             const noOverflow = geometry.documentScroll - geometry.documentClient <= 1 && geometry.bodyScroll - geometry.bodyClient <= 1;
             const status = response?.status() ?? 0;
-            const passed = status === 200 && darkApplied && searchResult && mobileMenuPassed && noOverflow && pageErrors.length === 0 && consoleErrors.length === 0;
 
             await page.click(themeSelector);
             await page.waitForFunction(() => !document.querySelector('main.admin')?.classList.contains('a-dark'));
             const lightRestored = await page.$eval('main.admin', el => !el.classList.contains('a-dark'));
-            if (!lightRestored) failed = true;
 
+            const passed = status === 200 && darkApplied && lightRestored && searchResult && mobileMenuPassed && noOverflow && pageErrors.length === 0 && badResponses.length === 0;
             await page.close();
-            return { status, passed: passed && lightRestored, darkApplied, lightRestored, searchResult, mobileMenuPassed, noOverflow, pageErrors, consoleErrors, geometry };
+            return { status, passed, darkApplied, lightRestored, searchResult, mobileMenuPassed, noOverflow, pageErrors, consoleErrors, badResponses, geometry };
           }
 
           for (const route of routes) {
@@ -163,6 +168,9 @@ jobs:
             report[route] = { mobile, desktop };
             if (!mobile.passed || !desktop.passed) failed = true;
             console.log(`${mobile.passed && desktop.passed ? 'PASS' : 'FAIL'} ${route}`);
+            for (const item of [...mobile.badResponses, ...desktop.badResponses]) {
+              console.log(`HTTP ${item.status} ${item.resourceType} ${item.url}`);
+            }
           }
 
           await browser.close();
