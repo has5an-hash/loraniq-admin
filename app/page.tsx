@@ -1,45 +1,207 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, BarChart3, Bell, Boxes, CalendarDays, Check, ChevronDown, Code2, CreditCard, Database, FileText, Gauge, LayoutDashboard, Menu, MessageSquare, Moon, Package, Palette, Search, ShieldCheck, ShoppingBag, Sparkles, Sun, Users, WalletCards, X, Zap } from "lucide-react";
+import {
+  ArrowLeft,
+  BarChart3,
+  Bell,
+  CalendarDays,
+  ChevronDown,
+  Code2,
+  FileText,
+  Gauge,
+  Grid2X2,
+  LayoutDashboard,
+  Menu,
+  MessageSquare,
+  Moon,
+  Package,
+  Search,
+  Settings,
+  ShoppingBag,
+  Sparkles,
+  Sun,
+  Users,
+  WalletCards,
+  X,
+} from "lucide-react";
 
 const demos = [
-  { title: "تجارت هوشمند", subtitle: "فروش، سفارش و درآمد", tone: "violet", icon: ShoppingBag },
-  { title: "تحلیل داده", subtitle: "شاخص‌ها در یک نگاه", tone: "blue", icon: BarChart3 },
-  { title: "مدیریت پروژه", subtitle: "تیم، زمان و پیشرفت", tone: "mint", icon: Gauge },
-  { title: "امور مالی", subtitle: "تراکنش و نقدینگی", tone: "orange", icon: WalletCards },
-  { title: "مدیریت مشتری", subtitle: "فروش و ارتباطات", tone: "pink", icon: Users },
-  { title: "آکادمی آنلاین", subtitle: "دوره، مدرس و دانشجو", tone: "navy", icon: FileText },
+  { slug: "commerce", title: "تجارت", subtitle: "فروش، سفارش و درآمد", tone: "violet", icon: ShoppingBag },
+  { slug: "analytics", title: "تحلیل داده", subtitle: "شاخص‌ها و روندها", tone: "blue", icon: BarChart3 },
+  { slug: "projects", title: "مدیریت پروژه", subtitle: "تیم، زمان و پیشرفت", tone: "mint", icon: Gauge },
+  { slug: "finance", title: "امور مالی", subtitle: "تراکنش و نقدینگی", tone: "orange", icon: WalletCards },
+  { slug: "crm", title: "مدیریت مشتری", subtitle: "مشتریان و پیگیری‌ها", tone: "pink", icon: Users },
+  { slug: "academy", title: "آکادمی", subtitle: "دوره و دانشجو", tone: "navy", icon: FileText },
+  { slug: "calendar", title: "تقویم", subtitle: "رویداد و برنامه‌ریزی", tone: "blue", icon: CalendarDays },
+  { slug: "inbox", title: "پیام‌ها", subtitle: "صندوق پیام و فعالیت‌ها", tone: "mint", icon: MessageSquare },
+  { slug: "components", title: "کامپوننت‌ها", subtitle: "اجزای رابط کاربری", tone: "violet", icon: Grid2X2 },
+  { slug: "settings", title: "تنظیمات", subtitle: "حساب و ترجیحات", tone: "orange", icon: Settings },
 ];
-const apps = [
-  ["فروشگاه", ShoppingBag, "مدیریت محصول، سفارش و انبار"], ["پیام‌رسان", MessageSquare, "گفت‌وگوی سریع و سازمان‌یافته"],
-  ["تقویم شمسی", CalendarDays, "رویدادها و برنامه‌ریزی فارسی"], ["صورتحساب", CreditCard, "فاکتور و پرداخت‌های حرفه‌ای"],
-  ["مدیریت فایل", Package, "فایل‌ها و فضای ابری یکپارچه"], ["نقش و دسترسی", ShieldCheck, "کنترل دقیق مجوزهای کاربران"],
+
+const features = [
+  [LayoutDashboard, "۱۰ فضای کاری تعاملی", "مسیرهای مستقل برای سناریوهای مدیریتی مختلف"],
+  [Moon, "حالت روشن و تیره", "تغییر تم در تجربه دمو"],
+  [Code2, "React + Next.js + TypeScript", "ساختار مدرن و قابل توسعه"],
+  [Gauge, "واکنش‌گرا", "چیدمان متناسب با دسکتاپ، تبلت و موبایل"],
 ];
+
 const faqs = [
-  ["لورانیک برای چه پروژه‌هایی مناسب است؟", "برای پنل‌های فروشگاهی، سازمانی، مالی، آموزشی، CRM و تقریباً هر محصولی که به یک رابط مدیریت حرفه‌ای و فارسی نیاز دارد."],
-  ["آیا طراحی کاملاً راست‌چین و فارسی است؟", "بله؛ چیدمان، فاصله‌ها، جهت آیکن‌ها، اعداد، فونت و تجربه کاربری از ابتدا برای زبان فارسی و RTL طراحی شده‌اند."],
-  ["حالت روشن و تیره هم ارائه می‌شود؟", "بله؛ تمام کامپوننت‌ها و صفحات در دو حالت روشن و تیره با کنتراست دقیق و رنگ‌های هماهنگ در دسترس‌اند."],
-  ["امکان شخصی‌سازی ظاهر قالب وجود دارد؟", "سیستم توکن‌های طراحی، رنگ اصلی، شعاع گوشه‌ها، تراکم چیدمان و حالت منو را می‌توانید سریع و بدون بازنویسی کامپوننت‌ها تغییر دهید."],
+  ["لورانیک دقیقاً چیست؟", "لورانیک یک قالب رابط کاربری مدیریتی فارسی و راست‌چین است که با React، Next.js و TypeScript توسعه داده شده است."],
+  ["چند دموی قابل استفاده دارد؟", "نسخه فعلی ۱۰ فضای کاری تعاملی دارد: تجارت، تحلیل داده، پروژه، مالی، CRM، آکادمی، تقویم، پیام‌ها، کامپوننت‌ها و تنظیمات."],
+  ["آیا حالت تیره دارد؟", "بله؛ دموهای مدیریتی امکان جابه‌جایی بین حالت روشن و تیره را دارند."],
+  ["برای اجرا چه چیزی لازم است؟", "Node.js نسخه 22.13 یا جدیدتر و npm برای نصب وابستگی‌ها، توسعه و Build نیاز است."],
 ];
 
-function MiniChart() { return <svg viewBox="0 0 380 120" className="chart" aria-label="نمودار رشد فروش"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7667f5" stopOpacity=".26"/><stop offset="1" stopColor="#7667f5" stopOpacity="0"/></linearGradient></defs><path d="M0 104 C34 92,52 96,80 75 S129 77,155 55 S197 73,225 43 S271 52,300 26 S348 32,380 7 L380 120 L0 120Z" fill="url(#area)"/><path d="M0 104 C34 92,52 96,80 75 S129 77,155 55 S197 73,225 43 S271 52,300 26 S348 32,380 7" fill="none" stroke="#7667f5" strokeWidth="4" strokeLinecap="round"/></svg>; }
+function MiniChart() {
+  return (
+    <svg viewBox="0 0 380 120" className="chart" aria-label="نمودار نمونه">
+      <defs>
+        <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#7667f5" stopOpacity=".26" />
+          <stop offset="1" stopColor="#7667f5" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M0 104 C34 92,52 96,80 75 S129 77,155 55 S197 73,225 43 S271 52,300 26 S348 32,380 7 L380 120 L0 120Z" fill="url(#area)" />
+      <path d="M0 104 C34 92,52 96,80 75 S129 77,155 55 S197 73,225 43 S271 52,300 26 S348 32,380 7" fill="none" stroke="#7667f5" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
 
-function DashboardMockup({ compact = false }: { compact?: boolean }) { return <div className={`dashboard ${compact ? "dashboard-compact" : ""}`}><aside className="dash-side"><div className="mini-brand"><span>لـ</span><b>لورانیک</b></div>{[LayoutDashboard, BarChart3, ShoppingBag, Users, CalendarDays].map((I,i)=><div className={`dash-nav ${i===0?"active":""}`} key={i}><I/><span>{["پیشخوان","گزارش‌ها","فروشگاه","مشتریان","تقویم"][i]}</span></div>)}</aside><div className="dash-main"><div className="dash-top"><div><b>صبح بخیر، نگار 👋</b><small>این خلاصه عملکرد امروز شماست</small></div><div className="dash-tools"><Search/><Bell/><span className="avatar">ن</span></div></div><div className="stat-grid"><div className="stat primary"><small>فروش امروز</small><strong>۱۸٫۴ مـ</strong><em>٪ ۱۲٫۵ +</em></div><div className="stat"><small>سفارش‌ها</small><strong>۲۴۸</strong><em>٪ ۸٫۲ +</em></div><div className="stat"><small>مشتری جدید</small><strong>۶۴</strong><em>٪ ۴٫۱ +</em></div></div><div className="dash-grid"><div className="chart-card"><div className="card-head"><b>روند درآمد</b><span>هفتگی⌄</span></div><MiniChart/><div className="chart-labels"><span>شنبه</span><span>دوشنبه</span><span>چهارشنبه</span><span>جمعه</span></div></div><div className="activity-card"><div className="card-head"><b>سفارش‌های اخیر</b><span>مشاهده همه</span></div>{["هدفون بی‌سیم","ساعت هوشمند","کیف چرمی"].map((x,i)=><div className="order" key={x}><span className={`product p${i}`}><Package/></span><div><b>{x}</b><small>سفارش #{2390+i}</small></div><em>{["۲٫۸۰۰٫۰۰۰","۴٫۱۵۰٫۰۰۰","۱٫۹۲۰٫۰۰۰"][i]}</em></div>)}</div></div></div></div>; }
+function DashboardMockup() {
+  return (
+    <div className="dashboard">
+      <aside className="dash-side">
+        <div className="mini-brand"><span>لـ</span><b>لورانیک</b></div>
+        {[LayoutDashboard, BarChart3, ShoppingBag, Users, CalendarDays].map((Icon, i) => (
+          <div className={`dash-nav ${i === 0 ? "active" : ""}`} key={i}>
+            <Icon />
+            <span>{["پیشخوان", "گزارش‌ها", "فروشگاه", "مشتریان", "تقویم"][i]}</span>
+          </div>
+        ))}
+      </aside>
+      <div className="dash-main">
+        <div className="dash-top">
+          <div><b>پیشخوان لورانیک</b><small>نمونه رابط مدیریتی فارسی</small></div>
+          <div className="dash-tools"><Search /><Bell /><span className="avatar">ل</span></div>
+        </div>
+        <div className="stat-grid">
+          <div className="stat primary"><small>درآمد نمونه</small><strong>۱۸٫۴ مـ</strong><em>+۱۲٫۵٪</em></div>
+          <div className="stat"><small>سفارش نمونه</small><strong>۲۴۸</strong><em>+۸٫۲٪</em></div>
+          <div className="stat"><small>مشتری نمونه</small><strong>۶۴</strong><em>+۴٫۱٪</em></div>
+        </div>
+        <div className="dash-grid">
+          <div className="chart-card">
+            <div className="card-head"><b>روند نمونه</b><span>هفتگی</span></div>
+            <MiniChart />
+            <div className="chart-labels"><span>شنبه</span><span>دوشنبه</span><span>چهارشنبه</span><span>جمعه</span></div>
+          </div>
+          <div className="activity-card">
+            <div className="card-head"><b>فعالیت‌های نمونه</b><span>دمو</span></div>
+            {["سفارش جدید", "ثبت مشتری", "گزارش مالی"].map((x, i) => (
+              <div className="order" key={x}>
+                <span className={`product p${i}`}><Package /></span>
+                <div><b>{x}</b><small>داده نمایشی</small></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
-  const [dark,setDark] = useState(false); const [menu,setMenu] = useState(false); const [openFaq,setOpenFaq] = useState(0);
-  return <main dir="rtl" className={dark ? "site dark" : "site"}>
-    <header className="navbar"><a className="brand" href="#top"><span className="brandmark">L</span><span><b>لورانیک</b><small>پنل مدیریت فارسی</small></span></a><nav className={menu?"open":""}><a href="#demos">دموها</a><a href="#features">ویژگی‌ها</a><a href="#apps">اپلیکیشن‌ها</a><a href="#tech">تکنولوژی‌ها</a><a href="#faq">سوالات متداول</a></nav><div className="nav-actions"><button className="icon-btn" onClick={()=>setDark(!dark)} aria-label="تغییر حالت رنگ">{dark?<Sun/>:<Moon/>}</button><a className="btn btn-primary" href="#buy">دریافت لورانیک <ArrowLeft/></a><button className="menu-btn" onClick={()=>setMenu(!menu)} aria-label="منو">{menu?<X/>:<Menu/>}</button></div></header>
-    <section className="hero" id="top"><div className="hero-copy"><div className="eyebrow"><Sparkles/> نسل تازه پنل‌های مدیریت فارسی <span>نسخه ۱.۰</span></div><h1>مدیریت، وقتی<br/><span>واقعاً لذت‌بخش</span> می‌شود.</h1><p>لورانیک یک قالب مدیریتی سریع، منعطف و کاملاً راست‌چین است؛ ساخته‌شده برای تیم‌هایی که به جزئیات اهمیت می‌دهند.</p><div className="hero-actions"><a className="btn btn-primary btn-lg" href="#demos">تماشای دموها <ArrowLeft/></a><a className="btn btn-ghost btn-lg" href="#features">کشف امکانات</a></div><div className="trust"><div className="faces"><i>م</i><i>ع</i><i>س</i><i>+</i></div><div><b>انتخاب توسعه‌دهندگان دقیق</b><span>امتیاز ۴٫۹ از ۵</span></div></div></div><div className="hero-visual"><div className="orb orb1"/><div className="orb orb2"/><div className="float-chip chip-sales"><span><Zap/></span><div><small>رشد فروش</small><b>۲۴٫۸٪</b></div></div><div className="float-chip chip-users"><span><Users/></span><div><small>کاربران آنلاین</small><b>۱٬۲۸۴</b></div></div><DashboardMockup/></div></section>
-    <section className="metrics"><div><strong>۱۲۰+</strong><span>صفحه کاربردی</span></div><div><strong>۱۲</strong><span>دموی تخصصی</span></div><div><strong>۶۰+</strong><span>کامپوننت حرفه‌ای</span></div><div><strong>۱۰۰٪</strong><span>راست‌چین واقعی</span></div></section>
-    <div className="demo-launch"><div><span><LayoutDashboard/></span><div><b>خودِ محصول را تجربه کنید</b><small>داشبورد تعاملی، صفحات تخصصی و حالت تاریک آماده‌اند.</small></div></div><a className="btn btn-primary btn-lg" href="/demo/commerce">ورود به دموی زنده <ArrowLeft/></a></div>
-    <section className="section demos-section" id="demos"><div className="section-head"><div><span className="kicker">برای هر ایده، یک نقطه شروع</span><h2>داشبوردی متناسب با دنیای شما</h2><p>شش تجربه تخصصی با یک زبان طراحی منسجم؛ آماده برای شخصی‌سازی و توسعه.</p></div><a href="#buy" className="text-link">مشاهده همه دموها <ArrowLeft/></a></div><div className="demo-grid">{demos.map((d)=><article className={`demo-card ${d.tone}`} key={d.title}><div className="demo-info"><span><d.icon/></span><div><h3>{d.title}</h3><p>{d.subtitle}</p></div></div><div className="demo-preview"><div className="mini-side"/><div className="mini-content"><div className="mini-top"/><div className="mini-stats"><i/><i/><i/></div><div className="mini-chart"><svg viewBox="0 0 200 50"><path d="M0 43 C30 42 25 19 52 27 S78 36 95 19 S122 30 145 12 S170 18 200 2"/></svg></div></div></div><a href="#buy">پیش‌نمایش دمو <ArrowLeft/></a></article>)}</div></section>
-    <section className="showcase" id="features"><div className="showcase-copy"><span className="kicker light">فراتر از یک قالب آماده</span><h2>جزئیات کوچک،<br/>تجربه‌ای بزرگ می‌سازند.</h2><p>از ساختار کد تا حرکت هر المان، همه‌چیز برای یک تجربه سریع، روان و قابل توسعه طراحی شده است.</p><div className="feature-list">{[[Palette,"سیستم طراحی یکپارچه","توکن‌های منعطف و کامپوننت‌های هماهنگ"],[Zap,"سریع و سبک","بهینه‌سازی‌شده برای عملکرد واقعی"],[Code2,"توسعه‌پذیر","ساختار تمیز، مستند و مقیاس‌پذیر"]].map(([I,t,s])=><div key={String(t)}><span>{typeof I!=="string" && <I/>}</span><div><b>{t as string}</b><small>{s as string}</small></div></div>)}</div></div><div className="showcase-ui"><DashboardMockup compact/><div className="palette-pop"><b>رنگ برند</b><div><i/><i/><i/><i/><i/></div><span>#7367F0</span></div></div></section>
-    <section className="section" id="apps"><div className="center-head"><span className="kicker">یک اکوسیستم کامل</span><h2>اپلیکیشن‌هایی که واقعاً نیاز دارید</h2><p>ابزارهای روزمره شما، از قبل طراحی و برای زبان فارسی آماده شده‌اند.</p></div><div className="apps-grid">{apps.map(([t,I,s],idx)=><article key={String(t)}><span className={`app-icon ai${idx}`}>{typeof I!=="string"&&<I/>}</span><div><h3>{t as string}</h3><p>{s as string}</p></div><ArrowLeft className="app-arrow"/></article>)}</div></section>
-    <section className="tech-section" id="tech"><div className="tech-inner"><div><span className="kicker">تکنولوژی، بدون محدودیت</span><h2>با ابزار مورد علاقه‌تان بسازید.</h2><p>ساختار مدرن و استاندارد لورانیک، مسیر توسعه را برای هر تیمی کوتاه‌تر می‌کند.</p></div><div className="tech-cloud"><span className="t-react">⚛<b>React</b></span><span className="t-vue">V<b>Vue.js</b></span><span className="t-next">N<b>Next.js</b></span><span className="t-laravel">L<b>Laravel</b></span><span className="t-html">۵<b>HTML</b></span><span className="t-figma">F<b>Figma</b></span></div></div></section>
-    <section className="section faq-section" id="faq"><div className="faq-title"><span className="kicker">پاسخ‌های شفاف</span><h2>سوال‌های پرتکرار</h2><p>اگر پاسخ سوالتان اینجا نیست، تیم پشتیبانی همراه شماست.</p><a className="btn btn-ghost" href="#buy">ارتباط با پشتیبانی</a></div><div className="faq-list">{faqs.map((f,i)=><button key={f[0]} className={openFaq===i?"faq open":"faq"} onClick={()=>setOpenFaq(openFaq===i?-1:i)}><span><b>{f[0]}</b><ChevronDown/></span><p>{f[1]}</p></button>)}</div></section>
-    <section className="buy" id="buy"><div className="buy-glow"/><span className="buy-icon"><Boxes/></span><h2>ایده بعدی شما، از اینجا شروع می‌شود.</h2><p>با لورانیک، زمان کمتری صرف جزئیات تکراری کنید و محصول بهتری بسازید.</p><div><a className="btn btn-white btn-lg" href="#top">دریافت از راست‌چین <ArrowLeft/></a><span><Check/> ۶ ماه پشتیبانی رایگان</span></div></section>
-    <footer><div className="footer-main"><div><a className="brand" href="#top"><span className="brandmark">L</span><span><b>لورانیک</b><small>پنل مدیریت فارسی</small></span></a><p>تجربه‌ای مدرن برای ساخت پنل‌های مدیریت حرفه‌ای، سریع و دوست‌داشتنی.</p></div><div><b>محصول</b><a href="#demos">دموها</a><a href="#features">ویژگی‌ها</a><a href="#apps">اپلیکیشن‌ها</a></div><div><b>منابع</b><a href="#faq">مستندات</a><a href="#faq">راهنمای شروع</a><a href="#faq">پشتیبانی</a></div><div><b>اعتماد شما</b><span><ShieldCheck/> خرید امن از راست‌چین</span><span><Database/> بروزرسانی‌های منظم</span></div></div><div className="copyright"><span>© ۱۴۰۵ لورانیک؛ ساخته‌شده با دقت برای وب فارسی.</span><div><a href="#">قوانین استفاده</a><a href="#">حریم خصوصی</a></div></div></footer>
-  </main>;
+  const [dark, setDark] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [openFaq, setOpenFaq] = useState(0);
+
+  return (
+    <main dir="rtl" className={dark ? "site dark" : "site"}>
+      <header className="navbar">
+        <a className="brand" href="#top"><span className="brandmark">L</span><span><b>لورانیک</b><small>پنل مدیریت فارسی</small></span></a>
+        <nav className={menu ? "open" : ""}>
+          <a href="#demos">دموها</a><a href="#features">ویژگی‌ها</a><a href="#tech">تکنولوژی</a><a href="#faq">سوالات متداول</a>
+        </nav>
+        <div className="nav-actions">
+          <button className="icon-btn" onClick={() => setDark(!dark)} aria-label="تغییر حالت رنگ">{dark ? <Sun /> : <Moon />}</button>
+          <a className="btn btn-primary" href="/demo/commerce">دموی زنده <ArrowLeft /></a>
+          <button className="menu-btn" onClick={() => setMenu(!menu)} aria-label="منو">{menu ? <X /> : <Menu />}</button>
+        </div>
+      </header>
+
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <div className="eyebrow"><Sparkles /> نسخه ۱.۰.۰</div>
+          <h1>پنل مدیریت فارسی،<br/><span>راست‌چین و توسعه‌پذیر</span></h1>
+          <p>لورانیک یک قالب رابط مدیریتی مبتنی بر React، Next.js و TypeScript است که ۱۰ فضای کاری تعاملی برای سناریوهای رایج مدیریتی ارائه می‌کند.</p>
+          <div className="hero-actions">
+            <a className="btn btn-primary btn-lg" href="/demo/commerce">ورود به دمو <ArrowLeft /></a>
+            <a className="btn btn-ghost btn-lg" href="#demos">مشاهده فضاهای کاری</a>
+          </div>
+        </div>
+        <div className="hero-visual"><DashboardMockup /></div>
+      </section>
+
+      <section className="metrics">
+        <div><strong>۱۰</strong><span>فضای کاری</span></div>
+        <div><strong>RTL</strong><span>چیدمان فارسی</span></div>
+        <div><strong>۲</strong><span>حالت روشن و تیره</span></div>
+        <div><strong>1.0.0</strong><span>نسخه محصول</span></div>
+      </section>
+
+      <section className="section demos-section" id="demos">
+        <div className="section-head"><div><span className="kicker">دموهای واقعی نسخه فعلی</span><h2>۱۰ فضای کاری قابل پیمایش</h2><p>هر کارت مستقیماً به مسیر همان دموی تعاملی متصل است.</p></div></div>
+        <div className="demo-grid">
+          {demos.map((d) => (
+            <article className={`demo-card ${d.tone}`} key={d.slug}>
+              <div className="demo-info"><span><d.icon /></span><div><h3>{d.title}</h3><p>{d.subtitle}</p></div></div>
+              <div className="demo-preview"><div className="mini-side"/><div className="mini-content"><div className="mini-top"/><div className="mini-stats"><i/><i/><i/></div><div className="mini-chart"><svg viewBox="0 0 200 50"><path d="M0 43 C30 42 25 19 52 27 S78 36 95 19 S122 30 145 12 S170 18 200 2"/></svg></div></div></div>
+              <a href={`/demo/${d.slug}`}>باز کردن دمو <ArrowLeft /></a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="showcase" id="features">
+        <div className="showcase-copy"><span className="kicker light">ویژگی‌های اثبات‌شده</span><h2>تمرکز روی رابط مدیریتی واقعی</h2><p>ادعاهای صفحه معرفی به قابلیت‌هایی محدود شده‌اند که در همین نسخه و مسیرهای دمو قابل مشاهده‌اند.</p></div>
+        <div className="apps-grid">
+          {features.map(([Icon, title, text]) => {
+            const I = Icon as typeof LayoutDashboard;
+            return <article key={String(title)}><span className="app-icon"><I /></span><div><h3>{String(title)}</h3><p>{String(text)}</p></div></article>;
+          })}
+        </div>
+      </section>
+
+      <section className="section" id="tech">
+        <div className="center-head"><span className="kicker">فناوری</span><h2>پایه فنی نسخه ۱.۰.۰</h2><p>React 19، Next.js 16، TypeScript 5، Recharts و Vinext در `package.json` ثبت شده‌اند.</p></div>
+        <div className="apps-grid">
+          {["React 19", "Next.js 16", "TypeScript 5", "Recharts"].map((x) => <article key={x}><span className="app-icon"><Code2 /></span><div><h3>{x}</h3><p>جزء ثبت‌شده در وابستگی‌های پروژه</p></div></article>)}
+        </div>
+      </section>
+
+      <section className="section faq-section" id="faq">
+        <div className="faq-title"><span className="kicker">سوالات متداول</span><h2>قبل از شروع</h2></div>
+        <div className="faq-list">
+          {faqs.map(([q, a], i) => (
+            <button className={`faq ${openFaq === i ? "open" : ""}`} onClick={() => setOpenFaq(i)} key={q}>
+              <span><b>{q}</b><ChevronDown /></span><p>{a}</p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="buy" id="buy">
+        <div className="buy-glow" />
+        <div className="buy-icon"><LayoutDashboard /></div>
+        <h2>لورانیک را در دمو بررسی کنید</h2>
+        <p>پیش از خرید، مسیرهای تعاملی نسخه فعلی را مشاهده کنید.</p>
+        <div><a className="btn btn-white" href="/demo/commerce">ورود به دمو <ArrowLeft /></a></div>
+      </section>
+
+      <footer>
+        <div className="copyright"><span>لورانیک ادمین — نسخه 1.0.0</span><span>React · Next.js · TypeScript</span></div>
+      </footer>
+    </main>
+  );
 }
