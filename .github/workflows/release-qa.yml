@@ -79,6 +79,7 @@ jobs:
             "/demo/components"
             "/demo/settings"
           )
+          mkdir -p artifacts
           : > artifacts/ROUTE_SMOKE_TEST.txt
           for route in "${routes[@]}"; do
             code="$(curl --silent --output /tmp/route-body --write-out '%{http_code}' "http://127.0.0.1:8787${route}")"
@@ -94,15 +95,40 @@ jobs:
           mkdir -p artifacts/screenshots/desktop artifacts/screenshots/mobile
           chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$chrome" ]; then
-            echo "Chrome executable not available on runner; screenshot step skipped." | tee artifacts/screenshots/README.txt
-            exit 0
+            echo "Chrome executable not available on runner." >&2
+            exit 1
           fi
+
+          capture() {
+            local width="$1"
+            local height="$2"
+            local output="$3"
+            local url="$4"
+            "$chrome" \
+              --headless \
+              --disable-gpu \
+              --no-sandbox \
+              --hide-scrollbars \
+              --disable-dev-shm-usage \
+              --run-all-compositor-stages-before-draw \
+              --virtual-time-budget=2500 \
+              --window-size="${width},${height}" \
+              --screenshot="$output" \
+              "$url"
+            test -s "$output"
+            bytes="$(stat -c%s "$output")"
+            if [ "$bytes" -lt 10000 ]; then
+              echo "Suspiciously small/blank screenshot: $output ($bytes bytes)" >&2
+              exit 1
+            fi
+          }
+
           routes=(commerce analytics projects finance crm academy calendar inbox components settings)
-          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot=artifacts/screenshots/desktop/landing.png http://127.0.0.1:8787/
-          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot=artifacts/screenshots/mobile/landing.png http://127.0.0.1:8787/
+          capture 1440 1000 artifacts/screenshots/desktop/landing.png http://127.0.0.1:8787/
+          capture 390 844 artifacts/screenshots/mobile/landing.png http://127.0.0.1:8787/
           for route in "${routes[@]}"; do
-            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot="artifacts/screenshots/desktop/${route}.png" "http://127.0.0.1:8787/demo/${route}"
-            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot="artifacts/screenshots/mobile/${route}.png" "http://127.0.0.1:8787/demo/${route}"
+            capture 1440 1000 "artifacts/screenshots/desktop/${route}.png" "http://127.0.0.1:8787/demo/${route}"
+            capture 390 844 "artifacts/screenshots/mobile/${route}.png" "http://127.0.0.1:8787/demo/${route}"
           done
 
       - name: Normalize lock metadata for customer package
@@ -166,6 +192,7 @@ jobs:
         if: always()
         shell: bash
         run: |
+          mkdir -p artifacts
           cp /tmp/loraniq-preview.log artifacts/PREVIEW.log 2>/dev/null || true
           if [ -f /tmp/loraniq-preview.pid ]; then
             kill "$(cat /tmp/loraniq-preview.pid)" 2>/dev/null || true
