@@ -2,6 +2,8 @@
 .openai export-ignore
 release export-ignore
 marketing export-ignore
+README.md export-ignore
+docs/README_FA.md export-ignore
 docs/RTL_THEME_LISTING_FA.md export-ignore
 docs/RELEASE_CHECKLIST_FA.md export-ignore
 examples export-ignore
