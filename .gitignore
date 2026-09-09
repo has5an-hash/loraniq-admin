@@ -43,3 +43,5 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+/.sites-stage/
+/loraniq-site.tar.gz
