@@ -4,6 +4,7 @@ release export-ignore
 marketing export-ignore
 README.md export-ignore
 docs/README_FA.md export-ignore
+docs/CUSTOMER_README_FA.md export-ignore
 docs/RTL_THEME_LISTING_FA.md export-ignore
 docs/RELEASE_CHECKLIST_FA.md export-ignore
 examples export-ignore
@@ -13,5 +14,8 @@ db export-ignore
 drizzle export-ignore
 drizzle.config.ts export-ignore
 cloudflare-env.d.ts export-ignore
+scripts/install-ci.mjs export-ignore
+scripts/release-check.mjs export-ignore
+scripts/generate-third-party-notices.mjs export-ignore
 .gitignore export-ignore
 .gitattributes export-ignore
