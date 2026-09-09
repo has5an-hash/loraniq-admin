@@ -45,3 +45,5 @@ next-env.d.ts
 /work/
 /.sites-stage/
 /loraniq-site.tar.gz
+.sites-stage-v2/
+loraniq-site-v2.tar.gz
