@@ -1,0 +1,11 @@
+/*
+ * Loraniq ships without a runtime dependency on Google Fonts.
+ * The original stylesheet still declares a legacy webfont face, but all
+ * rendered product surfaces are explicitly mapped to a local/system stack
+ * here so the browser never needs that external resource.
+ */
+body,
+.admin,
+.recharts-cartesian-axis-tick text {
+  font-family: Tahoma, "Segoe UI", Arial, sans-serif !important;
+}
