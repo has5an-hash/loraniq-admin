@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./font-fallback.css";
 
 export const metadata: Metadata = {
   title: "لورانیک | قالب پنل مدیریت فارسی و راست‌چین",
