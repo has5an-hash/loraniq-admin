@@ -95,51 +95,87 @@ jobs:
             test -s /tmp/route-body
           done
 
-      - name: Capture browser QA screenshots
+      - name: Install isolated browser QA helper
+        run: npm install --no-save --package-lock=false puppeteer-core@24 --no-audit --no-fund
+
+      - name: Capture exact browser QA screenshots
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/screenshots/desktop artifacts/screenshots/mobile
           chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$chrome" ]; then
             echo "Chrome executable not available on runner." >&2
             exit 1
           fi
+          CHROME_PATH="$chrome" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import puppeteer from 'puppeteer-core';
 
-          capture() {
-            local width="$1"
-            local height="$2"
-            local output="$3"
-            local url="$4"
-            "$chrome" \
-              --headless \
-              --disable-gpu \
-              --no-sandbox \
-              --hide-scrollbars \
-              --disable-dev-shm-usage \
-              --run-all-compositor-stages-before-draw \
-              --virtual-time-budget=2500 \
-              --window-size="${width},${height}" \
-              --screenshot="$output" \
-              "$url"
-            test -s "$output"
-            bytes="$(stat -c%s "$output")"
-            if [ "$bytes" -lt 10000 ]; then
-              echo "Suspiciously small/blank screenshot: $output ($bytes bytes)" >&2
-              exit 1
-            fi
+          const pages = [
+            ['landing', '/'],
+            ['commerce', '/demo/commerce'],
+            ['analytics', '/demo/analytics'],
+            ['projects', '/demo/projects'],
+            ['finance', '/demo/finance'],
+            ['crm', '/demo/crm'],
+            ['academy', '/demo/academy'],
+            ['calendar', '/demo/calendar'],
+            ['inbox', '/demo/inbox'],
+            ['components', '/demo/components'],
+            ['settings', '/demo/settings']
+          ];
+
+          fs.mkdirSync('artifacts/screenshots/desktop', { recursive: true });
+          fs.mkdirSync('artifacts/screenshots/mobile', { recursive: true });
+
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          });
+
+          async function capture(name, route, mode) {
+            const mobile = mode === 'mobile';
+            const width = mobile ? 390 : 1440;
+            const height = mobile ? 844 : 1000;
+            const page = await browser.newPage();
+            await page.setViewport({
+              width,
+              height,
+              deviceScaleFactor: 1,
+              isMobile: mobile,
+              hasTouch: mobile
+            });
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+            const response = await page.goto(`http://127.0.0.1:8787${route}`, {
+              waitUntil: 'networkidle2',
+              timeout: 30000
+            });
+            await new Promise(resolve => setTimeout(resolve, 750));
+            const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+            if ((response?.status() ?? 0) !== 200) throw new Error(`${mode}/${name}: HTTP ${response?.status()}`);
+            if (pageErrors.length) throw new Error(`${mode}/${name}: page errors: ${pageErrors.join(' | ')}`);
+            if (viewport.width !== width || viewport.height !== height) {
+              throw new Error(`${mode}/${name}: unexpected viewport ${viewport.width}x${viewport.height}, expected ${width}x${height}`);
+            }
+            const output = `artifacts/screenshots/${mode}/${name}.png`;
+            await page.screenshot({ path: output, fullPage: false });
+            const bytes = fs.statSync(output).size;
+            if (bytes < 10000) throw new Error(`${mode}/${name}: suspiciously small screenshot (${bytes} bytes)`);
+            console.log(`PASS screenshot ${mode}/${name} ${viewport.width}x${viewport.height} ${bytes} bytes`);
+            await page.close();
           }
 
-          routes=(commerce analytics projects finance crm academy calendar inbox components settings)
-          capture 1440 1000 artifacts/screenshots/desktop/landing.png http://127.0.0.1:8787/
-          capture 390 844 artifacts/screenshots/mobile/landing.png http://127.0.0.1:8787/
-          for route in "${routes[@]}"; do
-            capture 1440 1000 "artifacts/screenshots/desktop/${route}.png" "http://127.0.0.1:8787/demo/${route}"
-            capture 390 844 "artifacts/screenshots/mobile/${route}.png" "http://127.0.0.1:8787/demo/${route}"
-          done
-
-      - name: Install isolated browser QA helper
-        run: npm install --no-save --package-lock=false puppeteer-core@24 --no-audit --no-fund
+          try {
+            for (const [name, route] of pages) {
+              await capture(name, route, 'desktop');
+              await capture(name, route, 'mobile');
+            }
+          } finally {
+            await browser.close();
+          }
+          NODE
 
       - name: Mobile horizontal-overflow gate
         shell: bash
@@ -177,7 +213,7 @@ jobs:
 
           for (const route of routes) {
             const page = await browser.newPage();
-            await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+            await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
             const pageErrors = [];
             page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
             const response = await page.goto(`http://127.0.0.1:8787${route}`, {
@@ -223,7 +259,7 @@ jobs:
             const bodyOverflow = metrics.body.scrollWidth - metrics.body.clientWidth;
             const shellSelectors = [metrics.admin, metrics.adminPage, metrics.adminTop, metrics.adminContent].filter(Boolean);
             const shellClipped = shellSelectors.some(item => item.left < -1 || item.right > metrics.viewportWidth + 1);
-            const passed = status === 200 && pageErrors.length === 0 && documentOverflow <= 1 && bodyOverflow <= 1 && !shellClipped;
+            const passed = status === 200 && pageErrors.length === 0 && metrics.viewportWidth === 390 && documentOverflow <= 1 && bodyOverflow <= 1 && !shellClipped;
 
             report[route] = {
               status,
@@ -235,7 +271,7 @@ jobs:
               metrics
             };
             if (!passed) failed = true;
-            console.log(`${passed ? 'PASS' : 'FAIL'} ${route} docOverflow=${documentOverflow}px bodyOverflow=${bodyOverflow}px shellClipped=${shellClipped}`);
+            console.log(`${passed ? 'PASS' : 'FAIL'} ${route} viewport=${metrics.viewportWidth}px docOverflow=${documentOverflow}px bodyOverflow=${bodyOverflow}px shellClipped=${shellClipped}`);
             await page.close();
           }
 
@@ -371,6 +407,7 @@ jobs:
             ],
             zip_sha256: crypto.createHash('sha256').update(zip).digest('hex'),
             repository_build_passed: true,
+            exact_viewport_screenshots_passed: true,
             mobile_overflow_qa_passed: true,
             commercial_package_restore_test_passed: true
           };
