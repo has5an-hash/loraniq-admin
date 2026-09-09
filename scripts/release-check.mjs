@@ -51,15 +51,10 @@ for (const slug of demoSlugs) {
 }
 
 const landing = read("app/page.tsx");
-const forbiddenClaims = [
-  ["۱۲۰+", "unsupported 120+ pages claim"],
-  ["۱۲", "unsupported 12 demos claim"],
-  ["امتیاز ۴٫۹", "unverified rating/social-proof claim"],
-];
-for (const [needle, label] of forbiddenClaims) {
-  assert(!landing.includes(needle), `landing has no ${label}`);
-}
-assert(landing.includes("۱۰"), "landing states the verified 10-workspace count");
+assert(!landing.includes("۱۲۰+"), "landing has no unsupported 120+ pages claim");
+assert(!/۱۲\s*(?:دمو|فضای\s*کاری)/u.test(landing), "landing has no unsupported 12-demo/workspace claim");
+assert(!landing.includes("امتیاز ۴٫۹"), "landing has no unverified rating/social-proof claim");
+assert(/۱۰\s*(?:فضای\s*کاری|دمو)/u.test(landing), "landing states the verified 10-workspace count");
 
 const readme = read("README.md");
 assert(!readme.includes("vinext-starter"), "README no longer presents the project as a starter");
@@ -79,7 +74,7 @@ function walk(dir) {
     const absolute = path.join(dir, entry.name);
     const relative = path.relative(root, absolute).replaceAll("\\", "/");
     if (entry.isDirectory()) walk(absolute);
-    else if (sensitiveNames.has(entry.name) || /\.(pem|p12|pfx)$/.test(entry.name)) {
+    else if (sensitiveNames.has(entry.name) || /\.(pem|p12|pfx)$/u.test(entry.name)) {
       fail(`sensitive credential-like file must not be shipped: ${relative}`);
     }
   }
