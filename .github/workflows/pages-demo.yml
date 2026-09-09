@@ -45,8 +45,10 @@ jobs:
           done
           touch out/.nojekyll
 
-      - name: Configure Pages
+      - name: Configure or enable Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
