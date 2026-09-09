@@ -1,0 +1,53 @@
+name: Loraniq Mobile Components Diagnostic
+
+on:
+  push:
+    branches: [release-prep-2026-09-09]
+    paths: [.github/workflows/mobile-components-diagnostic.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Start preview
+        shell: bash
+        run: |
+          npm run start -- --port 8787 >/tmp/preview.log 2>&1 &
+          echo $! >/tmp/preview.pid
+          for i in {1..60}; do
+            curl -fsS http://127.0.0.1:8787/demo/components >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/preview.log
+          exit 1
+      - name: Capture components mobile three times
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p diagnostic
+          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          for n in 1 2 3; do
+            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --disable-dev-shm-usage --run-all-compositor-stages-before-draw --virtual-time-budget=5000 --window-size=390,844 --screenshot="diagnostic/components-mobile-${n}.png" "http://127.0.0.1:8787/demo/components"
+            bytes="$(stat -c%s "diagnostic/components-mobile-${n}.png")"
+            echo "attempt ${n}: ${bytes} bytes"
+            test "$bytes" -ge 10000
+            sleep 1
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-components-diagnostic-${{ github.run_id }}
+          path: diagnostic
+          retention-days: 7
