@@ -1,4 +1,4 @@
-name: Loraniq Mobile Components Diagnostic
+name: Loraniq Mobile Overflow Diagnostic
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  capture:
+  inspect:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -27,91 +27,106 @@ jobs:
           npm run start -- --port 8787 >/tmp/preview.log 2>&1 &
           echo $! >/tmp/preview.pid
           for i in {1..60}; do
-            curl -fsS http://127.0.0.1:8787/demo/components >/dev/null && exit 0
+            curl -fsS http://127.0.0.1:8787/demo/commerce >/dev/null && exit 0
             sleep 1
           done
           cat /tmp/preview.log
           exit 1
-      - name: Install browser diagnostic helper
+      - name: Install diagnostic helper
         run: npm install --no-save puppeteer-core@24 --no-audit --no-fund
-      - name: Inspect components at mobile width
+      - name: Inspect all demos at exact QA viewport
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p diagnostic
+          mkdir -p diagnostic/screenshots
           chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
           CHROME_PATH="$chrome" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import puppeteer from 'puppeteer-core';
 
-          const logs = { console: [], pageErrors: [], requestFailures: [] };
+          const routes = ['commerce','analytics','projects','finance','crm','academy','calendar','inbox','components','settings'];
           const browser = await puppeteer.launch({
             executablePath: process.env.CHROME_PATH,
             headless: true,
             args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
           });
-          const page = await browser.newPage();
-          await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
-          page.on('console', msg => logs.console.push({ type: msg.type(), text: msg.text() }));
-          page.on('pageerror', error => logs.pageErrors.push(String(error?.stack || error)));
-          page.on('requestfailed', request => logs.requestFailures.push({ url: request.url(), error: request.failure()?.errorText || '' }));
+          const report = {};
 
-          const response = await page.goto('http://127.0.0.1:8787/demo/components', { waitUntil: 'networkidle2', timeout: 30000 });
-          await new Promise(resolve => setTimeout(resolve, 3000));
+          for (const route of routes) {
+            const page = await browser.newPage();
+            await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+            const response = await page.goto(`http://127.0.0.1:8787/demo/${route}`, { waitUntil: 'networkidle2', timeout: 30000 });
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-          const metrics = await page.evaluate(() => {
-            const describe = (selector) => {
-              const element = document.querySelector(selector);
-              if (!element) return null;
-              const rect = element.getBoundingClientRect();
-              const style = getComputedStyle(element);
-              return {
-                selector,
-                rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height, top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left },
-                display: style.display,
-                visibility: style.visibility,
-                opacity: style.opacity,
-                position: style.position,
-                overflowX: style.overflowX,
-                overflowY: style.overflowY,
-                color: style.color,
-                backgroundColor: style.backgroundColor,
-                transform: style.transform,
-                textLength: element.textContent?.trim().length || 0,
-                childCount: element.children.length
+            const metrics = await page.evaluate(() => {
+              const vw = innerWidth;
+              const describe = (el) => {
+                const r = el.getBoundingClientRect();
+                const s = getComputedStyle(el);
+                return {
+                  tag: el.tagName.toLowerCase(),
+                  className: typeof el.className === 'string' ? el.className : '',
+                  id: el.id || '',
+                  rect: { left: Math.round(r.left), right: Math.round(r.right), width: Math.round(r.width), top: Math.round(r.top), height: Math.round(r.height) },
+                  clientWidth: el.clientWidth,
+                  scrollWidth: el.scrollWidth,
+                  display: s.display,
+                  position: s.position,
+                  overflowX: s.overflowX,
+                  minWidth: s.minWidth,
+                  maxWidth: s.maxWidth,
+                };
               };
-            };
-            return {
-              readyState: document.readyState,
-              title: document.title,
-              url: location.href,
-              viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
-              html: { scrollWidth: document.documentElement.scrollWidth, scrollHeight: document.documentElement.scrollHeight },
-              body: { scrollWidth: document.body.scrollWidth, scrollHeight: document.body.scrollHeight, textLength: document.body.innerText.length },
-              elements: [
-                describe('main.admin'),
-                describe('.admin-page'),
-                describe('.admin-top'),
-                describe('.admin-content'),
-                describe('.page-head'),
-                describe('.component-grid'),
-                describe('.component-grid .a-card'),
-                describe('.component-grid .orders')
-              ]
-            };
-          });
+              const all = [...document.querySelectorAll('body *')];
+              const offenders = all
+                .filter(el => {
+                  const r = el.getBoundingClientRect();
+                  if (!r.width || !r.height) return false;
+                  const s = getComputedStyle(el);
+                  if (s.position === 'fixed' && r.right <= 0) return false;
+                  return r.left < -1 || r.right > vw + 1;
+                })
+                .map(describe)
+                .sort((a,b) => Math.max(Math.abs(b.rect.left), b.rect.right - vw) - Math.max(Math.abs(a.rect.left), a.rect.right - vw))
+                .slice(0, 25);
+              const pick = selector => {
+                const el = document.querySelector(selector);
+                return el ? describe(el) : null;
+              };
+              return {
+                viewport: { width: vw, height: innerHeight },
+                document: { clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth },
+                body: { clientWidth: document.body.clientWidth, scrollWidth: document.body.scrollWidth },
+                key: {
+                  admin: pick('main.admin'),
+                  page: pick('.admin-page'),
+                  top: pick('.admin-top'),
+                  content: pick('.admin-content'),
+                  stats: pick('.a-stats'),
+                  grid: pick('.a-grid'),
+                  orders: pick('.orders'),
+                  projectBoard: pick('.project-board'),
+                  componentGrid: pick('.component-grid'),
+                  calendar: pick('.calendar-view')
+                },
+                offenders
+              };
+            });
 
-          await page.screenshot({ path: 'diagnostic/components-mobile-viewport.png', fullPage: false });
-          await page.screenshot({ path: 'diagnostic/components-mobile-full.png', fullPage: true });
-          fs.writeFileSync('diagnostic/dom.html', await page.content());
-          fs.writeFileSync('diagnostic/diagnostics.json', JSON.stringify({ status: response?.status(), metrics, logs }, null, 2));
+            report[route] = { status: response?.status(), pageErrors, metrics };
+            await page.screenshot({ path: `diagnostic/screenshots/${route}.png`, fullPage: false });
+            await page.close();
+          }
+
           await browser.close();
-
-          console.log(JSON.stringify({ status: response?.status(), metrics, logs }, null, 2));
+          fs.writeFileSync('diagnostic/mobile-overflow.json', JSON.stringify(report, null, 2));
+          console.log(JSON.stringify(report, null, 2));
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mobile-components-diagnostic-${{ github.run_id }}
+          name: mobile-overflow-diagnostic-${{ github.run_id }}
           path: diagnostic
           retention-days: 7
