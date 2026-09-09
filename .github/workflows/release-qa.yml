@@ -16,7 +16,7 @@ jobs:
   qa-and-package:
     name: QA, smoke test and package
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -30,6 +30,13 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Production dependency audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          npm audit --omit=dev --audit-level=high | tee artifacts/NPM_AUDIT.txt
 
       - name: Lint
         run: npm run lint
@@ -79,6 +86,7 @@ jobs:
             "/demo/components"
             "/demo/settings"
           )
+          mkdir -p artifacts
           : > artifacts/ROUTE_SMOKE_TEST.txt
           for route in "${routes[@]}"; do
             code="$(curl --silent --output /tmp/route-body --write-out '%{http_code}' "http://127.0.0.1:8787${route}")"
@@ -87,23 +95,190 @@ jobs:
             test -s /tmp/route-body
           done
 
-      - name: Capture browser QA screenshots
+      - name: Install isolated browser QA helper
+        run: npm install --no-save --package-lock=false puppeteer-core@24 --no-audit --no-fund
+
+      - name: Capture exact browser QA screenshots
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/screenshots/desktop artifacts/screenshots/mobile
           chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$chrome" ]; then
-            echo "Chrome executable not available on runner; screenshot step skipped." | tee artifacts/screenshots/README.txt
-            exit 0
+            echo "Chrome executable not available on runner." >&2
+            exit 1
           fi
-          routes=(commerce analytics projects finance crm academy calendar inbox components settings)
-          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot=artifacts/screenshots/desktop/landing.png http://127.0.0.1:8787/
-          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot=artifacts/screenshots/mobile/landing.png http://127.0.0.1:8787/
-          for route in "${routes[@]}"; do
-            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot="artifacts/screenshots/desktop/${route}.png" "http://127.0.0.1:8787/demo/${route}"
-            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot="artifacts/screenshots/mobile/${route}.png" "http://127.0.0.1:8787/demo/${route}"
-          done
+          CHROME_PATH="$chrome" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import puppeteer from 'puppeteer-core';
+
+          const pages = [
+            ['landing', '/'],
+            ['commerce', '/demo/commerce'],
+            ['analytics', '/demo/analytics'],
+            ['projects', '/demo/projects'],
+            ['finance', '/demo/finance'],
+            ['crm', '/demo/crm'],
+            ['academy', '/demo/academy'],
+            ['calendar', '/demo/calendar'],
+            ['inbox', '/demo/inbox'],
+            ['components', '/demo/components'],
+            ['settings', '/demo/settings']
+          ];
+
+          fs.mkdirSync('artifacts/screenshots/desktop', { recursive: true });
+          fs.mkdirSync('artifacts/screenshots/mobile', { recursive: true });
+
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          });
+
+          async function capture(name, route, mode) {
+            const mobile = mode === 'mobile';
+            const width = mobile ? 390 : 1440;
+            const height = mobile ? 844 : 1000;
+            const page = await browser.newPage();
+            await page.setViewport({
+              width,
+              height,
+              deviceScaleFactor: 1,
+              isMobile: mobile,
+              hasTouch: mobile
+            });
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+            const response = await page.goto(`http://127.0.0.1:8787${route}`, {
+              waitUntil: 'networkidle2',
+              timeout: 30000
+            });
+            await new Promise(resolve => setTimeout(resolve, 750));
+            const viewport = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+            if ((response?.status() ?? 0) !== 200) throw new Error(`${mode}/${name}: HTTP ${response?.status()}`);
+            if (pageErrors.length) throw new Error(`${mode}/${name}: page errors: ${pageErrors.join(' | ')}`);
+            if (viewport.width !== width || viewport.height !== height) {
+              throw new Error(`${mode}/${name}: unexpected viewport ${viewport.width}x${viewport.height}, expected ${width}x${height}`);
+            }
+            const output = `artifacts/screenshots/${mode}/${name}.png`;
+            await page.screenshot({ path: output, fullPage: false });
+            const bytes = fs.statSync(output).size;
+            if (bytes < 10000) throw new Error(`${mode}/${name}: suspiciously small screenshot (${bytes} bytes)`);
+            console.log(`PASS screenshot ${mode}/${name} ${viewport.width}x${viewport.height} ${bytes} bytes`);
+            await page.close();
+          }
+
+          try {
+            for (const [name, route] of pages) {
+              await capture(name, route, 'desktop');
+              await capture(name, route, 'mobile');
+            }
+          } finally {
+            await browser.close();
+          }
+          NODE
+
+      - name: Mobile horizontal-overflow gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome" ]; then
+            echo "Chrome executable not available on runner." >&2
+            exit 1
+          fi
+          CHROME_PATH="$chrome" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import puppeteer from 'puppeteer-core';
+
+          const routes = [
+            '/',
+            '/demo/commerce',
+            '/demo/analytics',
+            '/demo/projects',
+            '/demo/finance',
+            '/demo/crm',
+            '/demo/academy',
+            '/demo/calendar',
+            '/demo/inbox',
+            '/demo/components',
+            '/demo/settings'
+          ];
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          });
+          const report = {};
+          let failed = false;
+
+          for (const route of routes) {
+            const page = await browser.newPage();
+            await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+            const pageErrors = [];
+            page.on('pageerror', error => pageErrors.push(String(error?.stack || error)));
+            const response = await page.goto(`http://127.0.0.1:8787${route}`, {
+              waitUntil: 'networkidle2',
+              timeout: 30000
+            });
+            await new Promise(resolve => setTimeout(resolve, 750));
+
+            const metrics = await page.evaluate(() => {
+              const viewportWidth = window.innerWidth;
+              const describe = selector => {
+                const element = document.querySelector(selector);
+                if (!element) return null;
+                const rect = element.getBoundingClientRect();
+                return {
+                  selector,
+                  left: Math.round(rect.left),
+                  right: Math.round(rect.right),
+                  width: Math.round(rect.width),
+                  clientWidth: element.clientWidth,
+                  scrollWidth: element.scrollWidth
+                };
+              };
+              return {
+                viewportWidth,
+                document: {
+                  clientWidth: document.documentElement.clientWidth,
+                  scrollWidth: document.documentElement.scrollWidth
+                },
+                body: {
+                  clientWidth: document.body.clientWidth,
+                  scrollWidth: document.body.scrollWidth
+                },
+                admin: describe('main.admin'),
+                adminPage: describe('.admin-page'),
+                adminTop: describe('.admin-top'),
+                adminContent: describe('.admin-content')
+              };
+            });
+
+            const status = response?.status() ?? 0;
+            const documentOverflow = metrics.document.scrollWidth - metrics.document.clientWidth;
+            const bodyOverflow = metrics.body.scrollWidth - metrics.body.clientWidth;
+            const shellSelectors = [metrics.admin, metrics.adminPage, metrics.adminTop, metrics.adminContent].filter(Boolean);
+            const shellClipped = shellSelectors.some(item => item.left < -1 || item.right > metrics.viewportWidth + 1);
+            const passed = status === 200 && pageErrors.length === 0 && metrics.viewportWidth === 390 && documentOverflow <= 1 && bodyOverflow <= 1 && !shellClipped;
+
+            report[route] = {
+              status,
+              passed,
+              pageErrors,
+              documentOverflow,
+              bodyOverflow,
+              shellClipped,
+              metrics
+            };
+            if (!passed) failed = true;
+            console.log(`${passed ? 'PASS' : 'FAIL'} ${route} viewport=${metrics.viewportWidth}px docOverflow=${documentOverflow}px bodyOverflow=${bodyOverflow}px shellClipped=${shellClipped}`);
+            await page.close();
+          }
+
+          await browser.close();
+          fs.writeFileSync('artifacts/MOBILE_OVERFLOW_QA.json', `${JSON.stringify(report, null, 2)}\n`);
+          if (failed) process.exit(1);
+          NODE
 
       - name: Normalize lock metadata for customer package
         shell: bash
@@ -120,19 +295,92 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf artifacts/package
           mkdir -p artifacts/package
           git archive --format=tar --prefix=loraniq-admin/ HEAD | tar -xf - -C artifacts/package
+          cp docs/CUSTOMER_README_FA.md artifacts/package/loraniq-admin/README.md
           cp package-lock.json artifacts/package/loraniq-admin/package-lock.json
           mkdir -p artifacts/package/loraniq-admin/docs
           cp artifacts/THIRD_PARTY_LICENSES.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES.txt
           if [ -f artifacts/THIRD_PARTY_LICENSES_REVIEW.txt ]; then
             cp artifacts/THIRD_PARTY_LICENSES_REVIEW.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES_REVIEW.txt
           fi
+
+          rm -f \
+            artifacts/package/loraniq-admin/scripts/release-check.mjs \
+            artifacts/package/loraniq-admin/scripts/generate-third-party-notices.mjs
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'artifacts/package/loraniq-admin/package.json';
+          const p = JSON.parse(fs.readFileSync(file, 'utf8'));
+          p.scripts = {
+            dev: 'vinext dev --port 5173',
+            build: 'vinext build',
+            start: 'node --import ./scripts/runtime-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0',
+            lint: 'eslint . --ignore-pattern dist --ignore-pattern .next',
+            typecheck: 'tsc --noEmit'
+          };
+          fs.writeFileSync(file, `${JSON.stringify(p, null, 2)}\n`);
+          NODE
+
+          if grep -RInE 'seedy@sites\.test|oai-authenticated-user-|appgprj_|site-creator-d1|site-creator-r2|vinext-starter' artifacts/package/loraniq-admin \
+            --exclude='package-lock.json' --exclude='THIRD_PARTY_LICENSES.txt'; then
+            echo "Internal starter/hosting identifiers leaked into commercial package." >&2
+            exit 1
+          fi
+
           (
             cd artifacts/package
             zip -qr ../Loraniq-Admin-RTLTheme-1.0.0.zip loraniq-admin
           )
           sha256sum artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip | tee artifacts/SHA256SUMS.txt
+
+      - name: Restore-test commercial ZIP from scratch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/loraniq-customer-test
+          mkdir -p /tmp/loraniq-customer-test
+          unzip -q artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip -d /tmp/loraniq-customer-test
+          cd /tmp/loraniq-customer-test/loraniq-admin
+          npm ci --no-audit --no-fund
+          npm run lint
+          npm run typecheck
+          npm run build
+          npm run start -- --port 8790 > /tmp/loraniq-package-preview.log 2>&1 &
+          echo $! > /tmp/loraniq-package-preview.pid
+          for i in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8790/ >/dev/null; then
+              break
+            fi
+            sleep 1
+            if [ "$i" = 60 ]; then
+              cat /tmp/loraniq-package-preview.log
+              exit 1
+            fi
+          done
+          routes=(
+            "/"
+            "/demo/commerce"
+            "/demo/analytics"
+            "/demo/projects"
+            "/demo/finance"
+            "/demo/crm"
+            "/demo/academy"
+            "/demo/calendar"
+            "/demo/inbox"
+            "/demo/components"
+            "/demo/settings"
+          )
+          : > "$GITHUB_WORKSPACE/artifacts/PACKAGE_RESTORE_TEST.txt"
+          for route in "${routes[@]}"; do
+            code="$(curl --silent --output /tmp/package-route-body --write-out '%{http_code}' "http://127.0.0.1:8790${route}")"
+            printf '%s\t%s\n' "$code" "$route" | tee -a "$GITHUB_WORKSPACE/artifacts/PACKAGE_RESTORE_TEST.txt"
+            test "$code" = "200"
+            test -s /tmp/package-route-body
+          done
+          kill "$(cat /tmp/loraniq-package-preview.pid)" 2>/dev/null || true
 
       - name: Write build manifest
         shell: bash
@@ -157,18 +405,27 @@ jobs:
               '/demo/commerce','/demo/analytics','/demo/projects','/demo/finance','/demo/crm',
               '/demo/academy','/demo/calendar','/demo/inbox','/demo/components','/demo/settings'
             ],
-            zip_sha256: crypto.createHash('sha256').update(zip).digest('hex')
+            zip_sha256: crypto.createHash('sha256').update(zip).digest('hex'),
+            repository_build_passed: true,
+            exact_viewport_screenshots_passed: true,
+            mobile_overflow_qa_passed: true,
+            commercial_package_restore_test_passed: true
           };
           fs.writeFileSync('artifacts/BUILD_MANIFEST.json', `${JSON.stringify(manifest, null, 2)}\n`);
           NODE
 
-      - name: Save preview log
+      - name: Save preview logs
         if: always()
         shell: bash
         run: |
+          mkdir -p artifacts
           cp /tmp/loraniq-preview.log artifacts/PREVIEW.log 2>/dev/null || true
+          cp /tmp/loraniq-package-preview.log artifacts/PACKAGE_PREVIEW.log 2>/dev/null || true
           if [ -f /tmp/loraniq-preview.pid ]; then
             kill "$(cat /tmp/loraniq-preview.pid)" 2>/dev/null || true
+          fi
+          if [ -f /tmp/loraniq-package-preview.pid ]; then
+            kill "$(cat /tmp/loraniq-package-preview.pid)" 2>/dev/null || true
           fi
 
       - name: Upload release artifact
@@ -180,10 +437,14 @@ jobs:
             artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip
             artifacts/SHA256SUMS.txt
             artifacts/BUILD_MANIFEST.json
+            artifacts/NPM_AUDIT.txt
+            artifacts/MOBILE_OVERFLOW_QA.json
             artifacts/THIRD_PARTY_LICENSES.txt
             artifacts/THIRD_PARTY_LICENSES_REVIEW.txt
             artifacts/ROUTE_SMOKE_TEST.txt
+            artifacts/PACKAGE_RESTORE_TEST.txt
             artifacts/PREVIEW.log
+            artifacts/PACKAGE_PREVIEW.log
             artifacts/screenshots
           if-no-files-found: warn
           retention-days: 30

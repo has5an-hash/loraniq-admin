@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { accessSync, constants } from "node:fs";
 import path from "node:path";
-import { projectRoot } from "./sites-env.mjs";
+import { projectRoot } from "./runtime-env.mjs";
 
 if (!process.env.npm_execpath) {
   throw new Error("Run this installer with npm run install:ci.");
@@ -16,12 +16,19 @@ if (![
   process.env.SHARP_IGNORE_GLOBAL_LIBVIPS = "1";
 }
 
-// Invoke npm's JavaScript entrypoint, avoiding platform-specific shell shims.
 const installed = spawnSync(
   process.execPath,
   [
-    process.env.npm_execpath, "ci", "--prefix", projectRoot, "--workspaces=false",
-    "--include=dev", "--include=optional", "--prefer-offline", "--no-audit", "--no-fund",
+    process.env.npm_execpath,
+    "ci",
+    "--prefix",
+    projectRoot,
+    "--workspaces=false",
+    "--include=dev",
+    "--include=optional",
+    "--prefer-offline",
+    "--no-audit",
+    "--no-fund",
   ],
   { stdio: "inherit" },
 );
@@ -31,7 +38,9 @@ if (installed.status !== 0) process.exit(installed.status ?? 1);
 try {
   accessSync(
     path.join(
-      projectRoot, "node_modules", ".bin",
+      projectRoot,
+      "node_modules",
+      ".bin",
       process.platform === "win32" ? "vinext.cmd" : "vinext",
     ),
     process.platform === "win32" ? constants.F_OK : constants.X_OK,

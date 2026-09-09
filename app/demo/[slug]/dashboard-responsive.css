@@ -1,0 +1,25 @@
+.component-grid > .a-card {
+  min-width: 0;
+}
+
+.component-grid .table-wrap {
+  max-width: 100%;
+}
+
+@media (max-width: 760px) {
+  .component-grid {
+    min-width: 0;
+  }
+
+  .component-grid > .a-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .component-grid .table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}

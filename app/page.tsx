@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   ArrowLeft,
   BarChart3,
@@ -125,7 +126,7 @@ export default function Home() {
         </nav>
         <div className="nav-actions">
           <button className="icon-btn" onClick={() => setDark(!dark)} aria-label="تغییر حالت رنگ">{dark ? <Sun /> : <Moon />}</button>
-          <a className="btn btn-primary" href="/demo/commerce">دموی زنده <ArrowLeft /></a>
+          <Link className="btn btn-primary" href="/demo/commerce">دموی زنده <ArrowLeft /></Link>
           <button className="menu-btn" onClick={() => setMenu(!menu)} aria-label="منو">{menu ? <X /> : <Menu />}</button>
         </div>
       </header>
@@ -136,7 +137,7 @@ export default function Home() {
           <h1>پنل مدیریت فارسی،<br/><span>راست‌چین و توسعه‌پذیر</span></h1>
           <p>لورانیک یک قالب رابط مدیریتی مبتنی بر React، Next.js و TypeScript است که ۱۰ فضای کاری تعاملی برای سناریوهای رایج مدیریتی ارائه می‌کند.</p>
           <div className="hero-actions">
-            <a className="btn btn-primary btn-lg" href="/demo/commerce">ورود به دمو <ArrowLeft /></a>
+            <Link className="btn btn-primary btn-lg" href="/demo/commerce">ورود به دمو <ArrowLeft /></Link>
             <a className="btn btn-ghost btn-lg" href="#demos">مشاهده فضاهای کاری</a>
           </div>
         </div>
@@ -157,7 +158,7 @@ export default function Home() {
             <article className={`demo-card ${d.tone}`} key={d.slug}>
               <div className="demo-info"><span><d.icon /></span><div><h3>{d.title}</h3><p>{d.subtitle}</p></div></div>
               <div className="demo-preview"><div className="mini-side"/><div className="mini-content"><div className="mini-top"/><div className="mini-stats"><i/><i/><i/></div><div className="mini-chart"><svg viewBox="0 0 200 50"><path d="M0 43 C30 42 25 19 52 27 S78 36 95 19 S122 30 145 12 S170 18 200 2"/></svg></div></div></div>
-              <a href={`/demo/${d.slug}`}>باز کردن دمو <ArrowLeft /></a>
+              <Link href={`/demo/${d.slug}`}>باز کردن دمو <ArrowLeft /></Link>
             </article>
           ))}
         </div>
@@ -196,7 +197,7 @@ export default function Home() {
         <div className="buy-icon"><LayoutDashboard /></div>
         <h2>لورانیک را در دمو بررسی کنید</h2>
         <p>پیش از خرید، مسیرهای تعاملی نسخه فعلی را مشاهده کنید.</p>
-        <div><a className="btn btn-white" href="/demo/commerce">ورود به دمو <ArrowLeft /></a></div>
+        <div><Link className="btn btn-white" href="/demo/commerce">ورود به دمو <ArrowLeft /></Link></div>
       </section>
 
       <footer>

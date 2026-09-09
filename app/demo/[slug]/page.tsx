@@ -1,4 +1,5 @@
 import AdminDemo from "./admin-demo";
+import "./dashboard-responsive.css";
 
 const valid = ["commerce","analytics","projects","finance","crm","academy","calendar","inbox","settings","components"];
 
