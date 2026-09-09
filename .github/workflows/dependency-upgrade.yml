@@ -45,6 +45,7 @@ jobs:
             vite@8.2.2 \
             wrangler@4.114.0 \
             --save-exact --no-audit --no-fund
+          npm audit fix --no-audit --no-fund
 
       - name: Verify production audit
         run: npm audit --omit=dev --audit-level=high
