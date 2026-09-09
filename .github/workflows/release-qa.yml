@@ -1,0 +1,189 @@
+name: Loraniq Release QA
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loraniq-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa-and-package:
+    name: QA, smoke test and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Release gate
+        run: npm run check:release
+
+      - name: Production build
+        run: npm run build
+
+      - name: Generate third-party license report
+        run: node scripts/generate-third-party-notices.mjs
+
+      - name: Start built preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run start -- --port 8787 > /tmp/loraniq-preview.log 2>&1 &
+          echo $! > /tmp/loraniq-preview.pid
+          for i in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8787/ >/dev/null; then
+              echo "Preview is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/loraniq-preview.log
+          exit 1
+
+      - name: Smoke test all routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(
+            "/"
+            "/demo/commerce"
+            "/demo/analytics"
+            "/demo/projects"
+            "/demo/finance"
+            "/demo/crm"
+            "/demo/academy"
+            "/demo/calendar"
+            "/demo/inbox"
+            "/demo/components"
+            "/demo/settings"
+          )
+          : > artifacts/ROUTE_SMOKE_TEST.txt
+          for route in "${routes[@]}"; do
+            code="$(curl --silent --output /tmp/route-body --write-out '%{http_code}' "http://127.0.0.1:8787${route}")"
+            printf '%s\t%s\n' "$code" "$route" | tee -a artifacts/ROUTE_SMOKE_TEST.txt
+            test "$code" = "200"
+            test -s /tmp/route-body
+          done
+
+      - name: Capture browser QA screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/screenshots/desktop artifacts/screenshots/mobile
+          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome" ]; then
+            echo "Chrome executable not available on runner; screenshot step skipped." | tee artifacts/screenshots/README.txt
+            exit 0
+          fi
+          routes=(commerce analytics projects finance crm academy calendar inbox components settings)
+          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot=artifacts/screenshots/desktop/landing.png http://127.0.0.1:8787/
+          "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot=artifacts/screenshots/mobile/landing.png http://127.0.0.1:8787/
+          for route in "${routes[@]}"; do
+            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,1000 --screenshot="artifacts/screenshots/desktop/${route}.png" "http://127.0.0.1:8787/demo/${route}"
+            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --screenshot="artifacts/screenshots/mobile/${route}.png" "http://127.0.0.1:8787/demo/${route}"
+          done
+
+      - name: Normalize lock metadata for customer package
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          p.name = 'loraniq-admin';
+          if (p.packages?.['']) p.packages[''].name = 'loraniq-admin';
+          fs.writeFileSync('package-lock.json', `${JSON.stringify(p, null, 2)}\n`);
+          NODE
+
+      - name: Build clean commercial ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/package
+          git archive --format=tar --prefix=loraniq-admin/ HEAD | tar -xf - -C artifacts/package
+          cp package-lock.json artifacts/package/loraniq-admin/package-lock.json
+          mkdir -p artifacts/package/loraniq-admin/docs
+          cp artifacts/THIRD_PARTY_LICENSES.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES.txt
+          if [ -f artifacts/THIRD_PARTY_LICENSES_REVIEW.txt ]; then
+            cp artifacts/THIRD_PARTY_LICENSES_REVIEW.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES_REVIEW.txt
+          fi
+          (
+            cd artifacts/package
+            zip -qr ../Loraniq-Admin-RTLTheme-1.0.0.zip loraniq-admin
+          )
+          sha256sum artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip | tee artifacts/SHA256SUMS.txt
+
+      - name: Write build manifest
+        shell: bash
+        env:
+          BUILD_SHA: ${{ github.sha }}
+          BUILD_REF: ${{ github.ref }}
+          BUILD_RUN_ID: ${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          const zip = fs.readFileSync('artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip');
+          const manifest = {
+            product: 'Loraniq Admin',
+            version: '1.0.0',
+            commit: process.env.BUILD_SHA,
+            ref: process.env.BUILD_REF,
+            run_id: process.env.BUILD_RUN_ID,
+            built_at: new Date().toISOString(),
+            node: process.version,
+            demo_routes: [
+              '/demo/commerce','/demo/analytics','/demo/projects','/demo/finance','/demo/crm',
+              '/demo/academy','/demo/calendar','/demo/inbox','/demo/components','/demo/settings'
+            ],
+            zip_sha256: crypto.createHash('sha256').update(zip).digest('hex')
+          };
+          fs.writeFileSync('artifacts/BUILD_MANIFEST.json', `${JSON.stringify(manifest, null, 2)}\n`);
+          NODE
+
+      - name: Save preview log
+        if: always()
+        shell: bash
+        run: |
+          cp /tmp/loraniq-preview.log artifacts/PREVIEW.log 2>/dev/null || true
+          if [ -f /tmp/loraniq-preview.pid ]; then
+            kill "$(cat /tmp/loraniq-preview.pid)" 2>/dev/null || true
+          fi
+
+      - name: Upload release artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loraniq-admin-1.0.0-${{ github.run_id }}
+          path: |
+            artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip
+            artifacts/SHA256SUMS.txt
+            artifacts/BUILD_MANIFEST.json
+            artifacts/THIRD_PARTY_LICENSES.txt
+            artifacts/THIRD_PARTY_LICENSES_REVIEW.txt
+            artifacts/ROUTE_SMOKE_TEST.txt
+            artifacts/PREVIEW.log
+            artifacts/screenshots
+          if-no-files-found: warn
+          retention-days: 30
