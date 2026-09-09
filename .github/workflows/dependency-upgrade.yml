@@ -1,0 +1,58 @@
+name: Loraniq Secure Dependency Upgrade
+
+on:
+  push:
+    branches:
+      - release-prep-2026-09-09
+    paths:
+      - .github/workflows/dependency-upgrade.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: release-prep-2026-09-09
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+          cache: npm
+
+      - name: Install current lockfile
+        run: npm ci --no-audit --no-fund
+
+      - name: Upgrade vulnerable framework dependencies
+        run: |
+          npm install next@16.3.4 eslint-config-next@16.3.4 --save-exact --no-audit --no-fund
+          npm audit fix --no-audit --no-fund
+
+      - name: Verify production audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verify codebase
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run build
+
+      - name: Commit lockfile update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "No dependency changes required."
+            exit 0
+          fi
+          git commit -m "security: upgrade vulnerable production dependencies"
+          git push origin HEAD:release-prep-2026-09-09
