@@ -16,7 +16,7 @@ jobs:
   qa-and-package:
     name: QA, smoke test and package
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -30,6 +30,13 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+
+      - name: Production dependency audit
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          npm audit --omit=dev --audit-level=high | tee artifacts/NPM_AUDIT.txt
 
       - name: Lint
         run: npm run lint
@@ -146,6 +153,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf artifacts/package
           mkdir -p artifacts/package
           git archive --format=tar --prefix=loraniq-admin/ HEAD | tar -xf - -C artifacts/package
           cp package-lock.json artifacts/package/loraniq-admin/package-lock.json
@@ -154,11 +162,82 @@ jobs:
           if [ -f artifacts/THIRD_PARTY_LICENSES_REVIEW.txt ]; then
             cp artifacts/THIRD_PARTY_LICENSES_REVIEW.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES_REVIEW.txt
           fi
+
+          rm -f \
+            artifacts/package/loraniq-admin/scripts/release-check.mjs \
+            artifacts/package/loraniq-admin/scripts/generate-third-party-notices.mjs
+
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'artifacts/package/loraniq-admin/package.json';
+          const p = JSON.parse(fs.readFileSync(file, 'utf8'));
+          p.scripts = {
+            dev: 'vinext dev --port 5173',
+            build: 'vinext build',
+            start: 'node --import ./scripts/runtime-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0',
+            lint: 'eslint . --ignore-pattern dist --ignore-pattern .next',
+            typecheck: 'tsc --noEmit'
+          };
+          fs.writeFileSync(file, `${JSON.stringify(p, null, 2)}\n`);
+          NODE
+
+          if grep -RInE 'seedy@sites\.test|oai-authenticated-user-|appgprj_|site-creator-d1|site-creator-r2|vinext-starter' artifacts/package/loraniq-admin \
+            --exclude='package-lock.json' --exclude='THIRD_PARTY_LICENSES.txt'; then
+            echo "Internal starter/hosting identifiers leaked into commercial package." >&2
+            exit 1
+          fi
+
           (
             cd artifacts/package
             zip -qr ../Loraniq-Admin-RTLTheme-1.0.0.zip loraniq-admin
           )
           sha256sum artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip | tee artifacts/SHA256SUMS.txt
+
+      - name: Restore-test commercial ZIP from scratch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/loraniq-customer-test
+          mkdir -p /tmp/loraniq-customer-test
+          unzip -q artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip -d /tmp/loraniq-customer-test
+          cd /tmp/loraniq-customer-test/loraniq-admin
+          npm ci --no-audit --no-fund
+          npm run lint
+          npm run typecheck
+          npm run build
+          npm run start -- --port 8790 > /tmp/loraniq-package-preview.log 2>&1 &
+          echo $! > /tmp/loraniq-package-preview.pid
+          for i in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8790/ >/dev/null; then
+              break
+            fi
+            sleep 1
+            if [ "$i" = 60 ]; then
+              cat /tmp/loraniq-package-preview.log
+              exit 1
+            fi
+          done
+          routes=(
+            "/"
+            "/demo/commerce"
+            "/demo/analytics"
+            "/demo/projects"
+            "/demo/finance"
+            "/demo/crm"
+            "/demo/academy"
+            "/demo/calendar"
+            "/demo/inbox"
+            "/demo/components"
+            "/demo/settings"
+          )
+          : > "$GITHUB_WORKSPACE/artifacts/PACKAGE_RESTORE_TEST.txt"
+          for route in "${routes[@]}"; do
+            code="$(curl --silent --output /tmp/package-route-body --write-out '%{http_code}' "http://127.0.0.1:8790${route}")"
+            printf '%s\t%s\n' "$code" "$route" | tee -a "$GITHUB_WORKSPACE/artifacts/PACKAGE_RESTORE_TEST.txt"
+            test "$code" = "200"
+            test -s /tmp/package-route-body
+          done
+          kill "$(cat /tmp/loraniq-package-preview.pid)" 2>/dev/null || true
 
       - name: Write build manifest
         shell: bash
@@ -183,19 +262,25 @@ jobs:
               '/demo/commerce','/demo/analytics','/demo/projects','/demo/finance','/demo/crm',
               '/demo/academy','/demo/calendar','/demo/inbox','/demo/components','/demo/settings'
             ],
-            zip_sha256: crypto.createHash('sha256').update(zip).digest('hex')
+            zip_sha256: crypto.createHash('sha256').update(zip).digest('hex'),
+            repository_build_passed: true,
+            commercial_package_restore_test_passed: true
           };
           fs.writeFileSync('artifacts/BUILD_MANIFEST.json', `${JSON.stringify(manifest, null, 2)}\n`);
           NODE
 
-      - name: Save preview log
+      - name: Save preview logs
         if: always()
         shell: bash
         run: |
           mkdir -p artifacts
           cp /tmp/loraniq-preview.log artifacts/PREVIEW.log 2>/dev/null || true
+          cp /tmp/loraniq-package-preview.log artifacts/PACKAGE_PREVIEW.log 2>/dev/null || true
           if [ -f /tmp/loraniq-preview.pid ]; then
             kill "$(cat /tmp/loraniq-preview.pid)" 2>/dev/null || true
+          fi
+          if [ -f /tmp/loraniq-package-preview.pid ]; then
+            kill "$(cat /tmp/loraniq-package-preview.pid)" 2>/dev/null || true
           fi
 
       - name: Upload release artifact
@@ -207,10 +292,13 @@ jobs:
             artifacts/Loraniq-Admin-RTLTheme-1.0.0.zip
             artifacts/SHA256SUMS.txt
             artifacts/BUILD_MANIFEST.json
+            artifacts/NPM_AUDIT.txt
             artifacts/THIRD_PARTY_LICENSES.txt
             artifacts/THIRD_PARTY_LICENSES_REVIEW.txt
             artifacts/ROUTE_SMOKE_TEST.txt
+            artifacts/PACKAGE_RESTORE_TEST.txt
             artifacts/PREVIEW.log
+            artifacts/PACKAGE_PREVIEW.log
             artifacts/screenshots
           if-no-files-found: warn
           retention-days: 30
