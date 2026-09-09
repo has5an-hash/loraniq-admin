@@ -74,6 +74,7 @@ jobs:
           });
           const report = {};
           let failed = false;
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
           async function inspect(route, mobile) {
             const page = await browser.newPage();
@@ -92,34 +93,46 @@ jobs:
               waitUntil: 'networkidle2',
               timeout: 30000
             });
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await sleep(500);
 
-            const themeButton = await page.$('button[aria-label="تغییر تم"]');
-            if (!themeButton) throw new Error(`Theme toggle missing on ${route}`);
-            await themeButton.click();
+            const themeSelector = 'button[aria-label="تغییر تم"]';
+            await page.waitForSelector(themeSelector, { visible: true });
+            await page.click(themeSelector);
             await page.waitForFunction(() => document.querySelector('main.admin')?.classList.contains('a-dark'));
 
             const darkApplied = await page.$eval('main.admin', el => el.classList.contains('a-dark'));
             const screenshot = `artifacts/interaction/${mobile ? 'dark-mobile' : 'dark-desktop'}/${route}.png`;
             await page.screenshot({ path: screenshot, fullPage: false });
 
-            const search = await page.$('.admin-search input');
-            if (!search) throw new Error(`Search input missing on ${route}`);
-            await search.type('نمونه');
+            const searchSelector = '.admin-search input';
+            await page.waitForSelector(searchSelector, { visible: true });
+            await page.type(searchSelector, 'نمونه');
             await page.waitForSelector('.search-result', { visible: true });
             const searchResult = await page.$eval('.search-result', el => (el.textContent || '').includes('نمونه'));
 
             let mobileMenuPassed = true;
             if (mobile) {
-              const menu = await page.$('button.admin-menu');
-              if (!menu) throw new Error(`Mobile menu button missing on ${route}`);
-              await menu.click();
+              const menuSelector = 'button.admin-menu';
+              const closeSelector = 'button[aria-label="بستن منو"]';
+              await page.waitForSelector(menuSelector, { visible: true });
+              await page.click(menuSelector);
               await page.waitForFunction(() => document.querySelector('.admin-side')?.classList.contains('show'));
-              const opened = await page.$eval('.admin-side', el => el.classList.contains('show'));
-              const close = await page.$('button[aria-label="بستن منو"]');
-              if (!close) throw new Error(`Mobile close button missing on ${route}`);
-              await close.click();
+              await sleep(400);
+              const opened = await page.$eval('.admin-side', el => {
+                const rect = el.getBoundingClientRect();
+                return el.classList.contains('show') && rect.right > 0 && rect.left < window.innerWidth;
+              });
+              await page.waitForSelector(closeSelector, { visible: true });
+              await page.waitForFunction((selector) => {
+                const el = document.querySelector(selector);
+                if (!(el instanceof HTMLElement)) return false;
+                const rect = el.getBoundingClientRect();
+                const style = getComputedStyle(el);
+                return rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth + 1 && style.visibility !== 'hidden' && style.pointerEvents !== 'none';
+              }, {}, closeSelector);
+              await page.click(closeSelector);
               await page.waitForFunction(() => !document.querySelector('.admin-side')?.classList.contains('show'));
+              await sleep(400);
               const closed = await page.$eval('.admin-side', el => !el.classList.contains('show'));
               mobileMenuPassed = opened && closed;
             }
@@ -135,7 +148,7 @@ jobs:
             const status = response?.status() ?? 0;
             const passed = status === 200 && darkApplied && searchResult && mobileMenuPassed && noOverflow && pageErrors.length === 0 && consoleErrors.length === 0;
 
-            await themeButton.click();
+            await page.click(themeSelector);
             await page.waitForFunction(() => !document.querySelector('main.admin')?.classList.contains('a-dark'));
             const lightRestored = await page.$eval('main.admin', el => !el.classList.contains('a-dark'));
             if (!lightRestored) failed = true;
