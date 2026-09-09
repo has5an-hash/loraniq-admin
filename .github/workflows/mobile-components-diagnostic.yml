@@ -32,19 +32,83 @@ jobs:
           done
           cat /tmp/preview.log
           exit 1
-      - name: Capture components mobile three times
+      - name: Install browser diagnostic helper
+        run: npm install --no-save puppeteer-core@24 --no-audit --no-fund
+      - name: Inspect components at mobile width
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p diagnostic
           chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
-          for n in 1 2 3; do
-            "$chrome" --headless --disable-gpu --no-sandbox --hide-scrollbars --disable-dev-shm-usage --run-all-compositor-stages-before-draw --virtual-time-budget=5000 --window-size=390,844 --screenshot="diagnostic/components-mobile-${n}.png" "http://127.0.0.1:8787/demo/components"
-            bytes="$(stat -c%s "diagnostic/components-mobile-${n}.png")"
-            echo "attempt ${n}: ${bytes} bytes"
-            test "$bytes" -ge 10000
-            sleep 1
-          done
+          CHROME_PATH="$chrome" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import puppeteer from 'puppeteer-core';
+
+          const logs = { console: [], pageErrors: [], requestFailures: [] };
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH,
+            headless: true,
+            args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+          });
+          const page = await browser.newPage();
+          await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+          page.on('console', msg => logs.console.push({ type: msg.type(), text: msg.text() }));
+          page.on('pageerror', error => logs.pageErrors.push(String(error?.stack || error)));
+          page.on('requestfailed', request => logs.requestFailures.push({ url: request.url(), error: request.failure()?.errorText || '' }));
+
+          const response = await page.goto('http://127.0.0.1:8787/demo/components', { waitUntil: 'networkidle2', timeout: 30000 });
+          await new Promise(resolve => setTimeout(resolve, 3000));
+
+          const metrics = await page.evaluate(() => {
+            const describe = (selector) => {
+              const element = document.querySelector(selector);
+              if (!element) return null;
+              const rect = element.getBoundingClientRect();
+              const style = getComputedStyle(element);
+              return {
+                selector,
+                rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height, top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left },
+                display: style.display,
+                visibility: style.visibility,
+                opacity: style.opacity,
+                position: style.position,
+                overflowX: style.overflowX,
+                overflowY: style.overflowY,
+                color: style.color,
+                backgroundColor: style.backgroundColor,
+                transform: style.transform,
+                textLength: element.textContent?.trim().length || 0,
+                childCount: element.children.length
+              };
+            };
+            return {
+              readyState: document.readyState,
+              title: document.title,
+              url: location.href,
+              viewport: { width: innerWidth, height: innerHeight, dpr: devicePixelRatio },
+              html: { scrollWidth: document.documentElement.scrollWidth, scrollHeight: document.documentElement.scrollHeight },
+              body: { scrollWidth: document.body.scrollWidth, scrollHeight: document.body.scrollHeight, textLength: document.body.innerText.length },
+              elements: [
+                describe('main.admin'),
+                describe('.admin-page'),
+                describe('.admin-top'),
+                describe('.admin-content'),
+                describe('.page-head'),
+                describe('.component-grid'),
+                describe('.component-grid .a-card'),
+                describe('.component-grid .orders')
+              ]
+            };
+          });
+
+          await page.screenshot({ path: 'diagnostic/components-mobile-viewport.png', fullPage: false });
+          await page.screenshot({ path: 'diagnostic/components-mobile-full.png', fullPage: true });
+          fs.writeFileSync('diagnostic/dom.html', await page.content());
+          fs.writeFileSync('diagnostic/diagnostics.json', JSON.stringify({ status: response?.status(), metrics, logs }, null, 2));
+          await browser.close();
+
+          console.log(JSON.stringify({ status: response?.status(), metrics, logs }, null, 2));
+          NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
