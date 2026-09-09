@@ -156,6 +156,7 @@ jobs:
           rm -rf artifacts/package
           mkdir -p artifacts/package
           git archive --format=tar --prefix=loraniq-admin/ HEAD | tar -xf - -C artifacts/package
+          cp docs/CUSTOMER_README_FA.md artifacts/package/loraniq-admin/README.md
           cp package-lock.json artifacts/package/loraniq-admin/package-lock.json
           mkdir -p artifacts/package/loraniq-admin/docs
           cp artifacts/THIRD_PARTY_LICENSES.txt artifacts/package/loraniq-admin/docs/THIRD_PARTY_LICENSES.txt
