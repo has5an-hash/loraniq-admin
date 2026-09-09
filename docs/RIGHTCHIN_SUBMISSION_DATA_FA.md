@@ -55,15 +55,26 @@ Interaction QA نیز Dark/Light، جستجو، منوی موبایل، HTTP res
 
 ## دمو عمومی
 
-Static Export برای GitHub Pages با موفقیت ساخته شده و تمام ۱۰ دمو prerender می‌شوند.
+GitHub Pages فعال شده و Workflow `Loraniq Public Demo` با Build، Verify و Deploy موفق تمام شده است.
 
-مرحله باقی‌مانده برای انتشار عمومی:
-1. در GitHub مخزن `loraniq-admin` وارد `Settings > Pages` شوید.
-2. در `Build and deployment`، Source را روی `GitHub Actions` قرار دهید.
-3. Workflow با نام `Loraniq Public Demo` دوباره اجرا شود.
-4. URL عمومی پس از Deploy باید جداگانه باز و QA شود.
+لینک اصلی دمو:
 
-تا قبل از Deploy موفق، هیچ URL حدسی به راست‌چین داده نشود.
+`https://has5an-hash.github.io/loraniq-admin/`
+
+لینک دموها:
+
+- Commerce: `https://has5an-hash.github.io/loraniq-admin/demo/commerce/`
+- Analytics: `https://has5an-hash.github.io/loraniq-admin/demo/analytics/`
+- Projects: `https://has5an-hash.github.io/loraniq-admin/demo/projects/`
+- Finance: `https://has5an-hash.github.io/loraniq-admin/demo/finance/`
+- CRM: `https://has5an-hash.github.io/loraniq-admin/demo/crm/`
+- Academy: `https://has5an-hash.github.io/loraniq-admin/demo/academy/`
+- Calendar: `https://has5an-hash.github.io/loraniq-admin/demo/calendar/`
+- Inbox: `https://has5an-hash.github.io/loraniq-admin/demo/inbox/`
+- Components: `https://has5an-hash.github.io/loraniq-admin/demo/components/`
+- Settings: `https://has5an-hash.github.io/loraniq-admin/demo/settings/`
+
+شاهد انتشار: GitHub Pages deployment برای Commit `1effa5c6b9c694fc6b1e0e6708018ebef95828fd` با نتیجه `success` و URL بالا پایان یافته است.
 
 ## موارد ممنوع برای ادعا
 
@@ -80,5 +91,4 @@ Static Export برای GitHub Pages با موفقیت ساخته شده و تم�
 - کاور نهایی انسانی و مجاز
 - اینفوگرافیک انسانی با عرض ۹۶۰px و حجم کمتر از ۱MB
 - اطلاعات فروشنده و پشتیبانی
-- URL دموی عمومی بعد از Deploy واقعی
 - تأیید روش لایسنس فنی فقط در صورت الزام پنل راست‌چین
