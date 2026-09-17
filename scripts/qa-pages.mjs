@@ -62,8 +62,14 @@ for (const testCase of cases) {
     const sidebar = page.getByRole("complementary", { name: "ناوبری اصلی" });
     const closeButton = sidebar.getByRole("button", { name: "بستن منو" });
     await closeButton.waitFor({ state: "visible" });
+    if (!(await sidebar.evaluate((node) => node.classList.contains("is-open")))) {
+      failures.push("mobile: sidebar did not enter open state");
+    }
     await closeButton.click();
-    await closeButton.waitFor({ state: "hidden" });
+    await page.waitForFunction(() => !document.querySelector(".sidebar")?.classList.contains("is-open"));
+    if (await page.locator(".sidebar-backdrop").count()) {
+      failures.push("mobile: backdrop remained after closing sidebar");
+    }
   }
 
   await page.screenshot({
