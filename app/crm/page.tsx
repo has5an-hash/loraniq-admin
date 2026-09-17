@@ -58,7 +58,7 @@ export default function CrmPage() {
               <span className="crm-kicker"><i /> customer intelligence · زنده</span>
               <h1 id="page-title">هر مشتری یک سیگنال است؛ قبل از ریزش آن را ببین.</h1>
               <p>ارزش طول عمر، وفاداری، تعامل و ریسک ریزش را در یک نمای عملیاتی ترکیب کن تا تیم فروش و تجربه مشتری دقیق‌تر اقدام کنند.</p>
-              <div className="crm-actions"><Button className="primary-action"><Download /> خروجی مشتریان</Button><DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline"><CalendarDays /> {range}<ChevronDown /></Button></DropdownMenuTrigger><DropdownMenuContent align="end">{["۳۰ روز گذشته", "سه‌ماهه جاری", "سال جاری"].map((item) => <DropdownMenuItem key={item} onClick={() => setRange(item)}>{item}</DropdownMenuItem>)}</DropdownMenu></div>
+              <div className="crm-actions"><Button className="primary-action"><Download /> خروجی مشتریان</Button><DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline"><CalendarDays /> {range}<ChevronDown /></Button></DropdownMenuTrigger><DropdownMenuContent align="end">{["۳۰ روز گذشته", "سه‌ماهه جاری", "سال جاری"].map((item) => <DropdownMenuItem key={item} onClick={() => setRange(item)}>{item}</DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu></div>
             </div>
             <div className="crm-hero-score"><div className="crm-orbit"><span><strong>۸۸</strong><small>Customer health</small></span></div><em><ArrowUpRight /> ۶ امتیاز بهتر از فصل قبل</em></div>
             <div className="crm-hero-stats"><div><span>مشتری فعال</span><b>۲۸٬۴۶۰</b><small>+۸٫۷٪</small></div><div><span>ارزش طول عمر</span><b>۴٫۸ م</b><small>+۱۲٫۳٪</small></div><div><span>حفظ مشتری</span><b>۷۲٫۶٪</b><small>+۴٫۱٪</small></div></div>
