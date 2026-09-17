@@ -14,6 +14,8 @@ import "./calendar-premium.css";
 import "./projects-premium.css";
 import "./chat-premium.css";
 import "./email-premium.css";
+import "./files-premium.css";
+import "./invoice-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const vazirmatn = localFont({src:"./fonts/Vazirmatn.woff2",display:"swap",variable:"--font-vazirmatn",preload:true});

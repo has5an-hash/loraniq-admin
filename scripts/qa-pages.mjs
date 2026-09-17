@@ -7,27 +7,22 @@ const outputDir = path.resolve("artifacts/qa");
 await fs.mkdir(outputDir, { recursive: true });
 
 const routes = [
-  { name: "executive", path: "" },
-  { name: "analytics", path: "analytics/" },
-  { name: "ecommerce", path: "ecommerce/" },
-  { name: "crm", path: "crm/" },
-  { name: "finance", path: "finance/" },
-  { name: "healthcare", path: "healthcare/" },
-  { name: "tables", path: "tables/" },
-  { name: "forms", path: "forms/" },
-  { name: "calendar", path: "calendar/" },
-  { name: "projects", path: "projects/" },
-  { name: "chat", path: "chat/" },
-  { name: "email", path: "email/" },
+  { name: "executive", path: "" }, { name: "analytics", path: "analytics/" },
+  { name: "ecommerce", path: "ecommerce/" }, { name: "crm", path: "crm/" },
+  { name: "finance", path: "finance/" }, { name: "healthcare", path: "healthcare/" },
+  { name: "tables", path: "tables/" }, { name: "forms", path: "forms/" },
+  { name: "calendar", path: "calendar/" }, { name: "projects", path: "projects/" },
+  { name: "chat", path: "chat/" }, { name: "email", path: "email/" },
+  { name: "files", path: "files/" }, { name: "invoice", path: "invoice/" },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "tablet", width: 820, height: 1180 },
   { name: "mobile", width: 390, height: 844 },
 ];
-
 const browser = await chromium.launch({ headless: true });
 const failures = [];
+
 async function checkOverflow(page, label) {
   const value = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: document.documentElement.clientWidth }));
   if (value.documentWidth > value.viewportWidth + 1) failures.push(`${label}: horizontal overflow ${value.documentWidth}px > ${value.viewportWidth}px`);
@@ -99,16 +94,16 @@ for (const route of routes) {
       await page.getByText("رویداد جدید آماده ثبت است", { exact: true }).waitFor({ state: "visible" });
     }
     if (route.name === "projects") {
-      const projectSearch = page.getByLabel("جستجوی پروژه");
-      await projectSearch.fill("Dorsa");
+      const search = page.getByLabel("جستجوی پروژه");
+      await search.fill("Dorsa");
       await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
-      await projectSearch.fill("");
+      await search.fill("");
       await page.locator(".projects-filters").getByRole("button", { name: "ریسک", exact: true }).click();
       await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
     }
     if (route.name === "chat") {
-      const contactSearch = page.getByLabel("جستجوی مخاطب");
-      await contactSearch.fill("آرمان");
+      const search = page.getByLabel("جستجوی مخاطب");
+      await search.fill("آرمان");
       const contact = page.locator(".chat-contacts > button").filter({ hasText: "آرمان زمانی" });
       await contact.waitFor({ state: "visible" });
       await contact.click();
@@ -119,11 +114,11 @@ for (const route of routes) {
       await page.getByText("پیام QA لورانیک", { exact: true }).waitFor({ state: "visible" });
     }
     if (route.name === "email") {
-      const emailSearch = page.getByLabel("جستجوی ایمیل");
-      await emailSearch.fill("CI");
-      const emailRow = page.locator(".mail-items article").filter({ hasText: "CI / Pages deployment" });
-      await emailRow.waitFor({ state: "visible" });
-      await emailRow.locator(".mail-open").click();
+      const search = page.getByLabel("جستجوی ایمیل");
+      await search.fill("CI");
+      const row = page.locator(".mail-items article").filter({ hasText: "CI / Pages deployment" });
+      await row.waitFor({ state: "visible" });
+      await row.locator(".mail-open").click();
       await page.getByText("Run آخر بدون خطا deploy شد.", { exact: false }).last().waitFor({ state: "visible" });
       if (viewport.width > 900) {
         await page.getByRole("button", { name: "نوشتن ایمیل", exact: true }).click();
@@ -132,6 +127,31 @@ for (const route of routes) {
         await page.getByRole("heading", { name: "ایمیل ارسال شد", exact: true }).waitFor({ state: "visible" });
         await page.getByRole("button", { name: "بستن", exact: true }).click();
       }
+    }
+    if (route.name === "files") {
+      const search = page.getByLabel("جستجوی فایل");
+      await search.fill("source");
+      await page.getByRole("heading", { name: "source-package.zip", exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "انتخاب source-package.zip" }).click();
+      await page.getByText("۱ مورد انتخاب شده", { exact: true }).waitFor({ state: "visible" });
+      if (viewport.width > 820) {
+        await page.getByRole("button", { name: "آپلود فایل", exact: true }).click();
+        await page.getByRole("dialog", { name: "آپلود فایل" }).waitFor({ state: "visible" });
+        await page.getByRole("button", { name: "انتخاب فایل آزمایشی", exact: true }).click();
+        await page.getByRole("heading", { name: "آپلود کامل شد", exact: true }).waitFor({ state: "visible" });
+        await page.getByRole("button", { name: "تمام", exact: true }).click();
+      }
+      await search.fill("");
+    }
+    if (route.name === "invoice") {
+      const search = page.getByLabel("جستجوی فاکتور");
+      await search.fill("Atlas");
+      const row = page.locator(".invoice-items > button").filter({ hasText: "Atlas Group" });
+      await row.waitFor({ state: "visible" });
+      await row.click();
+      await page.locator(".invoice-preview > header h2").filter({ hasText: "INV-2047" }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "ارسال", exact: true }).click();
+      await page.getByText("فاکتور برای مشتری ارسال شد", { exact: true }).waitFor({ state: "visible" });
     }
 
     await checkOverflow(page, `${label}/rtl-light`);
@@ -145,8 +165,8 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    const commandQueries = { executive:"Executive", analytics:"Analytics", ecommerce:"Ecommerce", crm:"CRM", finance:"Finance", healthcare:"Healthcare", tables:"Data Tables", forms:"Forms", calendar:"Calendar", projects:"Projects", chat:"Chat", email:"Email" };
-    await commandInput.fill(commandQueries[route.name]);
+    const commands = {executive:"Executive",analytics:"Analytics",ecommerce:"Ecommerce",crm:"CRM",finance:"Finance",healthcare:"Healthcare",tables:"Data Tables",forms:"Forms",calendar:"Calendar",projects:"Projects",chat:"Chat",email:"Email",files:"File Manager",invoice:"Invoice"};
+    await commandInput.fill(commands[route.name]);
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
 
