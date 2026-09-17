@@ -2,247 +2,52 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 
-const baseURL = process.env.QA_URL ?? "http://127.0.0.1:4173/loraniq-admin/";
-const outputDir = path.resolve("artifacts/qa");
-await fs.mkdir(outputDir, { recursive: true });
-
-const routes = [
-  ["executive", ""], ["analytics", "analytics/"], ["ecommerce", "ecommerce/"], ["crm", "crm/"],
-  ["finance", "finance/"], ["healthcare", "healthcare/"], ["tables", "tables/"], ["forms", "forms/"],
-  ["calendar", "calendar/"], ["projects", "projects/"], ["chat", "chat/"], ["email", "email/"],
-  ["files", "files/"], ["invoice", "invoice/"], ["components", "components/"], ["settings", "settings/"],
-  ["search", "search/"], ["notifications", "notifications/"], ["kanban", "kanban/"], ["users", "users/"],
-].map(([name, routePath]) => ({ name, path: routePath }));
-
-const viewports = [
-  { name: "desktop", width: 1440, height: 1000 },
-  { name: "tablet", width: 820, height: 1180 },
-  { name: "mobile", width: 390, height: 844 },
-];
-const commandQueries = {
-  executive:"Executive", analytics:"Analytics", ecommerce:"Ecommerce", crm:"CRM", finance:"Finance", healthcare:"Healthcare",
-  tables:"Data Tables", forms:"Forms", calendar:"Calendar", projects:"Projects", chat:"Chat", email:"Email", files:"File Manager",
-  invoice:"Invoice", components:"UI Components", settings:"Appearance Settings", search:"Global Search", notifications:"Notifications",
-  kanban:"Kanban", users:"User Management",
-};
-
-const browser = await chromium.launch({ headless: true });
-const failures = [];
-
-async function checkOverflow(page, label) {
-  const value = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: document.documentElement.clientWidth }));
-  if (value.documentWidth > value.viewportWidth + 1) failures.push(`${label}: horizontal overflow ${value.documentWidth}px > ${value.viewportWidth}px`);
+const baseURL=process.env.QA_URL??"http://127.0.0.1:4173/loraniq-admin/";
+const outputDir=path.resolve("artifacts/qa");await fs.mkdir(outputDir,{recursive:true});
+const shellRoutes=[["executive",""],["analytics","analytics/"],["ecommerce","ecommerce/"],["crm","crm/"],["finance","finance/"],["healthcare","healthcare/"],["tables","tables/"],["forms","forms/"],["calendar","calendar/"],["projects","projects/"],["chat","chat/"],["email","email/"],["files","files/"],["invoice","invoice/"],["components","components/"],["settings","settings/"],["search","search/"],["notifications","notifications/"],["kanban","kanban/"],["users","users/"]].map(([name,routePath])=>({name,path:routePath,kind:"shell"}));
+const authRoutes=[["login","login/"],["register","register/"],["forgot-password","forgot-password/"],["reset-password","reset-password/"],["two-factor","two-factor/"],["verify-email","verify-email/"],["lock-screen","lock-screen/"]].map(([name,routePath])=>({name,path:routePath,kind:"auth"}));
+const utilityRoutes=[["error-404","error/404/"],["error-500","error/500/"],["maintenance","maintenance/"],["coming-soon","coming-soon/"]].map(([name,routePath])=>({name,path:routePath,kind:"utility"}));
+const routes=[...shellRoutes,...authRoutes,...utilityRoutes];
+const viewports=[{name:"desktop",width:1440,height:1000},{name:"tablet",width:820,height:1180},{name:"mobile",width:390,height:844}];
+const commandQueries={executive:"Executive",analytics:"Analytics",ecommerce:"Ecommerce",crm:"CRM",finance:"Finance",healthcare:"Healthcare",tables:"Data Tables",forms:"Forms",calendar:"Calendar",projects:"Projects",chat:"Chat",email:"Email",files:"File Manager",invoice:"Invoice",components:"UI Components",settings:"Appearance Settings",search:"Global Search",notifications:"Notifications",kanban:"Kanban",users:"User Management"};
+const browser=await chromium.launch({headless:true});const failures=[];
+async function checkOverflow(page,label){const v=await page.evaluate(()=>({documentWidth:document.documentElement.scrollWidth,viewportWidth:document.documentElement.clientWidth}));if(v.documentWidth>v.viewportWidth+1)failures.push(`${label}: horizontal overflow ${v.documentWidth}px > ${v.viewportWidth}px`)}
+async function normalize(page){await page.evaluate(()=>window.scrollTo({top:0,left:0,behavior:"instant"}));await page.waitForTimeout(380)}
+async function shellInteraction(page,route,viewport){
+ if(route.name==="ecommerce"){await page.getByRole("button",{name:"سفارش",exact:true}).click();await page.getByText("۳٬۸۴۲ سفارش",{exact:true}).waitFor({state:"visible"});await page.getByRole("button",{name:"درآمد",exact:true}).click()}
+ if(route.name==="crm"){await page.getByRole("button",{name:"ارزش مشتری",exact:true}).click();await page.getByText("۴٫۸ میلیون",{exact:true}).waitFor({state:"visible"});await page.getByRole("button",{name:"حفظ مشتری",exact:true}).click()}
+ if(route.name==="finance"){await page.getByRole("button",{name:"سود عملیاتی",exact:true}).click();await page.getByText("۱۸۶٫۵ میلیون",{exact:true}).waitFor({state:"visible"});await page.getByRole("button",{name:"جریان نقدی",exact:true}).click()}
+ if(route.name==="healthcare"){await page.getByRole("button",{name:"زمان انتظار",exact:true}).click();await page.locator(".health-chart-summary strong").filter({hasText:"۱۹ دقیقه"}).waitFor({state:"visible"});await page.getByRole("button",{name:"جریان مراجعه",exact:true}).click()}
+ if(route.name==="tables"){const q=page.getByLabel("جستجوی جدول");await q.fill("آرمان");const s=viewport.width>980?page.locator(".desktop-table-wrap"):page.locator(".mobile-data-cards");await s.getByText("آرمان زمانی",{exact:true}).waitFor({state:"visible"});await s.getByRole("button",{name:"انتخاب آرمان زمانی"}).click();await page.getByText("۱ ردیف انتخاب شده",{exact:false}).waitFor({state:"visible"});await q.fill("")}
+ if(route.name==="forms"){await page.getByRole("button",{name:"ادامه",exact:true}).click();await page.getByText("نام و نام خانوادگی الزامی است.",{exact:true}).waitFor({state:"visible"});await page.getByPlaceholder("مثلاً حسن مجتهدی").fill("کاربر تست");await page.getByPlaceholder("name@company.com").fill("test@example.com");await page.getByPlaceholder("0912 000 0000").fill("09120000000");await page.getByRole("button",{name:"ادامه",exact:true}).click();await page.getByRole("heading",{name:"اطلاعات سازمان",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="calendar"){await page.getByRole("button",{name:"هفته",exact:true}).click();await page.locator(".calendar-grid.week").waitFor({state:"visible"});await page.getByRole("button",{name:"ماه",exact:true}).click();await page.getByRole("button",{name:"رویداد جدید",exact:true}).click();await page.getByText("رویداد جدید آماده ثبت است",{exact:true}).waitFor({state:"visible"})}
+ if(route.name==="projects"){const q=page.getByLabel("جستجوی پروژه");await q.fill("Dorsa");await page.getByRole("heading",{name:"Dorsa Intelligence",exact:true}).waitFor({state:"visible"});await q.fill("");await page.locator(".projects-filters").getByRole("button",{name:"ریسک",exact:true}).click()}
+ if(route.name==="chat"){const q=page.getByLabel("جستجوی مخاطب");await q.fill("آرمان");const c=page.locator(".chat-contacts > button").filter({hasText:"آرمان زمانی"});await c.waitFor({state:"visible"});await c.click();const m=page.getByLabel("متن پیام");await m.fill("پیام QA لورانیک");await page.getByRole("button",{name:"ارسال پیام"}).click();await page.getByText("پیام QA لورانیک",{exact:true}).waitFor({state:"visible"})}
+ if(route.name==="email"){const q=page.getByLabel("جستجوی ایمیل");await q.fill("CI");const r=page.locator(".mail-items article").filter({hasText:"CI / Pages deployment"});await r.waitFor({state:"visible"});await r.locator(".mail-open").click();if(viewport.width>900){await page.getByRole("button",{name:"نوشتن ایمیل",exact:true}).click();await page.getByRole("dialog",{name:"نوشتن ایمیل"}).waitFor({state:"visible"});await page.getByRole("button",{name:"ارسال",exact:true}).click();await page.getByRole("button",{name:"بستن",exact:true}).click()}}
+ if(route.name==="files"){const q=page.getByLabel("جستجوی فایل");await q.fill("source");await page.getByRole("heading",{name:"source-package.zip",exact:true}).waitFor({state:"visible"});await page.getByRole("button",{name:"انتخاب source-package.zip"}).click();if(viewport.width>820){await page.getByRole("button",{name:"آپلود فایل",exact:true}).click();await page.getByRole("dialog",{name:"آپلود فایل"}).waitFor({state:"visible"});await page.getByRole("button",{name:"انتخاب فایل آزمایشی",exact:true}).click();await page.getByRole("button",{name:"تمام",exact:true}).click()}await q.fill("")}
+ if(route.name==="invoice"){const q=page.getByLabel("جستجوی فاکتور");await q.fill("Atlas");const r=page.locator(".invoice-items > button").filter({hasText:"Atlas Group"});await r.waitFor({state:"visible"});await r.click();await page.getByRole("button",{name:"ارسال",exact:true}).click();await page.getByText("فاکتور برای مشتری ارسال شد",{exact:true}).waitFor({state:"visible"})}
+ if(route.name==="components"){await page.locator(".state-switcher").getByRole("button",{name:"Error",exact:true}).click();await page.getByRole("button",{name:"تلاش دوباره",exact:true}).click();await page.getByRole("button",{name:/اکشن اصلی/}).click();await page.getByText("اکشن اصلی اجرا شد",{exact:true}).waitFor({state:"visible"})}
+ if(route.name==="settings"){await page.locator(".settings-card").filter({hasText:"تراکم"}).getByRole("button",{name:/فشرده/}).click();await page.waitForFunction(()=>document.documentElement.dataset.density==="compact");await page.locator(".settings-card").filter({hasText:"Skin"}).getByRole("button",{name:/Bordered/}).click();await page.locator(".settings-card").filter({hasText:"عرض محتوا"}).getByRole("button",{name:/Boxed/}).click();await page.locator(".settings-card").filter({hasText:"Motion"}).getByRole("button",{name:/Reduced/}).click();await page.getByRole("button",{name:/بازنشانی تنظیمات/}).click()}
+ if(route.name==="search"){const q=page.getByLabel("جستجوی سراسری");await q.fill("Dorsa");await page.getByText("Dorsa Intelligence",{exact:true}).waitFor({state:"visible"})}
+ if(route.name==="notifications"){await page.getByRole("button",{name:/علامت‌گذاری همه/}).click();await page.locator(".notification-pulse strong").filter({hasText:"۰"}).waitFor({state:"visible"});await page.locator(".notifications-filters").getByRole("button",{name:"پروژه",exact:true}).click()}
+ if(route.name==="kanban"){const q=page.getByLabel("جستجوی کانبان");await q.fill("checkout");await page.getByRole("button",{name:"انتقال نهایی‌کردن checkout responsive به ستون بعد",exact:true}).click();await page.locator(".kanban-column.tone-blue").getByRole("heading",{name:"نهایی‌کردن checkout responsive",exact:true}).waitFor({state:"visible"});await q.fill("")}
+ if(route.name==="users"){const q=page.getByLabel("جستجوی کاربران");await q.fill("آرمان");await page.getByRole("button",{name:"انتخاب آرمان زمانی",exact:true}).click();if(viewport.width>900){await page.getByRole("button",{name:/دعوت کاربر/}).click();await page.getByRole("dialog",{name:"دعوت کاربر"}).waitFor({state:"visible"});await page.getByRole("button",{name:/ارسال دعوت/}).click();await page.getByText("دعوت‌نامه کاربر با موفقیت آماده ارسال شد.",{exact:true}).waitFor({state:"visible"})}await q.fill("")}
 }
-async function normalizeForCapture(page) {
-  await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
-  await page.waitForTimeout(380);
+async function authInteraction(page,route){
+ if(route.name==="login"){await page.getByRole("button",{name:"ورود",exact:true}).click();await page.getByRole("heading",{name:"ورود نمونه موفق بود",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="register"){await page.getByLabel("نام ثبت نام").fill("کاربر QA");await page.getByLabel("ایمیل ثبت نام").fill("qa@example.com");await page.getByLabel("رمز ثبت نام").fill("LoraniqQA2026");await page.getByRole("button",{name:"ساخت حساب",exact:true}).click();await page.getByRole("heading",{name:"حساب نمونه ساخته شد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="forgot-password"){await page.getByLabel("ایمیل بازیابی").fill("qa@example.com");await page.getByRole("button",{name:"ادامه",exact:true}).click();await page.getByRole("heading",{name:"لینک نمونه آماده شد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="reset-password"){await page.getByLabel("رمز جدید").fill("LoraniqQA2026");await page.getByLabel("تکرار رمز").fill("LoraniqQA2026");await page.getByRole("button",{name:"ثبت رمز جدید",exact:true}).click();await page.getByRole("heading",{name:"رمز نمونه تغییر کرد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="two-factor"){await page.getByRole("button",{name:"تأیید کد",exact:true}).click();await page.getByRole("heading",{name:"کد نمونه تأیید شد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="verify-email"){await page.getByRole("button",{name:/شبیه‌سازی تأیید لینک/}).click();await page.getByRole("heading",{name:"ایمیل نمونه تأیید شد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="lock-screen"){await page.getByLabel("رمز قفل صفحه").fill("LoraniqQA2026");await page.getByRole("button",{name:"باز کردن قفل",exact:true}).click();await page.getByRole("heading",{name:"قفل نمونه باز شد",exact:true}).waitFor({state:"visible"})}
+ if(route.name==="coming-soon"){await page.getByLabel("ایمیل اعلان انتشار").fill("qa@example.com");await page.getByRole("button",{name:"خبرم کن",exact:true}).click();await page.getByRole("heading",{name:"درخواست نمونه ثبت شد",exact:true}).waitFor({state:"visible"})}
 }
-
-for (const route of routes) {
-  for (const viewport of viewports) {
-    const page = await browser.newPage({ viewport });
-    const consoleErrors = [];
-    const failedRequests = [];
-    page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
-    page.on("requestfailed", (request) => {
-      const errorText = request.failure()?.errorText ?? "failed";
-      if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
-      failedRequests.push(`${request.method()} ${request.url()} :: ${errorText}`);
-    });
-
-    const label = `${route.name}/${viewport.name}`;
-    const response = await page.goto(new URL(route.path, baseURL).toString(), { waitUntil: "networkidle", timeout: 60_000 });
-    if (!response?.ok()) failures.push(`${label}: page response ${response?.status() ?? "none"}`);
-    await page.locator("#main-content").waitFor({ state: "visible" });
-    await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
-    if ((await page.locator("html").getAttribute("dir")) !== "rtl") failures.push(`${label}: default direction is not rtl`);
-    if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) failures.push(`${label}: default state starts dark`);
-
-    if (route.name === "ecommerce") {
-      await page.getByRole("button", { name: "سفارش", exact: true }).click();
-      await page.getByText("۳٬۸۴۲ سفارش", { exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "درآمد", exact: true }).click();
-    }
-    if (route.name === "crm") {
-      await page.getByRole("button", { name: "ارزش مشتری", exact: true }).click();
-      await page.getByText("۴٫۸ میلیون", { exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "حفظ مشتری", exact: true }).click();
-    }
-    if (route.name === "finance") {
-      await page.getByRole("button", { name: "سود عملیاتی", exact: true }).click();
-      await page.getByText("۱۸۶٫۵ میلیون", { exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "جریان نقدی", exact: true }).click();
-    }
-    if (route.name === "healthcare") {
-      await page.getByRole("button", { name: "زمان انتظار", exact: true }).click();
-      await page.locator(".health-chart-summary strong").filter({ hasText: "۱۹ دقیقه" }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "جریان مراجعه", exact: true }).click();
-    }
-    if (route.name === "tables") {
-      const search = page.getByLabel("جستجوی جدول");
-      await search.fill("آرمان");
-      const surface = viewport.width > 980 ? page.locator(".desktop-table-wrap") : page.locator(".mobile-data-cards");
-      await surface.getByText("آرمان زمانی", { exact: true }).waitFor({ state: "visible" });
-      await surface.getByRole("button", { name: "انتخاب آرمان زمانی" }).click();
-      await page.getByText("۱ ردیف انتخاب شده", { exact: false }).waitFor({ state: "visible" });
-      await search.fill("");
-    }
-    if (route.name === "forms") {
-      await page.getByRole("button", { name: "ادامه", exact: true }).click();
-      await page.getByText("نام و نام خانوادگی الزامی است.", { exact: true }).waitFor({ state: "visible" });
-      await page.getByPlaceholder("مثلاً حسن مجتهدی").fill("کاربر تست");
-      await page.getByPlaceholder("name@company.com").fill("test@example.com");
-      await page.getByPlaceholder("0912 000 0000").fill("09120000000");
-      await page.getByRole("button", { name: "ادامه", exact: true }).click();
-      await page.getByRole("heading", { name: "اطلاعات سازمان", exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "calendar") {
-      await page.getByRole("button", { name: "هفته", exact: true }).click();
-      await page.locator(".calendar-grid.week").waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "ماه", exact: true }).click();
-      await page.getByRole("button", { name: "رویداد جدید", exact: true }).click();
-      await page.getByText("رویداد جدید آماده ثبت است", { exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "projects") {
-      const search = page.getByLabel("جستجوی پروژه");
-      await search.fill("Dorsa");
-      await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
-      await search.fill("");
-      await page.locator(".projects-filters").getByRole("button", { name: "ریسک", exact: true }).click();
-      await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "chat") {
-      const search = page.getByLabel("جستجوی مخاطب");
-      await search.fill("آرمان");
-      const contact = page.locator(".chat-contacts > button").filter({ hasText: "آرمان زمانی" });
-      await contact.waitFor({ state: "visible" }); await contact.click();
-      const composer = page.getByLabel("متن پیام"); await composer.waitFor({ state: "visible" });
-      await composer.fill("پیام QA لورانیک"); await page.getByRole("button", { name: "ارسال پیام" }).click();
-      await page.getByText("پیام QA لورانیک", { exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "email") {
-      const search = page.getByLabel("جستجوی ایمیل"); await search.fill("CI");
-      const row = page.locator(".mail-items article").filter({ hasText: "CI / Pages deployment" });
-      await row.waitFor({ state: "visible" }); await row.locator(".mail-open").click();
-      await page.getByText("Run آخر بدون خطا deploy شد.", { exact: false }).last().waitFor({ state: "visible" });
-      if (viewport.width > 900) {
-        await page.getByRole("button", { name: "نوشتن ایمیل", exact: true }).click();
-        await page.getByRole("dialog", { name: "نوشتن ایمیل" }).waitFor({ state: "visible" });
-        await page.getByRole("button", { name: "ارسال", exact: true }).click();
-        await page.getByRole("heading", { name: "ایمیل ارسال شد", exact: true }).waitFor({ state: "visible" });
-        await page.getByRole("button", { name: "بستن", exact: true }).click();
-      }
-    }
-    if (route.name === "files") {
-      const search = page.getByLabel("جستجوی فایل"); await search.fill("source");
-      await page.getByRole("heading", { name: "source-package.zip", exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "انتخاب source-package.zip" }).click();
-      await page.getByText("۱ مورد انتخاب شده", { exact: true }).waitFor({ state: "visible" });
-      if (viewport.width > 820) {
-        await page.getByRole("button", { name: "آپلود فایل", exact: true }).click();
-        await page.getByRole("dialog", { name: "آپلود فایل" }).waitFor({ state: "visible" });
-        await page.getByRole("button", { name: "انتخاب فایل آزمایشی", exact: true }).click();
-        await page.getByRole("heading", { name: "آپلود کامل شد", exact: true }).waitFor({ state: "visible" });
-        await page.getByRole("button", { name: "تمام", exact: true }).click();
-      }
-      await search.fill("");
-    }
-    if (route.name === "invoice") {
-      const search = page.getByLabel("جستجوی فاکتور"); await search.fill("Atlas");
-      const row = page.locator(".invoice-items > button").filter({ hasText: "Atlas Group" });
-      await row.waitFor({ state: "visible" }); await row.click();
-      await page.locator(".invoice-preview > header h2").filter({ hasText: "INV-2047" }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "ارسال", exact: true }).click();
-      await page.getByText("فاکتور برای مشتری ارسال شد", { exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "components") {
-      await page.locator(".state-switcher").getByRole("button", { name: "Error", exact: true }).click();
-      await page.getByRole("heading", { name: "دریافت داده ناموفق بود", exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "تلاش دوباره", exact: true }).click();
-      await page.locator(".mini-table").waitFor({ state: "visible" });
-      await page.getByRole("button", { name: /اکشن اصلی/ }).click();
-      await page.getByText("اکشن اصلی اجرا شد", { exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "settings") {
-      await page.locator(".settings-card").filter({ hasText: "تراکم" }).getByRole("button", { name: /فشرده/ }).click();
-      await page.waitForFunction(() => document.documentElement.dataset.density === "compact");
-      await page.locator(".settings-card").filter({ hasText: "Skin" }).getByRole("button", { name: /Bordered/ }).click();
-      await page.waitForFunction(() => document.documentElement.dataset.skin === "bordered");
-      await page.locator(".settings-card").filter({ hasText: "عرض محتوا" }).getByRole("button", { name: /Boxed/ }).click();
-      await page.waitForFunction(() => document.documentElement.dataset.contentWidth === "boxed");
-      await page.locator(".settings-card").filter({ hasText: "Motion" }).getByRole("button", { name: /Reduced/ }).click();
-      await page.waitForFunction(() => document.documentElement.dataset.motion === "reduced");
-      await page.getByRole("button", { name: /بازنشانی تنظیمات/ }).click();
-      await page.waitForFunction(() => document.documentElement.dataset.density === "comfortable" && document.documentElement.dataset.skin === "soft" && document.documentElement.dataset.motion === "full");
-    }
-    if (route.name === "search") {
-      const input = page.getByLabel("جستجوی سراسری"); await input.fill("Dorsa");
-      await page.getByText("Dorsa Intelligence", { exact: true }).waitFor({ state: "visible" });
-      await input.press("Enter");
-    }
-    if (route.name === "notifications") {
-      await page.locator(".notification-pulse strong").waitFor({ state: "visible" });
-      await page.getByRole("button", { name: /علامت‌گذاری همه/ }).click();
-      await page.locator(".notification-pulse strong").filter({ hasText: "۰" }).waitFor({ state: "visible" });
-      await page.locator(".notifications-filters").getByRole("button", { name: "پروژه", exact: true }).click();
-      await page.getByText("ریسک پروژه افزایش یافت", { exact: true }).waitFor({ state: "visible" });
-    }
-    if (route.name === "kanban") {
-      const search = page.getByLabel("جستجوی کانبان"); await search.fill("checkout");
-      await page.getByRole("heading", { name: "نهایی‌کردن checkout responsive", exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "انتقال نهایی‌کردن checkout responsive به ستون بعد", exact: true }).click();
-      await page.locator(".kanban-column.tone-blue").getByRole("heading", { name: "نهایی‌کردن checkout responsive", exact: true }).waitFor({ state: "visible" });
-      await search.fill("");
-    }
-    if (route.name === "users") {
-      const search = page.getByLabel("جستجوی کاربران"); await search.fill("آرمان");
-      await page.getByText("آرمان زمانی", { exact: true }).waitFor({ state: "visible" });
-      await page.getByRole("button", { name: "انتخاب آرمان زمانی", exact: true }).click();
-      await page.getByText("۱ کاربر انتخاب شده", { exact: true }).waitFor({ state: "visible" });
-      if (viewport.width > 900) {
-        await page.getByRole("button", { name: /دعوت کاربر/ }).click();
-        await page.getByRole("dialog", { name: "دعوت کاربر" }).waitFor({ state: "visible" });
-        await page.getByRole("button", { name: /ارسال دعوت/ }).click();
-        await page.getByText("دعوت‌نامه کاربر با موفقیت آماده ارسال شد.", { exact: true }).waitFor({ state: "visible" });
-      }
-      await search.fill("");
-    }
-
-    await normalizeForCapture(page);
-    await checkOverflow(page, `${label}/rtl-light`);
-    await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
-
-    await page.getByRole("button", { name: "تغییر پوسته" }).click();
-    if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) failures.push(`${label}: dark toggle failed`);
-    await page.getByRole("button", { name: "تغییر جهت و زبان" }).click();
-    if ((await page.locator("html").getAttribute("dir")) !== "ltr") failures.push(`${label}: ltr toggle failed`);
-    await checkOverflow(page, `${label}/ltr-dark`);
-
-    await page.keyboard.press("Control+K");
-    const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
-    await commandInput.waitFor({ state: "visible" });
-    await commandInput.fill(commandQueries[route.name]);
-    await page.keyboard.press("Escape");
-    await commandInput.waitFor({ state: "hidden" });
-
-    if (viewport.name === "mobile") {
-      await page.getByRole("button", { name: "باز کردن منو" }).click();
-      const sidebar = page.getByRole("complementary", { name: "ناوبری اصلی" });
-      const closeButton = sidebar.getByRole("button", { name: "بستن منو" });
-      await closeButton.waitFor({ state: "visible" });
-      if (!(await sidebar.evaluate((node) => node.classList.contains("is-open")))) failures.push(`${label}: sidebar did not open`);
-      await closeButton.click();
-      await page.waitForFunction(() => !document.querySelector("aside.sidebar")?.classList.contains("is-open"));
-      await page.waitForTimeout(380);
-    }
-
-    await normalizeForCapture(page);
-    await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`), fullPage: true });
-    if (consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
-    if (failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
-    await page.close();
-  }
-}
-await browser.close();
-if (failures.length) { console.error("Loraniq Pages QA failed:\n- " + failures.join("\n- ")); process.exit(1); }
-console.log(`Loraniq Pages QA passed for ${routes.length} routes × ${viewports.length} viewports in RTL/light and LTR/dark at ${baseURL}`);
+for(const route of routes){for(const viewport of viewports){const page=await browser.newPage({viewport});const consoleErrors=[];const failedRequests=[];page.on("console",m=>{if(m.type()==="error")consoleErrors.push(m.text())});page.on("requestfailed",r=>{const e=r.failure()?.errorText??"failed";if(r.method()==="HEAD"&&e.includes("ERR_ABORTED"))return;failedRequests.push(`${r.method()} ${r.url()} :: ${e}`)});const label=`${route.name}/${viewport.name}`;const response=await page.goto(new URL(route.path,baseURL).toString(),{waitUntil:"networkidle",timeout:60000});if(!response?.ok())failures.push(`${label}: page response ${response?.status()??"none"}`);await page.locator("#main-content").waitFor({state:"visible"});if(route.kind==="shell")await page.getByRole("heading",{level:1}).first().waitFor({state:"visible"});else await page.locator(".auth-card").waitFor({state:"visible"});if((await page.locator("html").getAttribute("dir"))!=="rtl")failures.push(`${label}: default direction is not rtl`);if(await page.locator("html").evaluate(n=>n.classList.contains("dark")))failures.push(`${label}: default state starts dark`);
+ if(route.kind==="shell")await shellInteraction(page,route,viewport);
+ await normalize(page);await checkOverflow(page,`${label}/rtl-light`);await page.screenshot({path:path.join(outputDir,`${route.name}-${viewport.name}-rtl-light.png`),fullPage:true});
+ if(route.kind!=="shell")await authInteraction(page,route);
+ await page.getByRole("button",{name:"تغییر پوسته"}).click();if(!(await page.locator("html").evaluate(n=>n.classList.contains("dark"))))failures.push(`${label}: dark toggle failed`);await page.getByRole("button",{name:"تغییر جهت و زبان"}).click();if((await page.locator("html").getAttribute("dir"))!=="ltr")failures.push(`${label}: ltr toggle failed`);await checkOverflow(page,`${label}/ltr-dark`);
+ if(route.kind==="shell"){await page.keyboard.press("Control+K");const input=page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");await input.waitFor({state:"visible"});await input.fill(commandQueries[route.name]);await page.keyboard.press("Escape");await input.waitFor({state:"hidden"});if(viewport.name==="mobile"){await page.getByRole("button",{name:"باز کردن منو"}).click();const s=page.getByRole("complementary",{name:"ناوبری اصلی"});const c=s.getByRole("button",{name:"بستن منو"});await c.waitFor({state:"visible"});await c.click();await page.waitForFunction(()=>!document.querySelector("aside.sidebar")?.classList.contains("is-open"));await page.waitForTimeout(380)}}
+ await normalize(page);await page.screenshot({path:path.join(outputDir,`${route.name}-${viewport.name}-ltr-dark.png`),fullPage:true});if(consoleErrors.length)failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);if(failedRequests.length)failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);await page.close()}}
+await browser.close();if(failures.length){console.error("Loraniq Pages QA failed:\n- "+failures.join("\n- "));process.exit(1)}console.log(`Loraniq Pages QA passed for ${routes.length} routes × ${viewports.length} viewports in RTL/light and LTR/dark at ${baseURL}`);

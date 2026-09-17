@@ -1,0 +1,14 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { CheckCircle2, Eye, EyeOff, KeyRound, Mail, UserPlus } from "lucide-react";
+import { AuthShell } from "@/components/auth-shell";
+import { Button } from "@/components/ui/button";
+
+export default function RegisterPage(){
+ const[name,setName]=useState("");const[email,setEmail]=useState("");const[password,setPassword]=useState("");const[show,setShow]=useState(false);const[submitted,setSubmitted]=useState(false);const[error,setError]=useState("");
+ const strength=useMemo(()=>password.length>=12&&/[A-Z]/.test(password)&&/\d/.test(password)?"strong":password.length>=8?"medium":"weak",[password]);
+ const submit=()=>{if(name.trim().length<2||!email.includes("@")||password.length<8){setError("نام، ایمیل معتبر و رمز حداقل ۸ کاراکتری لازم است.");return}setError("");setSubmitted(true)};
+ return <AuthShell eyebrow="Create workspace" title="شروع حرفه‌ای، بدون شلوغی." description="Register UI با password strength، validation و state تأیید؛ مستقل از provider احراز هویت تا خریدار backend خودش را انتخاب کند.">{submitted?<div className="auth-card auth-success-state"><span><CheckCircle2/></span><h2>حساب نمونه ساخته شد</h2><p>مرحله بعد در پروژه واقعی می‌تواند verification ایمیل و ساخت session باشد.</p><Link href="/verify-email/"><Button className="auth-submit">ادامه به تأیید ایمیل</Button></Link></div>:<div className="auth-card"><div className="auth-card-head"><span><UserPlus/></span><h2>ساخت حساب</h2><p>اطلاعات پایه حساب نمونه را تکمیل کنید.</p></div><div className="auth-fields"><label className="auth-field"><b>نام و نام خانوادگی</b><span className="auth-input"><UserPlus/><input aria-label="نام ثبت نام" value={name} onChange={(e)=>setName(e.target.value)} placeholder="مثلاً حسن مجتهدی"/></span></label><label className="auth-field"><b>ایمیل</b><span className="auth-input"><Mail/><input aria-label="ایمیل ثبت نام" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="name@company.com"/></span></label><label className="auth-field"><b>رمز عبور</b><span className="auth-input"><KeyRound/><input aria-label="رمز ثبت نام" type={show?"text":"password"} value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="حداقل ۸ کاراکتر"/><button type="button" onClick={()=>setShow((v)=>!v)} aria-label={show?"پنهان کردن رمز":"نمایش رمز"}>{show?<EyeOff/>:<Eye/>}</button></span><div className={`password-meter ${strength}`}><i/><i/><i/><i/></div><small className="auth-help">برای رمز قوی از عدد، حروف بزرگ و حداقل ۱۲ کاراکتر استفاده کنید.</small></label>{error&&<div className="auth-error" role="alert">{error}</div>}<label className="auth-remember"><input type="checkbox" defaultChecked/><span>شرایط استفاده نمونه را می‌پذیرم</span></label></div><Button className="auth-submit" onClick={submit}>ساخت حساب</Button><div className="auth-card-foot">قبلاً عضو هستید؟ <Link href="/login/">ورود</Link></div></div>}</AuthShell>
+}
