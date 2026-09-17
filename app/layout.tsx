@@ -8,6 +8,8 @@ import "./ecommerce-premium.css";
 import "./crm-premium.css";
 import "./finance-premium.css";
 import "./healthcare-premium.css";
+import "./tables-premium.css";
+import "./forms-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
