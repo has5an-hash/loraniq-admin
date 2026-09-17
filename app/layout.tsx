@@ -5,6 +5,7 @@ import "./visual-reset.css";
 import "./executive-premium.css";
 import "./flagship-polish.css";
 import "./ecommerce-premium.css";
+import "./crm-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
