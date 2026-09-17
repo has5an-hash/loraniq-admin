@@ -25,6 +25,7 @@ import "./system-premium.css";
 import "./typography-premium.css";
 import "./auth-premium.css";
 import "./auth-polish.css";
+import "./marketing-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const vazirmatn = localFont({src:"./fonts/Vazirmatn.woff2",display:"swap",variable:"--font-vazirmatn",preload:true});

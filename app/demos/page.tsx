@@ -1,0 +1,15 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Check, HeartPulse, LayoutDashboard, LineChart, ShoppingBag, UsersRound, WalletCards } from "lucide-react";
+import { MarketingShell } from "@/components/marketing-shell";
+
+const basePath=process.env.NEXT_PUBLIC_BASE_PATH??"";
+const demos=[
+ {slug:"executive",title:"Executive",subtitle:"نمای مدیریتی",href:"/",icon:LayoutDashboard,tags:["KPI","Revenue","Operations"],desc:"نمای تصمیم‌گیری سطح مدیریت با درآمد، سفارش، هدف فصل، جریان نقدی و فعالیت تیم."},
+ {slug:"analytics",title:"Analytics",subtitle:"تحلیل داده",href:"/analytics/",icon:LineChart,tags:["Acquisition","Funnel","Geo"],desc:"داشبورد تحلیلی مستقل برای رفتار کاربر، تعامل، conversion funnel و کانال‌های جذب."},
+ {slug:"ecommerce",title:"Ecommerce",subtitle:"فروشگاه",href:"/ecommerce/",icon:ShoppingBag,tags:["Orders","Inventory","Channels"],desc:"مرکز عملیات فروش با سفارش، هدف درآمد، محصولات، کانال‌ها، موجودی و fulfillment."},
+ {slug:"crm",title:"CRM",subtitle:"مدیریت مشتری",href:"/crm/",icon:UsersRound,tags:["CLV","Retention","Segments"],desc:"سلامت مشتری، ارزش طول عمر، segment، interaction stream و ریسک ریزش."},
+ {slug:"finance",title:"Finance",subtitle:"امور مالی",href:"/finance/",icon:WalletCards,tags:["Cash flow","Profit","Budget"],desc:"ترکیب مالی برای جریان نقدی، سود عملیاتی، بودجه و visibility اجرایی."},
+ {slug:"healthcare",title:"Healthcare",subtitle:"سلامت",href:"/healthcare/",icon:HeartPulse,tags:["Patients","Capacity","Flow"],desc:"نمای عملیاتی حوزه سلامت با مراجعه، ظرفیت، زمان انتظار و جریان خدمات."},
+];
+export default function DemosPage(){return <MarketingShell><main id="main-content" className="demos-page"><section className="demos-intro"><span>Real product previews</span><h1>دمویی را انتخاب کن که به مسئله‌ات نزدیک‌تر است.</h1><p>هر کارت مستقیماً به یک Route واقعی وصل است و تصویر آن از اجرای Chromium همان صفحه تهیه می‌شود.</p><div><span><Check/> RTL/LTR</span><span><Check/> Dark/Light</span><span><Check/> Responsive</span><span><Check/> Interactive states</span></div></section><section className="demos-grid">{demos.map(({slug,title,subtitle,href,icon:Icon,tags,desc},index)=><article className="selector-card" key={slug}><Link href={href} className="selector-shot"><Image src={`${basePath}/demo-previews/${slug}.jpg`} width={960} height={600} priority={index<2} alt={`پیش‌نمایش واقعی داشبورد ${title}`}/><span className="selector-index">0{index+1}</span><span className="selector-open">بازکردن دمو <ArrowLeft/></span></Link><div className="selector-copy"><div className="selector-title"><span><Icon/></span><div><small>{subtitle}</small><h2>{title}</h2></div></div><p>{desc}</p><div className="selector-tags">{tags.map(tag=><span key={tag}>{tag}</span>)}</div></div></article>)}</section><section className="demos-note"><div><h2>چرا ترکیب‌ها عمداً متفاوت‌اند؟</h2><p>برای جلوگیری از تکرار یک grid واحد. هر داشبورد hierarchy و data composition متناسب با سناریوی خودش دارد؛ در عین حال tokens، shell و interaction patterns مشترک می‌مانند.</p></div><Link href="/landing/">بازگشت به معرفی <ArrowLeft/></Link></section></main></MarketingShell>}
