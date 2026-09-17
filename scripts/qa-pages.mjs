@@ -33,6 +33,14 @@ for (const testCase of cases) {
   await page.locator("#main-content").waitFor({ state: "visible" });
   await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
 
+  const overflow = await page.evaluate(() => ({
+    documentWidth: document.documentElement.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+  }));
+  if (overflow.documentWidth > overflow.viewportWidth + 1) {
+    failures.push(`${testCase.name}: horizontal overflow ${overflow.documentWidth}px > ${overflow.viewportWidth}px`);
+  }
+
   await page.getByRole("button", { name: "تغییر پوسته" }).click();
   if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) {
     failures.push(`${testCase.name}: dark-mode toggle did not update <html>`);
@@ -47,11 +55,15 @@ for (const testCase of cases) {
   await commandInput.waitFor({ state: "visible" });
   await commandInput.fill("Analytics");
   await page.keyboard.press("Escape");
+  await commandInput.waitFor({ state: "hidden" });
 
   if (testCase.name === "mobile") {
     await page.getByRole("button", { name: "باز کردن منو" }).click();
-    await page.getByRole("button", { name: "بستن منو" }).waitFor({ state: "visible" });
-    await page.getByRole("button", { name: "بستن منو" }).click();
+    const sidebar = page.getByRole("complementary", { name: "ناوبری اصلی" });
+    const closeButton = sidebar.getByRole("button", { name: "بستن منو" });
+    await closeButton.waitFor({ state: "visible" });
+    await closeButton.click();
+    await closeButton.waitFor({ state: "hidden" });
   }
 
   await page.screenshot({
