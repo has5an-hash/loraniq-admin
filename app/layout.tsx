@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./visual-reset.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
