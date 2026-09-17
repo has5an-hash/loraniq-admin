@@ -29,7 +29,12 @@ for (const route of routes) {
       if (message.type() === "error") consoleErrors.push(message.text());
     });
     page.on("requestfailed", (request) => {
-      failedRequests.push(`${request.method()} ${request.url()} :: ${request.failure()?.errorText ?? "failed"}`);
+      const errorText = request.failure()?.errorText ?? "failed";
+      // Next.js can cancel speculative HEAD prefetches when a Link leaves the
+      // viewport or navigation state changes. This is expected and does not
+      // represent a broken document or asset request.
+      if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
+      failedRequests.push(`${request.method()} ${request.url()} :: ${errorText}`);
     });
 
     const url = new URL(route.path, baseURL).toString();
