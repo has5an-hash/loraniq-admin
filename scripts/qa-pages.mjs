@@ -17,8 +17,9 @@ const routes = [
   { name: "forms", path: "forms/" },
   { name: "calendar", path: "calendar/" },
   { name: "projects", path: "projects/" },
+  { name: "chat", path: "chat/" },
+  { name: "email", path: "email/" },
 ];
-
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "tablet", width: 820, height: 1180 },
@@ -27,15 +28,9 @@ const viewports = [
 
 const browser = await chromium.launch({ headless: true });
 const failures = [];
-
 async function checkOverflow(page, label) {
-  const value = await page.evaluate(() => ({
-    documentWidth: document.documentElement.scrollWidth,
-    viewportWidth: document.documentElement.clientWidth,
-  }));
-  if (value.documentWidth > value.viewportWidth + 1) {
-    failures.push(`${label}: horizontal overflow ${value.documentWidth}px > ${value.viewportWidth}px`);
-  }
+  const value = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: document.documentElement.clientWidth }));
+  if (value.documentWidth > value.viewportWidth + 1) failures.push(`${label}: horizontal overflow ${value.documentWidth}px > ${value.viewportWidth}px`);
 }
 
 for (const route of routes) {
@@ -43,10 +38,7 @@ for (const route of routes) {
     const page = await browser.newPage({ viewport });
     const consoleErrors = [];
     const failedRequests = [];
-
-    page.on("console", (message) => {
-      if (message.type() === "error") consoleErrors.push(message.text());
-    });
+    page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
     page.on("requestfailed", (request) => {
       const errorText = request.failure()?.errorText ?? "failed";
       if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
@@ -54,15 +46,10 @@ for (const route of routes) {
     });
 
     const label = `${route.name}/${viewport.name}`;
-    const response = await page.goto(new URL(route.path, baseURL).toString(), {
-      waitUntil: "networkidle",
-      timeout: 60_000,
-    });
+    const response = await page.goto(new URL(route.path, baseURL).toString(), { waitUntil: "networkidle", timeout: 60_000 });
     if (!response?.ok()) failures.push(`${label}: page response ${response?.status() ?? "none"}`);
-
     await page.locator("#main-content").waitFor({ state: "visible" });
     await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
-
     if ((await page.locator("html").getAttribute("dir")) !== "rtl") failures.push(`${label}: default direction is not rtl`);
     if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) failures.push(`${label}: default state starts dark`);
 
@@ -89,9 +76,9 @@ for (const route of routes) {
     if (route.name === "tables") {
       const search = page.getByLabel("جستجوی جدول");
       await search.fill("آرمان");
-      const dataSurface = viewport.width > 980 ? page.locator(".desktop-table-wrap") : page.locator(".mobile-data-cards");
-      await dataSurface.getByText("آرمان زمانی", { exact: true }).waitFor({ state: "visible" });
-      await dataSurface.getByRole("button", { name: "انتخاب آرمان زمانی" }).click();
+      const surface = viewport.width > 980 ? page.locator(".desktop-table-wrap") : page.locator(".mobile-data-cards");
+      await surface.getByText("آرمان زمانی", { exact: true }).waitFor({ state: "visible" });
+      await surface.getByRole("button", { name: "انتخاب آرمان زمانی" }).click();
       await page.getByText("۱ ردیف انتخاب شده", { exact: false }).waitFor({ state: "visible" });
       await search.fill("");
     }
@@ -114,15 +101,41 @@ for (const route of routes) {
     if (route.name === "projects") {
       const projectSearch = page.getByLabel("جستجوی پروژه");
       await projectSearch.fill("Dorsa");
-      await page.getByText("Dorsa Intelligence", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
       await projectSearch.fill("");
       await page.locator(".projects-filters").getByRole("button", { name: "ریسک", exact: true }).click();
-      await page.getByText("Dorsa Intelligence", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("heading", { name: "Dorsa Intelligence", exact: true }).waitFor({ state: "visible" });
+    }
+    if (route.name === "chat") {
+      const contactSearch = page.getByLabel("جستجوی مخاطب");
+      await contactSearch.fill("آرمان");
+      const contact = page.locator(".chat-contacts > button").filter({ hasText: "آرمان زمانی" });
+      await contact.waitFor({ state: "visible" });
+      await contact.click();
+      const composer = page.getByLabel("متن پیام");
+      await composer.waitFor({ state: "visible" });
+      await composer.fill("پیام QA لورانیک");
+      await page.getByRole("button", { name: "ارسال پیام" }).click();
+      await page.getByText("پیام QA لورانیک", { exact: true }).waitFor({ state: "visible" });
+    }
+    if (route.name === "email") {
+      const emailSearch = page.getByLabel("جستجوی ایمیل");
+      await emailSearch.fill("CI");
+      const emailRow = page.locator(".mail-items article").filter({ hasText: "CI / Pages deployment" });
+      await emailRow.waitFor({ state: "visible" });
+      await emailRow.locator(".mail-open").click();
+      await page.getByText("Run آخر بدون خطا deploy شد.", { exact: false }).last().waitFor({ state: "visible" });
+      if (viewport.width > 900) {
+        await page.getByRole("button", { name: "نوشتن ایمیل", exact: true }).click();
+        await page.getByRole("dialog", { name: "نوشتن ایمیل" }).waitFor({ state: "visible" });
+        await page.getByRole("button", { name: "ارسال", exact: true }).click();
+        await page.getByRole("heading", { name: "ایمیل ارسال شد", exact: true }).waitFor({ state: "visible" });
+        await page.getByRole("button", { name: "بستن", exact: true }).click();
+      }
     }
 
     await checkOverflow(page, `${label}/rtl-light`);
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
-
     await page.getByRole("button", { name: "تغییر پوسته" }).click();
     if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) failures.push(`${label}: dark toggle failed`);
     await page.getByRole("button", { name: "تغییر جهت و زبان" }).click();
@@ -132,18 +145,7 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    const commandQueries = {
-      executive: "Executive",
-      analytics: "Analytics",
-      ecommerce: "Ecommerce",
-      crm: "CRM",
-      finance: "Finance",
-      healthcare: "Healthcare",
-      tables: "Data Tables",
-      forms: "Forms",
-      calendar: "Calendar",
-      projects: "Projects",
-    };
+    const commandQueries = { executive:"Executive", analytics:"Analytics", ecommerce:"Ecommerce", crm:"CRM", finance:"Finance", healthcare:"Healthcare", tables:"Data Tables", forms:"Forms", calendar:"Calendar", projects:"Projects", chat:"Chat", email:"Email" };
     await commandInput.fill(commandQueries[route.name]);
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
@@ -164,10 +166,6 @@ for (const route of routes) {
     await page.close();
   }
 }
-
 await browser.close();
-if (failures.length) {
-  console.error("Loraniq Pages QA failed:\n- " + failures.join("\n- "));
-  process.exit(1);
-}
+if (failures.length) { console.error("Loraniq Pages QA failed:\n- " + failures.join("\n- ")); process.exit(1); }
 console.log(`Loraniq Pages QA passed for ${routes.length} routes × ${viewports.length} viewports in RTL/light and LTR/dark at ${baseURL}`);

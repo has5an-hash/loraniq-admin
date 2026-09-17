@@ -3,22 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import {Bell,CalendarDays,ChartNoAxesCombined,ChevronDown,Command as CommandIcon,FileText,FolderKanban,HeartPulse,Languages,LayoutDashboard,Mail,Menu,Moon,Search,Settings,ShoppingBag,Sparkles,Sun,Table2,UsersRound,WalletCards,X,type LucideIcon} from "lucide-react";
+import {Bell,CalendarDays,ChartNoAxesCombined,ChevronDown,Command as CommandIcon,FileText,FolderKanban,HeartPulse,Languages,LayoutDashboard,Mail,Menu,MessageCircle,Moon,Search,Settings,ShoppingBag,Sparkles,Sun,Table2,UsersRound,WalletCards,X,type LucideIcon} from "lucide-react";
 import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from "@/components/ui/dialog";
 import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Input} from "@/components/ui/input";
 import {Progress} from "@/components/ui/progress";
 
-type NavigationKey="executive"|"analytics"|"ecommerce"|"crm"|"finance"|"healthcare"|"tables"|"forms"|"calendar"|"projects";
+type NavigationKey="executive"|"analytics"|"ecommerce"|"crm"|"finance"|"healthcare"|"tables"|"forms"|"calendar"|"projects"|"chat"|"email";
 type NavigationItem={key?:NavigationKey;label:string;labelEn:string;icon:LucideIcon;href?:string;badge?:string};
 const dashboardNav:NavigationItem[]=[
 {key:"executive",label:"نمای مدیریتی",labelEn:"Executive",icon:LayoutDashboard,href:"/"},{key:"analytics",label:"تحلیل داده",labelEn:"Analytics",icon:ChartNoAxesCombined,href:"/analytics/"},{key:"ecommerce",label:"فروشگاه",labelEn:"Ecommerce",icon:ShoppingBag,href:"/ecommerce/"},{key:"crm",label:"مدیریت مشتری",labelEn:"CRM",icon:UsersRound,href:"/crm/"},{key:"finance",label:"امور مالی",labelEn:"Finance",icon:WalletCards,href:"/finance/"},{key:"healthcare",label:"سلامت",labelEn:"Healthcare",icon:HeartPulse,href:"/healthcare/"}];
 const appNav:NavigationItem[]=[
-{key:"tables",label:"جداول پیشرفته",labelEn:"Data Tables",icon:Table2,href:"/tables/"},{key:"forms",label:"فرم‌ها",labelEn:"Forms",icon:FileText,href:"/forms/"},{key:"calendar",label:"تقویم",labelEn:"Calendar",icon:CalendarDays,href:"/calendar/"},{key:"projects",label:"پروژه‌ها",labelEn:"Projects",icon:FolderKanban,href:"/projects/"},{label:"پیام‌ها",labelEn:"Inbox",icon:Mail,badge:"۱۲"}];
+{key:"tables",label:"جداول پیشرفته",labelEn:"Data Tables",icon:Table2,href:"/tables/"},{key:"forms",label:"فرم‌ها",labelEn:"Forms",icon:FileText,href:"/forms/"},{key:"calendar",label:"تقویم",labelEn:"Calendar",icon:CalendarDays,href:"/calendar/"},{key:"projects",label:"پروژه‌ها",labelEn:"Projects",icon:FolderKanban,href:"/projects/"},{key:"chat",label:"گفتگو",labelEn:"Chat",icon:MessageCircle,href:"/chat/",badge:"۲"},{key:"email",label:"ایمیل",labelEn:"Email",icon:Mail,href:"/email/",badge:"۲"}];
 function Logo(){return <div className="brand-lockup" aria-label="Loraniq Admin"><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span className="brand-name">لورانیک <b>ادمین</b></span></div>}
 export function LoraniqShell({children,active="executive"}:{children:ReactNode;active?:NavigationKey}){
 const pathname=usePathname();const[dark,setDark]=useState(false);const[rtl,setRtl]=useState(true);const[sidebar,setSidebar]=useState(false);const[palette,setPalette]=useState(false);const[query,setQuery]=useState("");const[toast,setToast]=useState("");
-const routeActive=useMemo<NavigationKey>(()=>{const p=pathname||"";if(p.includes("/analytics"))return"analytics";if(p.includes("/ecommerce"))return"ecommerce";if(p.includes("/crm"))return"crm";if(p.includes("/finance"))return"finance";if(p.includes("/healthcare"))return"healthcare";if(p.includes("/tables"))return"tables";if(p.includes("/forms"))return"forms";if(p.includes("/calendar"))return"calendar";if(p.includes("/projects"))return"projects";return active},[pathname,active]);
+const routeActive=useMemo<NavigationKey>(()=>{const p=pathname||"";if(p.includes("/analytics"))return"analytics";if(p.includes("/ecommerce"))return"ecommerce";if(p.includes("/crm"))return"crm";if(p.includes("/finance"))return"finance";if(p.includes("/healthcare"))return"healthcare";if(p.includes("/tables"))return"tables";if(p.includes("/forms"))return"forms";if(p.includes("/calendar"))return"calendar";if(p.includes("/projects"))return"projects";if(p.includes("/chat"))return"chat";if(p.includes("/email"))return"email";return active},[pathname,active]);
 useEffect(()=>{document.documentElement.classList.toggle("dark",dark);document.documentElement.dir=rtl?"rtl":"ltr";document.documentElement.lang=rtl?"fa":"en"},[dark,rtl]);
 useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();setPalette((value)=>!value)}if(event.key==="Escape")setSidebar(false)};window.addEventListener("keydown",onKey);return()=>window.removeEventListener("keydown",onKey)},[]);
 const filteredCommands=useMemo(()=>[...dashboardNav,...appNav].filter((item)=>`${item.label} ${item.labelEn}`.toLowerCase().includes(query.toLowerCase())),[query]);const notify=(message:string)=>{setToast(message);window.setTimeout(()=>setToast(""),2400)};
