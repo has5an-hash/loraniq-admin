@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NavigationBridge } from "@/components/navigation-bridge";
 import "./globals.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -10,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fa" dir="rtl" suppressHydrationWarning><body>{children}</body></html>;
+  return <html lang="fa" dir="rtl" suppressHydrationWarning><body><NavigationBridge />{children}</body></html>;
 }
