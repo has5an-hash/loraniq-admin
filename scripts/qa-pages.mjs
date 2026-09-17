@@ -19,6 +19,16 @@ const viewports = [
 const browser = await chromium.launch({ headless: true });
 const failures = [];
 
+async function checkOverflow(page, label) {
+  const overflow = await page.evaluate(() => ({
+    documentWidth: document.documentElement.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+  }));
+  if (overflow.documentWidth > overflow.viewportWidth + 1) {
+    failures.push(`${label}: horizontal overflow ${overflow.documentWidth}px > ${overflow.viewportWidth}px`);
+  }
+}
+
 for (const route of routes) {
   for (const viewport of viewports) {
     const page = await browser.newPage({ viewport });
@@ -30,9 +40,9 @@ for (const route of routes) {
     });
     page.on("requestfailed", (request) => {
       const errorText = request.failure()?.errorText ?? "failed";
-      // Next.js can cancel speculative HEAD prefetches when a Link leaves the
-      // viewport or navigation state changes. This is expected and does not
-      // represent a broken document or asset request.
+      // Next.js may cancel speculative HEAD prefetches when a Link leaves the
+      // viewport or navigation state changes. A cancelled HEAD prefetch is not
+      // a failed document/asset request, so only this exact case is ignored.
       if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
       failedRequests.push(`${request.method()} ${request.url()} :: ${errorText}`);
     });
@@ -45,13 +55,16 @@ for (const route of routes) {
     await page.locator("#main-content").waitFor({ state: "visible" });
     await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
 
-    const overflow = await page.evaluate(() => ({
-      documentWidth: document.documentElement.scrollWidth,
-      viewportWidth: document.documentElement.clientWidth,
-    }));
-    if (overflow.documentWidth > overflow.viewportWidth + 1) {
-      failures.push(`${label}: horizontal overflow ${overflow.documentWidth}px > ${overflow.viewportWidth}px`);
+    const initialDirection = await page.locator("html").getAttribute("dir");
+    if (initialDirection !== "rtl") failures.push(`${label}: default direction is ${initialDirection ?? "missing"}, expected rtl`);
+    if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) {
+      failures.push(`${label}: default state unexpectedly starts in dark mode`);
     }
+    await checkOverflow(page, `${label}/rtl-light`);
+    await page.screenshot({
+      path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`),
+      fullPage: true,
+    });
 
     await page.getByRole("button", { name: "تغییر پوسته" }).click();
     if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) {
@@ -61,6 +74,7 @@ for (const route of routes) {
     await page.getByRole("button", { name: "تغییر جهت و زبان" }).click();
     const direction = await page.locator("html").getAttribute("dir");
     if (direction !== "ltr") failures.push(`${label}: RTL/LTR toggle did not switch to ltr`);
+    await checkOverflow(page, `${label}/ltr-dark`);
 
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
@@ -81,7 +95,7 @@ for (const route of routes) {
     }
 
     await page.screenshot({
-      path: path.join(outputDir, `${route.name}-${viewport.name}.png`),
+      path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`),
       fullPage: true,
     });
 
@@ -99,4 +113,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Loraniq Pages QA passed for ${routes.length} routes across ${viewports.length} viewports at ${baseURL}`);
+console.log(`Loraniq Pages QA passed for ${routes.length} routes × ${viewports.length} viewports in RTL/light and LTR/dark at ${baseURL}`);

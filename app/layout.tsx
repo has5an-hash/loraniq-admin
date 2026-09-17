@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./visual-reset.css";
 import "./executive-premium.css";
 import "./flagship-polish.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+const vazirmatn = localFont({
+  src: "./fonts/Vazirmatn.woff2",
+  display: "swap",
+  variable: "--font-vazirmatn",
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: "Loraniq Admin — داشبورد مدیریتی حرفه‌ای",
@@ -13,5 +21,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fa" dir="rtl" suppressHydrationWarning><body>{children}</body></html>;
+  return <html lang="fa" dir="rtl" suppressHydrationWarning><body className={vazirmatn.className}>{children}</body></html>;
 }
