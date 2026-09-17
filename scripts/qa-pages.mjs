@@ -12,6 +12,7 @@ const routes = [
   { name: "ecommerce", path: "ecommerce/" },
   { name: "crm", path: "crm/" },
   { name: "finance", path: "finance/" },
+  { name: "healthcare", path: "healthcare/" },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
@@ -23,13 +24,8 @@ const browser = await chromium.launch({ headless: true });
 const failures = [];
 
 async function checkOverflow(page, label) {
-  const overflow = await page.evaluate(() => ({
-    documentWidth: document.documentElement.scrollWidth,
-    viewportWidth: document.documentElement.clientWidth,
-  }));
-  if (overflow.documentWidth > overflow.viewportWidth + 1) {
-    failures.push(`${label}: horizontal overflow ${overflow.documentWidth}px > ${overflow.viewportWidth}px`);
-  }
+  const overflow = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: document.documentElement.clientWidth }));
+  if (overflow.documentWidth > overflow.viewportWidth + 1) failures.push(`${label}: horizontal overflow ${overflow.documentWidth}px > ${overflow.viewportWidth}px`);
 }
 
 for (const route of routes) {
@@ -37,10 +33,7 @@ for (const route of routes) {
     const page = await browser.newPage({ viewport });
     const consoleErrors = [];
     const failedRequests = [];
-
-    page.on("console", (message) => {
-      if (message.type() === "error") consoleErrors.push(message.text());
-    });
+    page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
     page.on("requestfailed", (request) => {
       const errorText = request.failure()?.errorText ?? "failed";
       if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
@@ -51,15 +44,12 @@ for (const route of routes) {
     const response = await page.goto(url, { waitUntil: "networkidle", timeout: 60_000 });
     const label = `${route.name}/${viewport.name}`;
     if (!response?.ok()) failures.push(`${label}: page response ${response?.status() ?? "none"}`);
-
     await page.locator("#main-content").waitFor({ state: "visible" });
     await page.getByRole("heading", { level: 1 }).first().waitFor({ state: "visible" });
 
     const initialDirection = await page.locator("html").getAttribute("dir");
     if (initialDirection !== "rtl") failures.push(`${label}: default direction is ${initialDirection ?? "missing"}, expected rtl`);
-    if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) {
-      failures.push(`${label}: default state unexpectedly starts in dark mode`);
-    }
+    if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) failures.push(`${label}: default state unexpectedly starts in dark mode`);
 
     if (route.name === "ecommerce") {
       await page.getByRole("button", { name: "سفارش", exact: true }).click();
@@ -76,15 +66,17 @@ for (const route of routes) {
       await page.getByText("۱۸۶٫۵ میلیون", { exact: true }).waitFor({ state: "visible" });
       await page.getByRole("button", { name: "جریان نقدی", exact: true }).click();
     }
+    if (route.name === "healthcare") {
+      await page.getByRole("button", { name: "زمان انتظار", exact: true }).click();
+      await page.getByText("۱۹ دقیقه", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "جریان مراجعه", exact: true }).click();
+    }
 
     await checkOverflow(page, `${label}/rtl-light`);
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
 
     await page.getByRole("button", { name: "تغییر پوسته" }).click();
-    if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) {
-      failures.push(`${label}: dark-mode toggle did not update <html>`);
-    }
-
+    if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) failures.push(`${label}: dark-mode toggle did not update <html>`);
     await page.getByRole("button", { name: "تغییر جهت و زبان" }).click();
     const direction = await page.locator("html").getAttribute("dir");
     if (direction !== "ltr") failures.push(`${label}: RTL/LTR toggle did not switch to ltr`);
@@ -93,7 +85,8 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    await commandInput.fill(route.name === "finance" ? "Finance" : route.name === "crm" ? "CRM" : "Ecommerce");
+    const commandQuery = route.name === "healthcare" ? "Healthcare" : route.name === "finance" ? "Finance" : route.name === "crm" ? "CRM" : "Ecommerce";
+    await commandInput.fill(commandQuery);
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
 
@@ -109,19 +102,15 @@ for (const route of routes) {
     }
 
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`), fullPage: true });
-
     if (consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
     if (failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
-
     await page.close();
   }
 }
 
 await browser.close();
-
 if (failures.length) {
   console.error("Loraniq Pages QA failed:\n- " + failures.join("\n- "));
   process.exit(1);
 }
-
 console.log(`Loraniq Pages QA passed for ${routes.length} routes × ${viewports.length} viewports in RTL/light and LTR/dark at ${baseURL}`);

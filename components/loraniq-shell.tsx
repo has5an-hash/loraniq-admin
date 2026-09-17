@@ -46,7 +46,7 @@ const dashboardNav: NavigationItem[] = [
   { key: "ecommerce", label: "فروشگاه", labelEn: "Ecommerce", icon: ShoppingBag, href: "/ecommerce/" },
   { key: "crm", label: "مدیریت مشتری", labelEn: "CRM", icon: UsersRound, href: "/crm/" },
   { key: "finance", label: "امور مالی", labelEn: "Finance", icon: WalletCards, href: "/finance/" },
-  { key: "healthcare", label: "سلامت", labelEn: "Healthcare", icon: HeartPulse },
+  { key: "healthcare", label: "سلامت", labelEn: "Healthcare", icon: HeartPulse, href: "/healthcare/" },
 ];
 
 const appNav: NavigationItem[] = [
