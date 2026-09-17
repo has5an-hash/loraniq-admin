@@ -18,5 +18,12 @@ Baseline commit: 9d84a18f91be7964f499f7c52d25382ac8cfb3da
 - Card radii, shadows, hover timing and status colors harmonized across six flagship dashboards.
 - Reduced-motion support preserved.
 
+## High-DPI preview checkpoint
+- Generated preview commit: `e855bdad3abc009fdc85cc619afc79e98203905c`
+- Six deployed dashboard captures regenerated from the successful visual-polish deployment.
+- Source capture resolution: 3360×2100 pixels per preview (2× DPR), JPEG quality 96.
+- Repository preview file sizes are approximately 0.55–0.66 MB each.
+
 ## Gate
-Not complete until the full Quality and GitHub Pages workflow passes and the refreshed high-DPI previews are visually reviewed.
+The visual-polish code commit `476db6246dcb423f8593f841a0b0c2245f7251f2` passed Lint, Typecheck, static Build, Chromium product QA, marketing QA and GitHub Pages deployment.
+The high-DPI asset commit must also pass the full quality/deployment workflow before this milestone is closed, followed by visual review of the deployed Landing/Demos output.
