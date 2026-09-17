@@ -9,6 +9,7 @@ await fs.mkdir(outputDir, { recursive: true });
 const routes = [
   { name: "executive", path: "" },
   { name: "analytics", path: "analytics/" },
+  { name: "ecommerce", path: "ecommerce/" },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
@@ -40,9 +41,6 @@ for (const route of routes) {
     });
     page.on("requestfailed", (request) => {
       const errorText = request.failure()?.errorText ?? "failed";
-      // Next.js may cancel speculative HEAD prefetches when a Link leaves the
-      // viewport or navigation state changes. A cancelled HEAD prefetch is not
-      // a failed document/asset request, so only this exact case is ignored.
       if (request.method() === "HEAD" && errorText.includes("ERR_ABORTED")) return;
       failedRequests.push(`${request.method()} ${request.url()} :: ${errorText}`);
     });
@@ -60,6 +58,13 @@ for (const route of routes) {
     if (await page.locator("html").evaluate((node) => node.classList.contains("dark"))) {
       failures.push(`${label}: default state unexpectedly starts in dark mode`);
     }
+
+    if (route.name === "ecommerce") {
+      await page.getByRole("button", { name: "سفارش", exact: true }).click();
+      await page.getByText("۳٬۸۴۲ سفارش", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "درآمد", exact: true }).click();
+    }
+
     await checkOverflow(page, `${label}/rtl-light`);
     await page.screenshot({
       path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`),
@@ -79,7 +84,7 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    await commandInput.fill("Analytics");
+    await commandInput.fill("Ecommerce");
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
 

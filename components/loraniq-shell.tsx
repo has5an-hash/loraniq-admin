@@ -30,7 +30,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 
+type DashboardKey = "executive" | "analytics" | "ecommerce" | "crm" | "finance" | "healthcare";
 type NavigationItem = {
+  key?: DashboardKey;
   label: string;
   labelEn: string;
   icon: LucideIcon;
@@ -39,12 +41,12 @@ type NavigationItem = {
 };
 
 const dashboardNav: NavigationItem[] = [
-  { label: "نمای مدیریتی", labelEn: "Executive", icon: LayoutDashboard, href: "/" },
-  { label: "تحلیل داده", labelEn: "Analytics", icon: ChartNoAxesCombined, href: "/analytics/" },
-  { label: "فروشگاه", labelEn: "Ecommerce", icon: ShoppingBag },
-  { label: "مدیریت مشتری", labelEn: "CRM", icon: UsersRound },
-  { label: "امور مالی", labelEn: "Finance", icon: WalletCards },
-  { label: "سلامت", labelEn: "Healthcare", icon: HeartPulse },
+  { key: "executive", label: "نمای مدیریتی", labelEn: "Executive", icon: LayoutDashboard, href: "/" },
+  { key: "analytics", label: "تحلیل داده", labelEn: "Analytics", icon: ChartNoAxesCombined, href: "/analytics/" },
+  { key: "ecommerce", label: "فروشگاه", labelEn: "Ecommerce", icon: ShoppingBag, href: "/ecommerce/" },
+  { key: "crm", label: "مدیریت مشتری", labelEn: "CRM", icon: UsersRound },
+  { key: "finance", label: "امور مالی", labelEn: "Finance", icon: WalletCards },
+  { key: "healthcare", label: "سلامت", labelEn: "Healthcare", icon: HeartPulse },
 ];
 
 const appNav: NavigationItem[] = [
@@ -57,7 +59,7 @@ function Logo() {
   return <div className="brand-lockup" aria-label="Loraniq Admin"><span className="brand-mark" aria-hidden="true"><i /><i /><i /></span><span className="brand-name">لورانیک <b>ادمین</b></span></div>;
 }
 
-export function LoraniqShell({ children, active = "analytics" }: { children: ReactNode; active?: "executive" | "analytics" }) {
+export function LoraniqShell({ children, active = "executive" }: { children: ReactNode; active?: DashboardKey }) {
   const [dark, setDark] = useState(false);
   const [rtl, setRtl] = useState(true);
   const [sidebar, setSidebar] = useState(false);
@@ -102,9 +104,9 @@ export function LoraniqShell({ children, active = "analytics" }: { children: Rea
         <nav className="sidebar-scroll">
           <p className="nav-eyebrow">داشبوردها</p>
           <div className="nav-stack">
-            {dashboardNav.map((item, index) => {
+            {dashboardNav.map((item) => {
               const Icon = item.icon;
-              const isActive = (active === "executive" && index === 0) || (active === "analytics" && index === 1);
+              const isActive = item.key === active;
               const content = <><Icon /><span>{rtl ? item.label : item.labelEn}</span>{isActive && <span className="active-pip" />}</>;
               return item.href ? <Link key={item.label} className={`nav-item ${isActive ? "active" : ""}`} href={item.href} onClick={() => setSidebar(false)}>{content}</Link> : <button key={item.label} className="nav-item" onClick={() => notify(`${item.label} به‌زودی اضافه می‌شود`)}>{content}</button>;
             })}
