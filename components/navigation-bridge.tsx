@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+import { useRouter } from "next/navigation";
 
 export function NavigationBridge() {
+  const router = useRouter();
+
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null;
@@ -14,13 +15,13 @@ export function NavigationBridge() {
       const label = button.textContent?.replace(/\s+/g, " ").trim() ?? "";
       if (label === "تحلیل داده" || label === "Analytics") {
         event.preventDefault();
-        window.location.assign(`${basePath}/analytics/`);
+        router.push("/analytics/");
       }
     };
 
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, []);
+  }, [router]);
 
   return null;
 }
