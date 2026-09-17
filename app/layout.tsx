@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { UiPreferencesProvider } from "@/components/ui-preferences-provider";
 import "./globals.css";
 import "./visual-reset.css";
 import "./executive-premium.css";
@@ -16,8 +17,11 @@ import "./chat-premium.css";
 import "./email-premium.css";
 import "./files-premium.css";
 import "./invoice-premium.css";
+import "./settings-premium.css";
+import "./components-premium.css";
+import "./system-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const vazirmatn = localFont({src:"./fonts/Vazirmatn.woff2",display:"swap",variable:"--font-vazirmatn",preload:true});
 export const metadata:Metadata={title:"Loraniq Admin — داشبورد مدیریتی حرفه‌ای",description:"قالب پنل مدیریت حرفه‌ای، فارسی و RTL-first برای محصولات مدرن.",icons:{icon:`${basePath}/favicon.svg`,shortcut:`${basePath}/favicon.svg`}};
-export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="fa" dir="rtl" suppressHydrationWarning><body className={vazirmatn.className}>{children}</body></html>}
+export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="fa" dir="rtl" suppressHydrationWarning><body className={vazirmatn.className}><UiPreferencesProvider>{children}</UiPreferencesProvider></body></html>}

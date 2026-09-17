@@ -14,6 +14,7 @@ const routes = [
   { name: "calendar", path: "calendar/" }, { name: "projects", path: "projects/" },
   { name: "chat", path: "chat/" }, { name: "email", path: "email/" },
   { name: "files", path: "files/" }, { name: "invoice", path: "invoice/" },
+  { name: "components", path: "components/" }, { name: "settings", path: "settings/" },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
@@ -153,6 +154,30 @@ for (const route of routes) {
       await page.getByRole("button", { name: "ارسال", exact: true }).click();
       await page.getByText("فاکتور برای مشتری ارسال شد", { exact: true }).waitFor({ state: "visible" });
     }
+    if (route.name === "components") {
+      await page.locator(".state-switcher").getByRole("button", { name: "Error", exact: true }).click();
+      await page.getByRole("heading", { name: "دریافت داده ناموفق بود", exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "تلاش دوباره", exact: true }).click();
+      await page.locator(".mini-table").waitFor({ state: "visible" });
+      await page.getByRole("button", { name: /اکشن اصلی/ }).click();
+      await page.getByText("اکشن اصلی اجرا شد", { exact: true }).waitFor({ state: "visible" });
+    }
+    if (route.name === "settings") {
+      const density = page.locator(".settings-card").filter({ hasText: "تراکم" });
+      await density.getByRole("button", { name: /فشرده/ }).click();
+      await page.waitForFunction(() => document.documentElement.dataset.density === "compact");
+      const skin = page.locator(".settings-card").filter({ hasText: "Skin" });
+      await skin.getByRole("button", { name: /Bordered/ }).click();
+      await page.waitForFunction(() => document.documentElement.dataset.skin === "bordered");
+      const width = page.locator(".settings-card").filter({ hasText: "عرض محتوا" });
+      await width.getByRole("button", { name: /Boxed/ }).click();
+      await page.waitForFunction(() => document.documentElement.dataset.contentWidth === "boxed");
+      const motion = page.locator(".settings-card").filter({ hasText: "Motion" });
+      await motion.getByRole("button", { name: /Reduced/ }).click();
+      await page.waitForFunction(() => document.documentElement.dataset.motion === "reduced");
+      await page.getByRole("button", { name: /بازنشانی تنظیمات/ }).click();
+      await page.waitForFunction(() => document.documentElement.dataset.density === "comfortable" && document.documentElement.dataset.skin === "soft" && document.documentElement.dataset.motion === "full");
+    }
 
     await checkOverflow(page, `${label}/rtl-light`);
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
@@ -165,7 +190,7 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    const commands = {executive:"Executive",analytics:"Analytics",ecommerce:"Ecommerce",crm:"CRM",finance:"Finance",healthcare:"Healthcare",tables:"Data Tables",forms:"Forms",calendar:"Calendar",projects:"Projects",chat:"Chat",email:"Email",files:"File Manager",invoice:"Invoice"};
+    const commands = {executive:"Executive",analytics:"Analytics",ecommerce:"Ecommerce",crm:"CRM",finance:"Finance",healthcare:"Healthcare",tables:"Data Tables",forms:"Forms",calendar:"Calendar",projects:"Projects",chat:"Chat",email:"Email",files:"File Manager",invoice:"Invoice",components:"UI Components",settings:"Appearance Settings"};
     await commandInput.fill(commands[route.name]);
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
