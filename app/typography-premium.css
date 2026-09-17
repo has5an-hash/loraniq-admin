@@ -1,0 +1,10 @@
+/* Readability floor benchmarked against mature admin templates.
+   Preserve dense data UI while preventing metadata/helper text from becoming micro-type. */
+.main-content p{font-size:max(11.5px,.72rem)}
+.main-content small{font-size:max(10.5px,.66rem);line-height:1.55}
+.main-content input,.main-content select,.main-content textarea{font-size:max(11px,.7rem)}
+.main-content th,.main-content td{font-size:max(10.5px,.66rem)}
+.main-content [class*="kicker"],.main-content [class*="eyebrow"]{font-size:max(10px,.63rem)}
+.main-content [class*="status-pill"],.main-content [class*="role-pill"]{font-size:max(9.5px,.6rem)}
+.main-content [class*="field-hint"],.main-content [class*="field-error"]{font-size:max(10px,.63rem)}
+@media(max-width:620px){.main-content p{font-size:12px}.main-content small{font-size:11px}.main-content input,.main-content select,.main-content textarea{font-size:12px}}

@@ -7,26 +7,35 @@ const outputDir = path.resolve("artifacts/qa");
 await fs.mkdir(outputDir, { recursive: true });
 
 const routes = [
-  { name: "executive", path: "" }, { name: "analytics", path: "analytics/" },
-  { name: "ecommerce", path: "ecommerce/" }, { name: "crm", path: "crm/" },
-  { name: "finance", path: "finance/" }, { name: "healthcare", path: "healthcare/" },
-  { name: "tables", path: "tables/" }, { name: "forms", path: "forms/" },
-  { name: "calendar", path: "calendar/" }, { name: "projects", path: "projects/" },
-  { name: "chat", path: "chat/" }, { name: "email", path: "email/" },
-  { name: "files", path: "files/" }, { name: "invoice", path: "invoice/" },
-  { name: "components", path: "components/" }, { name: "settings", path: "settings/" },
-];
+  ["executive", ""], ["analytics", "analytics/"], ["ecommerce", "ecommerce/"], ["crm", "crm/"],
+  ["finance", "finance/"], ["healthcare", "healthcare/"], ["tables", "tables/"], ["forms", "forms/"],
+  ["calendar", "calendar/"], ["projects", "projects/"], ["chat", "chat/"], ["email", "email/"],
+  ["files", "files/"], ["invoice", "invoice/"], ["components", "components/"], ["settings", "settings/"],
+  ["search", "search/"], ["notifications", "notifications/"], ["kanban", "kanban/"], ["users", "users/"],
+].map(([name, routePath]) => ({ name, path: routePath }));
+
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "tablet", width: 820, height: 1180 },
   { name: "mobile", width: 390, height: 844 },
 ];
+const commandQueries = {
+  executive:"Executive", analytics:"Analytics", ecommerce:"Ecommerce", crm:"CRM", finance:"Finance", healthcare:"Healthcare",
+  tables:"Data Tables", forms:"Forms", calendar:"Calendar", projects:"Projects", chat:"Chat", email:"Email", files:"File Manager",
+  invoice:"Invoice", components:"UI Components", settings:"Appearance Settings", search:"Global Search", notifications:"Notifications",
+  kanban:"Kanban", users:"User Management",
+};
+
 const browser = await chromium.launch({ headless: true });
 const failures = [];
 
 async function checkOverflow(page, label) {
   const value = await page.evaluate(() => ({ documentWidth: document.documentElement.scrollWidth, viewportWidth: document.documentElement.clientWidth }));
   if (value.documentWidth > value.viewportWidth + 1) failures.push(`${label}: horizontal overflow ${value.documentWidth}px > ${value.viewportWidth}px`);
+}
+async function normalizeForCapture(page) {
+  await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+  await page.waitForTimeout(380);
 }
 
 for (const route of routes) {
@@ -106,20 +115,15 @@ for (const route of routes) {
       const search = page.getByLabel("جستجوی مخاطب");
       await search.fill("آرمان");
       const contact = page.locator(".chat-contacts > button").filter({ hasText: "آرمان زمانی" });
-      await contact.waitFor({ state: "visible" });
-      await contact.click();
-      const composer = page.getByLabel("متن پیام");
-      await composer.waitFor({ state: "visible" });
-      await composer.fill("پیام QA لورانیک");
-      await page.getByRole("button", { name: "ارسال پیام" }).click();
+      await contact.waitFor({ state: "visible" }); await contact.click();
+      const composer = page.getByLabel("متن پیام"); await composer.waitFor({ state: "visible" });
+      await composer.fill("پیام QA لورانیک"); await page.getByRole("button", { name: "ارسال پیام" }).click();
       await page.getByText("پیام QA لورانیک", { exact: true }).waitFor({ state: "visible" });
     }
     if (route.name === "email") {
-      const search = page.getByLabel("جستجوی ایمیل");
-      await search.fill("CI");
+      const search = page.getByLabel("جستجوی ایمیل"); await search.fill("CI");
       const row = page.locator(".mail-items article").filter({ hasText: "CI / Pages deployment" });
-      await row.waitFor({ state: "visible" });
-      await row.locator(".mail-open").click();
+      await row.waitFor({ state: "visible" }); await row.locator(".mail-open").click();
       await page.getByText("Run آخر بدون خطا deploy شد.", { exact: false }).last().waitFor({ state: "visible" });
       if (viewport.width > 900) {
         await page.getByRole("button", { name: "نوشتن ایمیل", exact: true }).click();
@@ -130,8 +134,7 @@ for (const route of routes) {
       }
     }
     if (route.name === "files") {
-      const search = page.getByLabel("جستجوی فایل");
-      await search.fill("source");
+      const search = page.getByLabel("جستجوی فایل"); await search.fill("source");
       await page.getByRole("heading", { name: "source-package.zip", exact: true }).waitFor({ state: "visible" });
       await page.getByRole("button", { name: "انتخاب source-package.zip" }).click();
       await page.getByText("۱ مورد انتخاب شده", { exact: true }).waitFor({ state: "visible" });
@@ -145,11 +148,9 @@ for (const route of routes) {
       await search.fill("");
     }
     if (route.name === "invoice") {
-      const search = page.getByLabel("جستجوی فاکتور");
-      await search.fill("Atlas");
+      const search = page.getByLabel("جستجوی فاکتور"); await search.fill("Atlas");
       const row = page.locator(".invoice-items > button").filter({ hasText: "Atlas Group" });
-      await row.waitFor({ state: "visible" });
-      await row.click();
+      await row.waitFor({ state: "visible" }); await row.click();
       await page.locator(".invoice-preview > header h2").filter({ hasText: "INV-2047" }).waitFor({ state: "visible" });
       await page.getByRole("button", { name: "ارسال", exact: true }).click();
       await page.getByText("فاکتور برای مشتری ارسال شد", { exact: true }).waitFor({ state: "visible" });
@@ -163,24 +164,54 @@ for (const route of routes) {
       await page.getByText("اکشن اصلی اجرا شد", { exact: true }).waitFor({ state: "visible" });
     }
     if (route.name === "settings") {
-      const density = page.locator(".settings-card").filter({ hasText: "تراکم" });
-      await density.getByRole("button", { name: /فشرده/ }).click();
+      await page.locator(".settings-card").filter({ hasText: "تراکم" }).getByRole("button", { name: /فشرده/ }).click();
       await page.waitForFunction(() => document.documentElement.dataset.density === "compact");
-      const skin = page.locator(".settings-card").filter({ hasText: "Skin" });
-      await skin.getByRole("button", { name: /Bordered/ }).click();
+      await page.locator(".settings-card").filter({ hasText: "Skin" }).getByRole("button", { name: /Bordered/ }).click();
       await page.waitForFunction(() => document.documentElement.dataset.skin === "bordered");
-      const width = page.locator(".settings-card").filter({ hasText: "عرض محتوا" });
-      await width.getByRole("button", { name: /Boxed/ }).click();
+      await page.locator(".settings-card").filter({ hasText: "عرض محتوا" }).getByRole("button", { name: /Boxed/ }).click();
       await page.waitForFunction(() => document.documentElement.dataset.contentWidth === "boxed");
-      const motion = page.locator(".settings-card").filter({ hasText: "Motion" });
-      await motion.getByRole("button", { name: /Reduced/ }).click();
+      await page.locator(".settings-card").filter({ hasText: "Motion" }).getByRole("button", { name: /Reduced/ }).click();
       await page.waitForFunction(() => document.documentElement.dataset.motion === "reduced");
       await page.getByRole("button", { name: /بازنشانی تنظیمات/ }).click();
       await page.waitForFunction(() => document.documentElement.dataset.density === "comfortable" && document.documentElement.dataset.skin === "soft" && document.documentElement.dataset.motion === "full");
     }
+    if (route.name === "search") {
+      const input = page.getByLabel("جستجوی سراسری"); await input.fill("Dorsa");
+      await page.getByText("Dorsa Intelligence", { exact: true }).waitFor({ state: "visible" });
+      await input.press("Enter");
+    }
+    if (route.name === "notifications") {
+      await page.locator(".notification-pulse strong").waitFor({ state: "visible" });
+      await page.getByRole("button", { name: /علامت‌گذاری همه/ }).click();
+      await page.locator(".notification-pulse strong").filter({ hasText: "۰" }).waitFor({ state: "visible" });
+      await page.locator(".notifications-filters").getByRole("button", { name: "پروژه", exact: true }).click();
+      await page.getByText("ریسک پروژه افزایش یافت", { exact: true }).waitFor({ state: "visible" });
+    }
+    if (route.name === "kanban") {
+      const search = page.getByLabel("جستجوی کانبان"); await search.fill("checkout");
+      await page.getByRole("heading", { name: "نهایی‌کردن checkout responsive", exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "انتقال نهایی‌کردن checkout responsive به ستون بعد", exact: true }).click();
+      await page.locator(".kanban-column.tone-blue").getByRole("heading", { name: "نهایی‌کردن checkout responsive", exact: true }).waitFor({ state: "visible" });
+      await search.fill("");
+    }
+    if (route.name === "users") {
+      const search = page.getByLabel("جستجوی کاربران"); await search.fill("آرمان");
+      await page.getByText("آرمان زمانی", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "انتخاب آرمان زمانی", exact: true }).click();
+      await page.getByText("۱ کاربر انتخاب شده", { exact: true }).waitFor({ state: "visible" });
+      if (viewport.width > 900) {
+        await page.getByRole("button", { name: /دعوت کاربر/ }).click();
+        await page.getByRole("dialog", { name: "دعوت کاربر" }).waitFor({ state: "visible" });
+        await page.getByRole("button", { name: /ارسال دعوت/ }).click();
+        await page.getByText("دعوت‌نامه کاربر با موفقیت آماده ارسال شد.", { exact: true }).waitFor({ state: "visible" });
+      }
+      await search.fill("");
+    }
 
+    await normalizeForCapture(page);
     await checkOverflow(page, `${label}/rtl-light`);
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
+
     await page.getByRole("button", { name: "تغییر پوسته" }).click();
     if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) failures.push(`${label}: dark toggle failed`);
     await page.getByRole("button", { name: "تغییر جهت و زبان" }).click();
@@ -190,8 +221,7 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    const commands = {executive:"Executive",analytics:"Analytics",ecommerce:"Ecommerce",crm:"CRM",finance:"Finance",healthcare:"Healthcare",tables:"Data Tables",forms:"Forms",calendar:"Calendar",projects:"Projects",chat:"Chat",email:"Email",files:"File Manager",invoice:"Invoice",components:"UI Components",settings:"Appearance Settings"};
-    await commandInput.fill(commands[route.name]);
+    await commandInput.fill(commandQueries[route.name]);
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
 
@@ -203,8 +233,10 @@ for (const route of routes) {
       if (!(await sidebar.evaluate((node) => node.classList.contains("is-open")))) failures.push(`${label}: sidebar did not open`);
       await closeButton.click();
       await page.waitForFunction(() => !document.querySelector("aside.sidebar")?.classList.contains("is-open"));
+      await page.waitForTimeout(380);
     }
 
+    await normalizeForCapture(page);
     await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`), fullPage: true });
     if (consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
     if (failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
