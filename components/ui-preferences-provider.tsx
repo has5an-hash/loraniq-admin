@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 export type DirectionMode = "rtl" | "ltr";
@@ -39,6 +39,60 @@ type UiPreferencesContextValue = {
 };
 
 const UiPreferencesContext = createContext<UiPreferencesContextValue | null>(null);
+let clientSnapshot = defaultUiPreferences;
+let storageRead = false;
+const listeners = new Set<() => void>();
+
+function normalizePreferences(value: Partial<UiPreferences> | null | undefined): UiPreferences {
+  return { ...defaultUiPreferences, ...(value ?? {}) };
+}
+
+function readStorage(): UiPreferences {
+  if (typeof window === "undefined") return defaultUiPreferences;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? normalizePreferences(JSON.parse(raw) as Partial<UiPreferences>) : defaultUiPreferences;
+  } catch {
+    return defaultUiPreferences;
+  }
+}
+
+function getSnapshot() {
+  if (typeof window !== "undefined" && !storageRead) {
+    clientSnapshot = readStorage();
+    storageRead = true;
+  }
+  return clientSnapshot;
+}
+
+function getServerSnapshot() {
+  return defaultUiPreferences;
+}
+
+function publish(next: UiPreferences) {
+  clientSnapshot = next;
+  storageRead = true;
+  if (typeof window !== "undefined") {
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* storage may be unavailable */ }
+  }
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  if (typeof window === "undefined") return () => listeners.delete(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== STORAGE_KEY) return;
+    clientSnapshot = readStorage();
+    storageRead = true;
+    listeners.forEach((entry) => entry());
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
 
 function resolveTheme(theme: ThemeMode): "light" | "dark" {
   if (theme !== "system") return theme;
@@ -63,28 +117,12 @@ function applyPreferences(preferences: UiPreferences) {
 }
 
 export function UiPreferencesProvider({ children }: { children: ReactNode }) {
-  const [preferences, setPreferences] = useState<UiPreferences>(defaultUiPreferences);
+  const preferences = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [systemThemeTick, setSystemThemeTick] = useState(0);
-
-  useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as Partial<UiPreferences>;
-        const next = { ...defaultUiPreferences, ...parsed };
-        setPreferences(next);
-        applyPreferences(next);
-        return;
-      }
-    } catch {
-      // Invalid local preference data should never break the application shell.
-    }
-    applyPreferences(defaultUiPreferences);
-  }, []);
+  const resolvedTheme = resolveTheme(preferences.theme);
 
   useEffect(() => {
     applyPreferences(preferences);
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences)); } catch { /* storage can be unavailable */ }
   }, [preferences, systemThemeTick]);
 
   useEffect(() => {
@@ -95,12 +133,17 @@ export function UiPreferencesProvider({ children }: { children: ReactNode }) {
     return () => media.removeEventListener("change", onChange);
   }, [preferences.theme]);
 
+  const updatePreferences = useCallback((patch: Partial<UiPreferences>) => {
+    publish({ ...getSnapshot(), ...patch });
+  }, []);
+  const resetPreferences = useCallback(() => publish(defaultUiPreferences), []);
+
   const value = useMemo<UiPreferencesContextValue>(() => ({
     preferences,
-    resolvedTheme: resolveTheme(preferences.theme),
-    updatePreferences: (patch) => setPreferences((current) => ({ ...current, ...patch })),
-    resetPreferences: () => setPreferences(defaultUiPreferences),
-  }), [preferences, systemThemeTick]);
+    resolvedTheme,
+    updatePreferences,
+    resetPreferences,
+  }), [preferences, resolvedTheme, updatePreferences, resetPreferences]);
 
   return <UiPreferencesContext.Provider value={value}>{children}</UiPreferencesContext.Provider>;
 }
