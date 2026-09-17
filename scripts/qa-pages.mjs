@@ -11,6 +11,7 @@ const routes = [
   { name: "analytics", path: "analytics/" },
   { name: "ecommerce", path: "ecommerce/" },
   { name: "crm", path: "crm/" },
+  { name: "finance", path: "finance/" },
 ];
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
@@ -70,12 +71,14 @@ for (const route of routes) {
       await page.getByText("۴٫۸ میلیون", { exact: true }).waitFor({ state: "visible" });
       await page.getByRole("button", { name: "حفظ مشتری", exact: true }).click();
     }
+    if (route.name === "finance") {
+      await page.getByRole("button", { name: "سود عملیاتی", exact: true }).click();
+      await page.getByText("۱۸۶٫۵ میلیون", { exact: true }).waitFor({ state: "visible" });
+      await page.getByRole("button", { name: "جریان نقدی", exact: true }).click();
+    }
 
     await checkOverflow(page, `${label}/rtl-light`);
-    await page.screenshot({
-      path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`),
-      fullPage: true,
-    });
+    await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-rtl-light.png`), fullPage: true });
 
     await page.getByRole("button", { name: "تغییر پوسته" }).click();
     if (!(await page.locator("html").evaluate((node) => node.classList.contains("dark")))) {
@@ -90,7 +93,7 @@ for (const route of routes) {
     await page.keyboard.press("Control+K");
     const commandInput = page.getByPlaceholder("نام صفحه یا عملیات را بنویسید...");
     await commandInput.waitFor({ state: "visible" });
-    await commandInput.fill(route.name === "crm" ? "CRM" : "Ecommerce");
+    await commandInput.fill(route.name === "finance" ? "Finance" : route.name === "crm" ? "CRM" : "Ecommerce");
     await page.keyboard.press("Escape");
     await commandInput.waitFor({ state: "hidden" });
 
@@ -105,10 +108,7 @@ for (const route of routes) {
       await page.getByRole("button", { name: "بستن منو" }).first().waitFor({ state: "hidden" }).catch(() => undefined);
     }
 
-    await page.screenshot({
-      path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`),
-      fullPage: true,
-    });
+    await page.screenshot({ path: path.join(outputDir, `${route.name}-${viewport.name}-ltr-dark.png`), fullPage: true });
 
     if (consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
     if (failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
