@@ -1,0 +1,157 @@
+/* Flagship polish: Executive collision fixes + dedicated Analytics visual language. */
+
+/* Executive: reserve the inline-end visual zone instead of letting copy collide with the goal orb. */
+.exec-hero-main { padding-bottom: 94px; }
+.exec-hero-copy { max-width: none; padding-inline-end: 172px; }
+.exec-hero-copy h1 { max-width: 660px; }
+
+/* Analytics — deliberately a different composition from Executive. */
+.ana-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.58fr) minmax(320px, .72fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.ana-hero-main,
+.ana-quality-card,
+.ana-metric-ribbon,
+.ana-chart-card,
+.ana-source-card,
+.ana-funnel-card,
+.ana-cohort-card,
+.ana-geo-card,
+.ana-pages-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: linear-gradient(145deg, var(--card), color-mix(in srgb, var(--surface-2) 38%, var(--card)));
+  box-shadow: var(--shadow-card);
+}
+.ana-hero-main {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 274px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 88% 22%, rgba(18,168,145,.17), transparent 14rem),
+    radial-gradient(circle at 70% 120%, rgba(141,131,255,.17), transparent 19rem),
+    linear-gradient(130deg, color-mix(in srgb, #12a891 6%, var(--card)), var(--card) 56%, color-mix(in srgb, var(--primary) 8%, var(--card)));
+}
+.ana-hero-main::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 240px;
+  height: 240px;
+  inset-inline-end: -56px;
+  top: -95px;
+  border: 1px solid color-mix(in srgb, #12a891 16%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 24px color-mix(in srgb, #12a891 3%, transparent), 0 0 0 52px color-mix(in srgb, var(--primary) 2%, transparent);
+}
+.ana-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  border: 1px solid color-mix(in srgb, #12a891 20%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, #12a891 7%, var(--card));
+  padding-inline: 10px;
+  color: #0c9c86;
+  font-size: 9px;
+  font-weight: 850;
+}
+.ana-kicker i { width: 6px; height: 6px; border-radius: 50%; background: #12a891; box-shadow: 0 0 0 4px rgba(18,168,145,.11); }
+.ana-title { max-width: 680px; margin: 15px 0 7px; font-size: clamp(30px, 3vw, 44px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.25; }
+.ana-lead { max-width: 650px; margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.9; }
+.ana-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+.ana-actions button { min-height: 42px; border-radius: 12px; font-size: 10px; font-weight: 800; }
+.ana-live-spark {
+  position: absolute;
+  inset-inline-end: 30px;
+  bottom: 24px;
+  width: 210px;
+  height: 78px;
+  opacity: .96;
+}
+.ana-live-spark path.line { fill: none; stroke: #12a891; stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 5px 6px rgba(18,168,145,.18)); }
+.ana-live-spark path.area { fill: url(#ana-hero-area); }
+
+.ana-quality-card { position: relative; overflow: hidden; padding: 22px; }
+.ana-quality-card::before { content:""; position:absolute; width:150px; height:150px; inset-inline-end:-55px; top:-55px; border-radius:50%; background:radial-gradient(circle,rgba(141,131,255,.13),transparent 70%); }
+.ana-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.ana-card-head h2 { margin:0; font-size:15px; font-weight:850; }
+.ana-card-head p { margin:4px 0 0; color:var(--muted-foreground); font-size:9px; line-height:1.7; }
+.ana-live-pill { display:inline-flex; align-items:center; gap:5px; border-radius:999px; background:rgba(18,168,145,.10); color:#0c9c86; padding:5px 8px; font-size:8px; font-weight:850; }
+.ana-live-pill i { width:5px; height:5px; border-radius:50%; background:#12a891; }
+.ana-quality-score { display:flex; align-items:end; gap:9px; margin-top:24px; }
+.ana-quality-score strong { font-size:45px; line-height:1; font-weight:900; letter-spacing:-1px; }
+.ana-quality-score span { color:#12a891; font-size:9px; font-weight:850; }
+.ana-quality-copy { margin:9px 0 17px; color:var(--muted-foreground); font-size:9px; line-height:1.8; }
+.ana-quality-bars { display:grid; gap:11px; }
+.ana-quality-row { display:grid; grid-template-columns:76px 1fr auto; align-items:center; gap:9px; }
+.ana-quality-row label,.ana-quality-row b { font-size:8px; }.ana-quality-row label { color:var(--muted-foreground); }.ana-quality-row b { font-weight:850; }
+.ana-track { height:6px; overflow:hidden; border-radius:999px; background:color-mix(in srgb,var(--border) 78%,transparent); }.ana-track i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#12a891,#8d83ff); }
+
+.ana-metric-ribbon { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); margin-bottom:14px; overflow:hidden; }
+.ana-metric { position:relative; min-height:132px; padding:18px 19px; }
+.ana-metric + .ana-metric { border-inline-start:1px solid var(--border); }
+.ana-metric-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ana-metric-icon { display:grid; width:38px; height:38px; place-items:center; border-radius:12px; background:color-mix(in srgb,var(--metric,var(--primary)) 12%,var(--card)); color:var(--metric,var(--primary)); }.ana-metric-icon svg { width:18px; }
+.ana-metric-trend { display:inline-flex; align-items:center; gap:3px; color:#0c9c86; font-size:8px; font-weight:850; }.ana-metric-trend.bad { color:#df5369; }
+.ana-metric p { margin:13px 0 1px; color:var(--muted-foreground); font-size:9px; font-weight:700; }
+.ana-metric strong { font-size:24px; font-weight:900; letter-spacing:-.45px; }.ana-metric strong small { color:var(--muted-foreground); font-size:8px; font-weight:650; }
+.ana-metric-foot { margin-top:5px; color:var(--muted-foreground); font-size:8px; }
+
+.ana-main-grid { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(310px,.72fr); gap:14px; margin-bottom:14px; }
+.ana-chart-card,.ana-source-card,.ana-funnel-card,.ana-cohort-card,.ana-geo-card,.ana-pages-card { padding:21px; }
+.ana-chart-toolbar { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.ana-segments { display:flex; gap:4px; padding:3px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); }
+.ana-segments span { padding:5px 8px; border-radius:7px; color:var(--muted-foreground); font-size:8px; }.ana-segments span.active { background:var(--card); color:var(--foreground); box-shadow:0 3px 10px rgba(35,39,58,.07); font-weight:800; }
+.ana-chart-summary { display:flex; flex-wrap:wrap; align-items:end; justify-content:space-between; gap:14px; margin-top:20px; }.ana-chart-summary span { color:var(--muted-foreground); font-size:8px; }.ana-chart-summary strong { display:block; margin-top:2px; font-size:28px; font-weight:900; }.ana-chart-summary em { color:#0c9c86; font-size:9px; font-style:normal; font-weight:850; }
+.ana-chart-canvas { height:274px; margin-top:13px; border:1px solid color-mix(in srgb,var(--border) 80%,transparent); border-radius:16px; background:linear-gradient(180deg,color-mix(in srgb,#12a891 3%,var(--surface-2)),transparent); padding:15px 12px 10px; }
+.ana-chart-canvas svg { width:100%; height:100%; overflow:visible; }.ana-grid line { stroke:var(--border); stroke-width:1; }.ana-main-line { fill:none; stroke:#8d83ff; stroke-width:3.1; stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 5px 5px rgba(141,131,255,.16)); }.ana-second-line { fill:none; stroke:#12a891; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }.ana-main-area { fill:url(#ana-main-area); }.ana-second-area { fill:url(#ana-second-area); }
+.ana-chart-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:11px; color:var(--muted-foreground); font-size:8px; }.ana-chart-legend span { display:flex; align-items:center; gap:6px; }.ana-chart-legend i { width:16px; height:3px; border-radius:3px; background:#8d83ff; }.ana-chart-legend i.cyan { background:#12a891; }
+
+.ana-source-card { display:flex; flex-direction:column; }
+.ana-source-donut { position:relative; display:grid; width:152px; height:152px; place-items:center; margin:18px auto 17px; border-radius:50%; background:conic-gradient(#8d83ff 0 38%,#12a891 38% 64%,#f2a641 64% 84%,#e85f72 84% 100%); box-shadow:0 16px 38px rgba(35,39,58,.08); }.ana-source-donut::before { content:""; position:absolute; width:112px; height:112px; border-radius:50%; background:var(--card); }.ana-source-donut div { position:relative; text-align:center; }.ana-source-donut strong { display:block; font-size:22px; font-weight:900; }.ana-source-donut span { color:var(--muted-foreground); font-size:8px; }
+.ana-source-list { display:grid; gap:9px; margin-top:auto; }.ana-source-item { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; }.ana-source-dot { width:7px; height:7px; border-radius:50%; background:var(--source); }.ana-source-item div { min-width:0; }.ana-source-item b { display:block; font-size:8px; }.ana-source-item small { color:var(--muted-foreground); font-size:7px; }.ana-source-item strong { font-size:9px; }
+
+.ana-insight-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1.05fr) minmax(280px,.75fr); gap:14px; margin-bottom:14px; }
+.ana-funnel { display:grid; gap:9px; margin-top:18px; }.ana-funnel-step { width:var(--w); margin-inline:auto; border:1px solid color-mix(in srgb,var(--primary) 14%,var(--border)); border-radius:12px; background:linear-gradient(100deg,color-mix(in srgb,var(--primary) 7%,var(--card)),var(--surface-2)); padding:11px 13px; }.ana-funnel-step div { display:flex; justify-content:space-between; gap:8px; font-size:8px; }.ana-funnel-step b { font-size:9px; }.ana-funnel-step .ana-track { margin-top:8px; height:5px; }
+.ana-cohort-labels { display:grid; grid-template-columns:72px repeat(6,1fr); gap:5px; margin-top:18px; color:var(--muted-foreground); font-size:7px; text-align:center; }.ana-cohort-labels span:first-child { text-align:start; }.ana-cohort-row { display:grid; grid-template-columns:72px repeat(6,1fr); gap:5px; margin-top:5px; }.ana-cohort-row label { align-self:center; color:var(--muted-foreground); font-size:7px; }.ana-heat { display:grid; min-height:31px; place-items:center; border-radius:7px; background:color-mix(in srgb,#12a891 calc(var(--heat) * 1%),var(--surface-2)); color:color-mix(in srgb,var(--foreground) 85%,white); font-size:7px; font-weight:800; }
+.ana-geo-list { display:grid; gap:4px; margin-top:15px; }.ana-geo-item { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:9px; border-radius:11px; padding:9px; transition:.18s ease; }.ana-geo-item:hover { background:var(--muted); }.ana-rank { display:grid; width:29px; height:29px; place-items:center; border-radius:9px; background:var(--accent); color:var(--primary); font-size:8px; font-weight:850; }.ana-geo-item b { display:block; font-size:8px; }.ana-geo-item small { color:var(--muted-foreground); font-size:7px; }.ana-geo-item strong { font-size:9px; }
+
+.ana-pages-card { padding-bottom:6px; }.ana-pages-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }.ana-pages-table { width:calc(100% + 42px); margin:16px -21px 0; border-collapse:collapse; white-space:nowrap; }.ana-pages-table th,.ana-pages-table td { border-top:1px solid var(--border); padding:11px 16px; text-align:start; font-size:8px; }.ana-pages-table th { background:var(--surface-2); color:var(--muted-foreground); font-weight:750; }.ana-pages-table td { color:var(--muted-foreground); }.ana-pages-table td b { color:var(--foreground); }.ana-page-path { display:flex; align-items:center; gap:8px; }.ana-page-path span { display:grid; width:30px; height:30px; place-items:center; border-radius:9px; background:var(--accent); color:var(--primary); font-weight:850; }
+
+@media (max-width:1180px) {
+  .ana-hero,.ana-main-grid { grid-template-columns:1fr; }
+  .ana-metric-ribbon { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ana-metric:nth-child(3) { border-inline-start:0; border-top:1px solid var(--border); }.ana-metric:nth-child(4) { border-top:1px solid var(--border); }
+  .ana-insight-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.ana-geo-card { grid-column:1 / -1; }
+}
+
+@media (max-width:680px) {
+  .exec-hero-main { display:flex; min-height:0; flex-direction:column; padding:20px; }
+  .exec-hero-copy { padding-inline-end:0; }
+  .exec-hero-copy h1 { max-width:none; }
+  .exec-hero-orb { position:relative; inset:auto; top:auto; transform:none; order:2; margin:18px auto 0; }
+  .exec-hero-strip { position:relative; inset:auto; bottom:auto; order:3; width:100%; max-width:none; margin-top:18px; }
+
+  .ana-hero { grid-template-columns:1fr; }
+  .ana-hero-main { min-height:0; padding:20px 18px; }
+  .ana-title { font-size:29px; letter-spacing:-.8px; }
+  .ana-live-spark { position:relative; inset:auto; width:100%; height:72px; margin-top:18px; }
+  .ana-quality-card { padding:18px; }
+  .ana-metric-ribbon { grid-template-columns:1fr; border-radius:18px; }
+  .ana-metric + .ana-metric { border-inline-start:0; border-top:1px solid var(--border); }
+  .ana-main-grid,.ana-insight-grid { grid-template-columns:1fr; }
+  .ana-geo-card { grid-column:auto; }
+  .ana-chart-card,.ana-source-card,.ana-funnel-card,.ana-cohort-card,.ana-geo-card,.ana-pages-card { padding:17px; border-radius:18px; }
+  .ana-chart-toolbar { align-items:stretch; flex-direction:column; }.ana-segments { align-self:flex-start; }
+  .ana-chart-canvas { height:220px; padding-inline:6px; }
+  .ana-cohort-labels,.ana-cohort-row { grid-template-columns:60px repeat(6,minmax(29px,1fr)); gap:3px; }.ana-cohort-card { overflow-x:auto; }
+  .ana-pages-card { overflow:hidden; }.ana-pages-table { display:block; width:100%; margin:14px 0 0; overflow-x:auto; }
+}

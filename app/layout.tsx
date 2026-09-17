@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./visual-reset.css";
 import "./executive-premium.css";
+import "./flagship-polish.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
