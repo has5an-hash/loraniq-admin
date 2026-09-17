@@ -1,10 +1,9 @@
 name: Capture Loraniq demo previews
 
 on:
-  push:
-    paths:
-      - '.github/workflows/capture-demo-previews.yml'
-      - 'scripts/capture-demo-previews.mjs'
+  workflow_run:
+    workflows: ["Quality and GitHub Pages"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -12,9 +11,12 @@ permissions:
 
 jobs:
   capture:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
       - uses: actions/setup-node@v6
         with:
           node-version: 22.16.0
@@ -26,7 +28,7 @@ jobs:
         run: |
           pnpm add --save-dev --lockfile=false playwright@1.55.0
           pnpm exec playwright install --with-deps chromium
-      - name: Capture real deployed dashboards
+      - name: Capture real deployed dashboards at high DPI
         env:
           LORANIQ_PREVIEW_URL: https://has5an-hash.github.io/loraniq-admin/
         run: node scripts/capture-demo-previews.mjs
@@ -38,6 +40,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Preview images unchanged"
           else
-            git commit -m "chore: refresh real dashboard preview assets"
+            git commit -m "chore: refresh high-DPI dashboard preview assets"
             git push
           fi
