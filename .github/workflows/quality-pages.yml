@@ -1,0 +1,92 @@
+name: Quality and GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: loraniq-pages
+  cancel-in-progress: true
+
+jobs:
+  quality-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.16.0
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build static GitHub Pages output
+        env:
+          NEXT_PUBLIC_BASE_PATH: /loraniq-admin
+        run: pnpm build:pages
+
+      - name: Prepare local Pages mount
+        run: |
+          mkdir -p /tmp/loraniq-pages/loraniq-admin
+          cp -a out/. /tmp/loraniq-pages/loraniq-admin/
+          touch out/.nojekyll
+          python3 -m http.server 4173 --directory /tmp/loraniq-pages >/tmp/loraniq-http.log 2>&1 &
+          echo $! >/tmp/loraniq-http.pid
+
+      - name: Install Chromium QA runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Chromium smoke QA
+        env:
+          QA_URL: http://127.0.0.1:4173/loraniq-admin/
+        run: pnpm qa:pages
+
+      - name: Upload QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: loraniq-qa-screenshots
+          path: artifacts/qa
+          if-no-files-found: warn
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: out
+
+  deploy:
+    needs: quality-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
