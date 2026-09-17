@@ -23,13 +23,22 @@ import {
   UsersRound,
   WalletCards,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 
-const dashboardNav = [
+type NavigationItem = {
+  label: string;
+  labelEn: string;
+  icon: LucideIcon;
+  href?: string;
+  badge?: string;
+};
+
+const dashboardNav: NavigationItem[] = [
   { label: "نمای مدیریتی", labelEn: "Executive", icon: LayoutDashboard, href: "/" },
   { label: "تحلیل داده", labelEn: "Analytics", icon: ChartNoAxesCombined, href: "/analytics/" },
   { label: "فروشگاه", labelEn: "Ecommerce", icon: ShoppingBag },
@@ -38,7 +47,7 @@ const dashboardNav = [
   { label: "سلامت", labelEn: "Healthcare", icon: HeartPulse },
 ];
 
-const appNav = [
+const appNav: NavigationItem[] = [
   { label: "تقویم", labelEn: "Calendar", icon: CalendarDays },
   { label: "پیام‌ها", labelEn: "Inbox", icon: Mail, badge: "۱۲" },
   { label: "پروژه‌ها", labelEn: "Projects", icon: FolderKanban },
