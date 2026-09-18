@@ -1,5 +1,7 @@
 "use client";
 
+import "../crm-premium.css";
+
 import { useState } from "react";
 import {
   ArrowDownRight,
