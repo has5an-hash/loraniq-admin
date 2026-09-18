@@ -1,154 +1,535 @@
 "use client";
 
-import "./executive-premium.css";
-import "./flagship-polish.css";
-
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  ArrowUpRight,
-  CalendarDays,
+  ArrowDownToLine,
+  ArrowLeft,
+  ArrowUpLeft,
   ChevronDown,
-  CircleDollarSign,
-  Download,
-  MoreHorizontal,
-  PackageCheck,
-  Plus,
+  CreditCard,
+  Search,
+  ShieldCheck,
   ShoppingBag,
+  SlidersHorizontal,
   Sparkles,
-  Target,
-  TrendingDown,
   TrendingUp,
-  UserRoundPlus,
-  UsersRound,
-  WalletCards,
-  Zap,
+  Users,
+  Wallet,
 } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import RevenueChart from "@/components/revenue-chart";
+import {
+  downloadOrders,
+  fa,
+  orders,
+  periods,
+  statusLabels,
+  type Order,
+} from "@/lib/dashboard-data";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const orders = [
-  { id: "LQ-8421", name: "سارا محمدی", initials: "سم", product: "اشتراک سازمانی", amount: "۱۸٬۴۹۰٬۰۰۰", status: "پرداخت‌شده", tone: "success" },
-  { id: "LQ-8419", name: "آرمان کریمی", initials: "آک", product: "بسته فروشگاهی", amount: "۹٬۸۵۰٬۰۰۰", status: "در حال بررسی", tone: "warning" },
-  { id: "LQ-8417", name: "نگار توکلی", initials: "نت", product: "داشبورد مالی", amount: "۱۲٬۳۰۰٬۰۰۰", status: "پرداخت‌شده", tone: "success" },
-  { id: "LQ-8412", name: "شرکت رایان", initials: "شر", product: "لایسنس توسعه", amount: "۷٬۲۸۰٬۰۰۰", status: "ناموفق", tone: "danger" },
+type View = "overview" | "analytics" | "orders" | "customers";
+
+const views: { id: View; label: string }[] = [
+  { id: "overview", label: "نمای کلی" },
+  { id: "analytics", label: "تحلیل درآمد" },
+  { id: "orders", label: "سفارش‌ها" },
+  { id: "customers", label: "مشتریان" },
 ];
-
-const activity = [
-  { title: "سفارش LQ-8421 تکمیل شد", meta: "پرداخت با موفقیت تأیید شد", time: "۱۰ دقیقه پیش", icon: PackageCheck },
-  { title: "عضو تازه به تیم پیوست", meta: "مریم سلیمانی · تیم محصول", time: "۴۵ دقیقه پیش", icon: UserRoundPlus },
-  { title: "هدف فروش هفتگی به‌روزرسانی شد", meta: "۹۱٪ از برنامه محقق شده", time: "۲ ساعت پیش", icon: Target },
-];
-
-const chartPoints = "0,160 55,145 110,151 165,118 220,132 275,92 330,105 385,70 440,84 495,53 550,67 605,34 660,44 715,18";
-const goalPoints = "0,172 70,160 140,146 210,130 280,118 350,103 420,89 490,74 560,61 630,47 715,34";
-
-function MiniLine({ tone = "#8d83ff", down = false }: { tone?: string; down?: boolean }) {
-  return (
-    <svg className="exec-mini-line" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true" style={{ ["--stat-accent" as string]: tone }}>
-      <path d={down ? "M1 5 C19 2 25 19 41 13 S64 25 99 23" : "M1 23 C18 25 25 11 42 16 S67 2 99 7"} />
-    </svg>
-  );
-}
 
 export default function Home() {
-  const [range, setRange] = useState("۳۰ روز گذشته");
+  const [view, setView] = useState<View>("overview");
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [period, setPeriod] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const data = periods[period];
+
+  const visibleOrders = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          (filter === "all" || order.status === filter) &&
+          `${order.id} ${order.name} ${order.product}`
+            .toLowerCase()
+            .includes(search.trim().toLowerCase()),
+      ),
+    [filter, search],
+  );
+
+  const exportCsv = () => downloadOrders(visibleOrders);
+
+  const metrics = [
+    {
+      label: "درآمد کل",
+      value: data.revenue,
+      unit: "میلیون تومان",
+      change: "۱۲٫۸٪",
+      icon: Wallet,
+      tone: "purple",
+      spark: "2,32 18,28 30,30 45,16 58,23 73,10 88,14 103,4",
+    },
+    {
+      label: "سفارش‌های جدید",
+      value: data.count,
+      unit: "سفارش",
+      change: "۸٫۲٪",
+      icon: ShoppingBag,
+      tone: "blue",
+      spark: "2,30 18,23 32,28 47,12 62,18 77,9 90,15 103,4",
+    },
+    {
+      label: "مشتریان تازه",
+      value: data.customers,
+      unit: "نفر",
+      change: "۵٫۶٪",
+      icon: Users,
+      tone: "green",
+      spark: "2,28 18,31 33,20 48,25 63,10 78,17 90,7 103,4",
+    },
+    {
+      label: "میانگین ارزش سفارش",
+      value: "۱۵۴٫۵",
+      unit: "هزار تومان",
+      change: "۴٫۳٪",
+      icon: CreditCard,
+      tone: "amber",
+      spark: "2,32 18,26 32,29 47,20 63,23 78,12 90,17 103,6",
+    },
+  ];
 
   return (
     <LoraniqShell active="executive">
-      <main id="main-content" className="main-content">
-        <section className="exec-hero" aria-labelledby="page-title">
-          <article className="exec-hero-main">
-            <div className="exec-hero-copy">
-              <span className="exec-eyebrow"><i /> Business pulse · زنده</span>
-              <h1 id="page-title">سلام حسن، امروز روی رشد تمرکز داریم.</h1>
-              <p>تصویر مدیریتی لورانیک، شاخص‌های اصلی فروش، سود، تیم و جریان نقدی را در یک نگاه قابل اقدام جمع می‌کند.</p>
-              <div className="exec-hero-actions">
-                <Button className="primary-action"><Download /> دریافت گزارش مدیریتی</Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild><Button variant="outline"><CalendarDays /> {range}<ChevronDown /></Button></DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">{["۷ روز گذشته", "۳۰ روز گذشته", "سه‌ماهه جاری"].map((item) => <DropdownMenuItem key={item} onClick={() => setRange(item)}>{item}</DropdownMenuItem>)}</DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-            <div className="exec-hero-orb" role="img" aria-label="۸۷ درصد تحقق هدف درآمد"><div><strong>۸۷٪</strong><span>تحقق هدف</span></div></div>
-            <div className="exec-hero-strip">
-              <div><span>درآمد امروز</span><strong>۱۸٫۶ میلیون</strong></div>
-              <div><span>سفارش موفق</span><strong>۳۲۸ سفارش</strong></div>
-              <div><span>حاشیه سود</span><strong>۳۶٫۴٪</strong></div>
-            </div>
-          </article>
-
-          <article className="exec-focus-card">
-            <div className="exec-focus-head"><div><h2>ریتم کسب‌وکار</h2><p>سه سیگنال مهم برای تصمیم امروز</p></div><span className="exec-live"><i /> زنده</span></div>
-            <div className="exec-focus-score"><strong>۹۱</strong><span><ArrowUpRight /> +۶ امتیاز</span></div>
-            <p className="exec-focus-copy">فروش و رضایت مشتری بالاتر از میانگین‌اند؛ ظرفیت عملیات هنوز جا برای رشد دارد.</p>
-            <div className="exec-focus-lines">
-              <div className="exec-focus-line"><span className="violet" /><label>فروش</label><b>۹۲٪</b></div>
-              <div className="exec-focus-line"><span className="cyan" /><label>رضایت مشتری</label><b>۸۸٪</b></div>
-              <div className="exec-focus-line"><span className="amber" /><label>ظرفیت عملیات</label><b>۷۴٪</b></div>
-            </div>
-            <div className="exec-team"><div className="exec-avatars"><span>حم</span><span>مس</span><span>آک</span><span>+۴</span></div><small>۷ عضو فعال امروز</small></div>
-          </article>
-        </section>
-
-        <section className="exec-stat-grid" aria-label="شاخص‌های کلیدی">
-          <article className="exec-stat" style={{ ["--stat-accent" as string]: "#8d83ff" }}>
-            <div className="exec-stat-head"><span className="exec-stat-icon"><CircleDollarSign /></span><span className="exec-stat-trend"><TrendingUp />۱۲٫۸٪</span></div>
-            <p className="exec-stat-label">درآمد خالص</p><div className="exec-stat-value"><strong>۲۸۴٫۶</strong><small>میلیون تومان</small></div><MiniLine />
-          </article>
-          <article className="exec-stat" style={{ ["--stat-accent" as string]: "#12a891" }}>
-            <div className="exec-stat-head"><span className="exec-stat-icon"><ShoppingBag /></span><span className="exec-stat-trend"><TrendingUp />۸٫۲٪</span></div>
-            <p className="exec-stat-label">سفارش‌های جدید</p><div className="exec-stat-value"><strong>۱٬۸۴۲</strong><small>سفارش</small></div><MiniLine tone="#12a891" />
-          </article>
-          <article className="exec-stat" style={{ ["--stat-accent" as string]: "#f2a641" }}>
-            <div className="exec-stat-head"><span className="exec-stat-icon"><UsersRound /></span><span className="exec-stat-trend"><ArrowUpRight />۵٫۶٪</span></div>
-            <p className="exec-stat-label">مشتریان تازه</p><div className="exec-stat-value"><strong>۴۶۸</strong><small>مشتری</small></div><MiniLine tone="#f2a641" />
-          </article>
-          <article className="exec-stat" style={{ ["--stat-accent" as string]: "#e85f72" }}>
-            <div className="exec-stat-head"><span className="exec-stat-icon"><WalletCards /></span><span className="exec-stat-trend down"><TrendingDown />۰٫۳٪</span></div>
-            <p className="exec-stat-label">نرخ ریزش</p><div className="exec-stat-value"><strong>۲٫۴٪</strong><small>بهبود یافته</small></div><MiniLine tone="#e85f72" down />
-          </article>
-        </section>
-
-        <section className="exec-main-grid">
-          <article className="exec-chart-card">
-            <div className="exec-chart-head"><div><h2>روند درآمد و هدف</h2><p>عملکرد واقعی در برابر برنامه رشد ماهانه</p></div><button className="panel-menu" aria-label="گزینه‌های نمودار"><MoreHorizontal /></button></div>
-            <div className="exec-chart-total"><span>درآمد این دوره</span><strong>۲۸۴٫۶ میلیون تومان</strong></div>
-            <div className="exec-chart-wrap" role="img" aria-label="نمودار روند درآمد و هدف">
-              <svg viewBox="0 0 720 210" preserveAspectRatio="none" aria-hidden="true">
-                <defs><linearGradient id="exec-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#8d83ff" stopOpacity=".34" /><stop offset="100%" stopColor="#8d83ff" stopOpacity="0" /></linearGradient></defs>
-                <g className="exec-chart-grid"><line x1="0" y1="35" x2="720" y2="35"/><line x1="0" y1="90" x2="720" y2="90"/><line x1="0" y1="145" x2="720" y2="145"/><line x1="0" y1="200" x2="720" y2="200"/></g>
-                <polygon className="exec-chart-area" points={`0,200 ${chartPoints} 715,200`} />
-                <polyline className="exec-chart-goal" points={goalPoints} />
-                <polyline className="exec-chart-line" points={chartPoints} />
-                <circle cx="605" cy="34" r="5" fill="var(--card)" stroke="#8d83ff" strokeWidth="3" />
-              </svg>
-            </div>
-            <div className="exec-chart-legend"><span><i /> عملکرد واقعی</span><span><i className="goal" /> هدف برنامه</span></div>
-            <div className="exec-chart-insights"><div><span>بهترین روز</span><b>پنجشنبه · ۱۸٫۹م</b></div><div><span>میانگین روزانه</span><b>۹٫۴ میلیون</b></div><div><span>فاصله تا هدف</span><b>۴۲٫۱ میلیون</b></div></div>
-          </article>
-
-          <div className="exec-side-stack">
-            <article className="exec-goal-card"><h2>هدف فصل جاری</h2><p>پیشرفت تجمعی تیم‌ها</p><div className="exec-goal-ring"><div><strong>۷۸٪</strong><span>پیشرفت کل</span></div></div><div className="exec-goal-meta"><div><span>فروش</span><b>۹۲٪</b></div><div><span>محصول</span><b>۶۸٪</b></div><div><span>بازاریابی</span><b>۷۴٪</b></div></div></article>
-            <article className="exec-cash-card"><h2>جریان نقدی هفتگی</h2><p>ورودی خالص نسبت به هزینه‌ها</p><div className="exec-bars" role="img" aria-label="نمودار میله‌ای جریان نقدی"><i className="exec-bar" style={{height:"42%"}}/><i className="exec-bar" style={{height:"58%"}}/><i className="exec-bar" style={{height:"51%"}}/><i className="exec-bar" style={{height:"72%"}}/><i className="exec-bar" style={{height:"67%"}}/><i className="exec-bar" style={{height:"88%"}}/><i className="exec-bar" style={{height:"79%"}}/></div><div className="exec-cash-foot"><span>خالص هفته</span><b>+۴۶٫۲ میلیون</b></div></article>
+      <main id="main-content" className="main-content studio-main" tabIndex={-1}>
+        <div className="heading-row">
+          <div>
+            <p className="overline">YOUR BUSINESS, IN FOCUS</p>
+            <h1>
+              {view === "overview" ? "هر روز، یک قدم جلوتر" : views.find((item) => item.id === view)?.label}
+              <span className="title-dot">.</span>
+            </h1>
+            <p className="heading-description">
+              {view === "overview"
+                ? "سلام حسن، به فضای مدیریت کسب‌وکارت خوش آمدی."
+                : "جزئیات روشن‌تر، برای تصمیم‌های دقیق‌تر."}
+            </p>
           </div>
-        </section>
 
-        <section className="exec-lower-grid">
-          <article className="exec-orders-card">
-            <div className="exec-card-head"><div><h2>آخرین سفارش‌ها</h2><p>تراکنش‌های تازه و وضعیت پردازش</p></div><button className="exec-card-link">مشاهده همه</button></div>
-            <table className="exec-order-table" tabIndex={0} aria-label="آخرین سفارش‌ها"><thead><tr><th>سفارش</th><th>مشتری</th><th>محصول</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>{orders.map((order) => <tr key={order.id}><td><b>{order.id}</b></td><td><div className="exec-customer"><span>{order.initials}</span><b>{order.name}</b></div></td><td>{order.product}</td><td>{order.amount}</td><td><span className={`exec-status ${order.tone}`}>{order.status}</span></td></tr>)}</tbody></table>
-          </article>
+          <div className="heading-controls">
+            <label className="period-control">
+              <span className="sr-only">بازهٔ گزارش نمونه</span>
+              <select value={period} onChange={(event) => setPeriod(Number(event.target.value))}>
+                {periods.map((item, index) => (
+                  <option key={item.label} value={index}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={15} />
+            </label>
+            <button className="primary-button" onClick={exportCsv}>
+              <ArrowDownToLine size={17} />
+              خروجی سفارش‌ها
+            </button>
+          </div>
+        </div>
 
-          <article className="exec-activity-card">
-            <div className="exec-card-head"><div><h2>فعالیت‌های مهم</h2><p>رویدادهایی که ارزش توجه دارند</p></div><Zap className="h-5 w-5 text-primary" /></div>
-            <div className="exec-activity-list">{activity.map((item) => { const Icon = item.icon; return <div className="exec-activity-item" key={item.title}><span className="exec-activity-icon"><Icon /></span><div><b>{item.title}</b><small>{item.meta}</small></div><time>{item.time}</time></div>; })}</div>
-            <div className="exec-ai-note"><Sparkles /><div><b>خلاصه مدیریتی</b><p>روند فروش مثبت است؛ بیشترین فرصت امروز در بهبود ظرفیت عملیات دیده می‌شود.</p></div></div>
-            <Button variant="outline" className="mt-3 w-full"><Plus /> ایجاد اقدام جدید</Button>
-          </article>
-        </section>
+        <nav className="view-tabs" aria-label="بخش‌های داشبورد">
+          {views.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={view === item.id ? "active" : ""}
+              aria-current={view === item.id ? "page" : undefined}
+              onClick={() => setView(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <span className="period-note">
+            <i />
+            نمایش اطلاعات آزمایشی
+          </span>
+        </nav>
+
+        {(view === "overview" || view === "analytics") && (
+          <>
+            <section className="metrics" aria-label="شاخص‌های عملکرد نمونه">
+              {metrics.map((metric, index) => {
+                const Icon = metric.icon;
+                return (
+                  <article className={`metric metric-${metric.tone}`} key={metric.label}>
+                    <div className="metric-heading">
+                      <span className={`metric-symbol ${metric.tone}`}>
+                        <Icon size={20} />
+                      </span>
+                      <span className="metric-index">0{index + 1}</span>
+                    </div>
+                    <p>{metric.label}</p>
+                    <div className="metric-value">
+                      {metric.value}
+                      <small>{metric.unit}</small>
+                    </div>
+                    <div className="metric-foot">
+                      <span>
+                        <TrendingUp size={13} />
+                        {metric.change}
+                        <small> نسبت به قبل</small>
+                      </span>
+                      <svg viewBox="0 0 106 40" aria-hidden="true">
+                        <polyline points={metric.spark} />
+                      </svg>
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
+
+            <section className="insights-grid">
+              <article className="surface revenue-surface">
+                <div className="surface-heading">
+                  <div>
+                    <span className="eyebrow">گزارش عملکرد</span>
+                    <h2>نبض درآمد کسب‌وکار</h2>
+                  </div>
+                  <span className="soft-tag">{data.label}</span>
+                </div>
+                <div className="revenue-summary">
+                  <div>
+                    <b>{data.revenue}</b>
+                    <span>میلیون تومان</span>
+                    <em>
+                      <TrendingUp size={13} />
+                      ۱۲٫۸٪
+                    </em>
+                  </div>
+                  <div className="chart-legend">
+                    <span>
+                      <i />
+                      درآمد
+                    </span>
+                    <span>
+                      <i />
+                      هدف
+                    </span>
+                  </div>
+                </div>
+                <RevenueChart values={data.points} />
+                <div className="chart-footer">
+                  <ShieldCheck size={15} />
+                  <span>مبالغ نمودار به میلیون تومان · داده‌های نمونهٔ قالب</span>
+                </div>
+              </article>
+
+              <article className="surface goal-surface">
+                <div className="surface-heading">
+                  <div>
+                    <span className="eyebrow">قدم بعدی شما</span>
+                    <h2>به هدف نزدیک‌تریم</h2>
+                  </div>
+                  <span className="goal-star">
+                    <Sparkles size={20} />
+                  </span>
+                </div>
+                <div className="goal-ring">
+                  <svg viewBox="0 0 180 180" aria-hidden="true">
+                    <circle className="ring-track" cx="90" cy="90" r="72" />
+                    <circle className="ring-progress" cx="90" cy="90" r="72" />
+                  </svg>
+                  <div>
+                    <b>
+                      ۷۸<span>٪</span>
+                    </b>
+                    <small>تحقق هدف فصل</small>
+                  </div>
+                </div>
+                <p className="goal-caption">عملکرد خوب، نتیجهٔ قدم‌های پیوسته است.</p>
+                <div className="goal-teams">
+                  {[
+                    ["فروش", "۹۲٪", 92],
+                    ["بازاریابی", "۷۴٪", 74],
+                    ["محصول", "۶۸٪", 68],
+                  ].map(([name, value, progress]) => (
+                    <div key={String(name)}>
+                      <span>{name}</span>
+                      <div>
+                        <i style={{ width: `${progress}%` }} />
+                      </div>
+                      <b>{value}</b>
+                    </div>
+                  ))}
+                </div>
+                <button className="outline-button" onClick={() => setView("analytics")}>
+                  جزئیات عملکرد
+                  <ArrowLeft size={16} />
+                </button>
+              </article>
+            </section>
+          </>
+        )}
+
+        {view !== "customers" && (
+          <section className={view === "orders" ? "orders-layout" : "bottom-grid"}>
+            <article className="surface orders-surface">
+              <div className="surface-heading">
+                <div>
+                  <span className="eyebrow">جریان کسب‌وکار</span>
+                  <h2>
+                    {view === "orders" ? "همهٔ سفارش‌ها" : "آخرین سفارش‌ها"}{" "}
+                    <small className="count-tag">{fa(visibleOrders.length)}</small>
+                  </h2>
+                </div>
+                {view !== "orders" && (
+                  <button className="text-button" onClick={() => setView("orders")}>
+                    مشاهده همه
+                    <ArrowLeft size={15} />
+                  </button>
+                )}
+              </div>
+
+              <div className="table-toolbar">
+                <label className="table-search">
+                  <Search size={16} />
+                  <input
+                    aria-label="جستجوی سفارش"
+                    placeholder="جستجوی نام یا شماره سفارش…"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </label>
+                <label className="status-select">
+                  <SlidersHorizontal size={15} />
+                  <span className="sr-only">فیلتر وضعیت سفارش</span>
+                  <select value={filter} onChange={(event) => setFilter(event.target.value)}>
+                    <option value="all">همهٔ وضعیت‌ها</option>
+                    {Object.entries(statusLabels).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="orders-table-wrap">
+                <table className="orders-table">
+                  <thead>
+                    <tr>
+                      <th>مشتری / سفارش</th>
+                      <th>محصول</th>
+                      <th>
+                        مبلغ <small>(تومان)</small>
+                      </th>
+                      <th>وضعیت</th>
+                      <th>
+                        <span className="sr-only">جزئیات</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visibleOrders.map((order, index) => (
+                      <tr key={order.id}>
+                        <td>
+                          <div className="customer-cell">
+                            <span className={`customer-avatar color-${index % 4}`}>
+                              {order.name
+                                .split(" ")
+                                .map((name) => name[0])
+                                .slice(0, 2)
+                                .join("")}
+                            </span>
+                            <div>
+                              <b>{order.name}</b>
+                              <small dir="ltr">{order.id}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>{order.product}</td>
+                        <td className="amount">{fa(order.amount)}</td>
+                        <td>
+                          <span className={`order-status ${order.status}`}>
+                            <i />
+                            {statusLabels[order.status]}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className="square-button"
+                            onClick={() => setSelectedOrder(order)}
+                            aria-label={`جزئیات سفارش ${order.id}`}
+                          >
+                            <ArrowUpLeft size={17} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {!visibleOrders.length && (
+                  <div className="empty-state">
+                    <Search />
+                    <b>سفارشی پیدا نشد</b>
+                    <p>عبارت جستجو یا وضعیت را تغییر بدهید.</p>
+                    <button
+                      className="outline-button"
+                      onClick={() => {
+                        setSearch("");
+                        setFilter("all");
+                      }}
+                    >
+                      پاک کردن فیلترها
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="table-footer">
+                <span>
+                  نمایش {fa(visibleOrders.length)} از {fa(orders.length)} سفارش نمونه
+                </span>
+                <button className="text-button" onClick={exportCsv}>
+                  دانلود CSV
+                  <ArrowDownToLine size={14} />
+                </button>
+              </div>
+            </article>
+
+            {view !== "orders" && (
+              <article className="surface activity-surface">
+                <div className="surface-heading">
+                  <div>
+                    <span className="eyebrow">در جریان بمانید</span>
+                    <h2>تازه‌های فضای کاری</h2>
+                  </div>
+                  <span className="activity-dot" />
+                </div>
+
+                <div className="activity-list">
+                  {[
+                    {
+                      icon: ShoppingBag,
+                      title: "یک سفارش موفق دیگر",
+                      text: "اشتراک سازمانی سارا محمدی تأیید شد.",
+                      time: "۱۰ دقیقه پیش",
+                      color: "green",
+                    },
+                    {
+                      icon: Users,
+                      title: "تیم، یک نفر قوی‌تر شد",
+                      text: "مریم سلیمانی به تیم محصول پیوست.",
+                      time: "۴۵ دقیقه پیش",
+                      color: "purple",
+                    },
+                    {
+                      icon: ShieldCheck,
+                      title: "آماده برای قدم بعدی",
+                      text: "گزارش عملکرد فصل آمادهٔ بررسی است.",
+                      time: "۲ ساعت پیش",
+                      color: "amber",
+                    },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div className="activity-item" key={item.title}>
+                        <span className={`metric-symbol ${item.color}`}>
+                          <Icon size={17} />
+                        </span>
+                        <div>
+                          <b>{item.title}</b>
+                          <p>{item.text}</p>
+                          <time>{item.time}</time>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="insight-note">
+                  <Sparkles size={19} />
+                  <div>
+                    <b>نکتهٔ امروز</b>
+                    <p>پیگیری سفارش‌های در انتظار، فرصتی برای افزایش فروش شماست.</p>
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        setView("orders");
+                        setFilter("pending");
+                      }}
+                    >
+                      بررسی سفارش‌ها
+                      <ArrowLeft size={14} />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            )}
+          </section>
+        )}
+
+        {view === "customers" && (
+          <section className="customer-grid" aria-label="مشتریان نمونه">
+            {orders.map((order, index) => (
+              <article className="surface customer-profile" key={order.id}>
+                <span className={`customer-avatar color-${index % 4}`}>{order.name[0]}</span>
+                <h2>{order.name}</h2>
+                <p>{order.product}</p>
+                <dl>
+                  <dt>آخرین خرید</dt>
+                  <dd>{order.date}</dd>
+                  <dt>مبلغ سفارش</dt>
+                  <dd>{fa(order.amount)} تومان</dd>
+                </dl>
+                <button className="outline-button" onClick={() => setSelectedOrder(order)}>
+                  مشاهده سفارش
+                  <ArrowLeft size={16} />
+                </button>
+              </article>
+            ))}
+          </section>
+        )}
+
+        <footer className="studio-footer">
+          <span>
+            لورانیک <b>© ۱۴۰۵</b> <i />
+            طراحی برای تصمیم‌های بهتر
+          </span>
+          <span>
+            ساخته‌شده با توجه به جزئیات <span className="footer-gem">◇</span>
+          </span>
+        </footer>
       </main>
+
+      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <DialogContent className="detail-dialog">
+          <DialogHeader>
+            <DialogTitle>سفارش {selectedOrder?.id}</DialogTitle>
+            <DialogDescription>اطلاعات این پیش‌نمایش نمونه است و به سرویس واقعی متصل نیست.</DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <>
+              <div className="order-detail">
+                <span className={`order-status ${selectedOrder.status}`}>
+                  {statusLabels[selectedOrder.status]}
+                </span>
+                <h3>{selectedOrder.name}</h3>
+                <dl>
+                  <dt>محصول</dt>
+                  <dd>{selectedOrder.product}</dd>
+                  <dt>تاریخ ثبت</dt>
+                  <dd>{selectedOrder.date}</dd>
+                  <dt>مبلغ</dt>
+                  <dd>{fa(selectedOrder.amount)} تومان</dd>
+                </dl>
+              </div>
+              <button className="primary-button" onClick={() => downloadOrders([selectedOrder])}>
+                <ArrowDownToLine size={17} />
+                دریافت اطلاعات سفارش
+              </button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </LoraniqShell>
   );
 }
