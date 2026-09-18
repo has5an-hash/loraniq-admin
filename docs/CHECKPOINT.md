@@ -6,7 +6,7 @@ Last updated: 2026-09-18
 
 Repository: `has5an-hash/loraniq-admin`
 Branch: `main`
-GitHub is the live source. Historical ZIP files are not the development reference.
+GitHub is the live source. Historical ZIP files are not the development reference.\n\nVisual exception: the user-provided Windows Astra handoff `loraniq-github.zip` is the canonical **visual/UI reference** only. See `docs/ASTRA-VISUAL-REFERENCE.md`. Newer GitHub functionality remains authoritative.
 
 ## Current verified product commit
 
@@ -66,7 +66,7 @@ Run 39 screenshots were manually reviewed after shell/data polish. Executive, An
 
 ## Do not regress
 
-- Do not return to the earlier generic card-grid visual language.
+- Do not return to the earlier generic card-grid visual language.\n- Do not replace the Astra dark workspace sidebar/topbar/card language with a generic white-sidebar shell.
 - Do not remove local Vazirmatn or add required runtime font/CDN dependencies.
 - Do not remove real RTL/LTR or Dark/Light testing.
 - Do not replace real high-DPI dashboard screenshots with mock or decorative fake previews.
