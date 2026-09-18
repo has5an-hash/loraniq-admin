@@ -28,11 +28,18 @@ jobs:
         run: |
           pnpm add --save-dev --lockfile=false playwright@1.55.0
           pnpm exec playwright install --with-deps chromium
-      - name: Capture real deployed dashboards at high DPI
+      - name: Capture real deployed dashboards
         env:
           LORANIQ_PREVIEW_URL: https://has5an-hash.github.io/loraniq-admin/
         run: node scripts/capture-demo-previews.mjs
-      - name: Commit generated previews
+      - name: Upload high-DPI preview sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: loraniq-demo-previews-hires
+          path: artifacts/demo-previews-hires
+          if-no-files-found: error
+          retention-days: 30
+      - name: Commit optimized web previews
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -40,6 +47,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Preview images unchanged"
           else
-            git commit -m "chore: refresh high-DPI dashboard preview assets"
+            git commit -m "chore: refresh optimized dashboard preview assets"
             git push
           fi
