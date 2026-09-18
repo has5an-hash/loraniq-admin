@@ -1,0 +1,240 @@
+/* Loraniq header system: notification dropdown + command palette refinements.
+   Loaded last in the root layout so it wins ties without blanket !important.
+   All spacing uses the shared scale; all directions use CSS logical properties. */
+
+/* ---------- Bell + dropdown panel ---------- */
+.bell-root{position:relative;display:grid}
+.bell-button .bell-badge{
+  position:absolute;
+  top:4px;
+  inset-inline-end:3px;
+  display:grid;
+  min-width:17px;
+  height:17px;
+  place-items:center;
+  border:2px solid var(--card);
+  border-radius:999px;
+  background:var(--destructive);
+  color:#fff;
+  padding:0 3px;
+  font-size:9px;
+  font-weight:800;
+  line-height:1;
+  font-style:normal;
+  letter-spacing:0;
+}
+.notification-panel{
+  position:absolute;
+  z-index:60;
+  top:calc(100% + 12px);
+  inset-inline-end:0;
+  display:grid;
+  width:min(392px,calc(100vw - 24px));
+  max-height:min(560px,calc(100vh - 120px));
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--popover);
+  color:var(--popover-foreground);
+  box-shadow:0 24px 64px rgba(12,14,32,.18),0 4px 14px rgba(12,14,32,.08);
+  animation:panel-in .16s ease;
+  text-align:start;
+}
+@keyframes panel-in{from{opacity:0;transform:translateY(-6px) scale(.985)}}
+.notification-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid var(--border);
+  padding:16px 18px;
+}
+.notification-panel-head b{display:block;font-size:14px;font-weight:750;letter-spacing:-.2px}
+.notification-panel-head small{display:block;margin-top:2px;color:var(--muted-foreground);font-size:11px}
+.notification-panel-action{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:transparent;
+  padding:7px 10px;
+  color:var(--muted-foreground);
+  cursor:pointer;
+  font-size:11px;
+  font-weight:650;
+  transition:.15s ease;
+}
+.notification-panel-action:hover:not(:disabled){background:var(--accent);color:var(--accent-foreground);border-color:color-mix(in srgb,var(--primary) 25%,var(--border))}
+.notification-panel-action:disabled{opacity:.45;cursor:default}
+.notification-panel-action svg{width:14px}
+.notification-panel-list{overflow-y:auto;padding:8px;scrollbar-width:thin}
+.notification-panel-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:38px 1fr auto;
+  gap:12px;
+  align-items:start;
+  width:100%;
+  border:0;
+  border-radius:11px;
+  background:transparent;
+  padding:12px;
+  cursor:pointer;
+  text-align:start;
+  transition:background .14s ease;
+}
+.notification-panel-item:hover{background:var(--muted)}
+.notification-panel-item.unread{background:color-mix(in srgb,var(--primary) 5%,transparent)}
+.notification-panel-item.unread:hover{background:color-mix(in srgb,var(--primary) 9%,var(--muted))}
+.notification-panel-item .notification-icon{width:38px;height:38px;border-radius:10px}
+.notification-panel-item .notification-icon svg{width:17px}
+.notification-panel-copy{display:grid;gap:3px;min-width:0}
+.notification-panel-copy b{font-size:12px;font-weight:700;line-height:1.6;color:var(--foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notification-panel-item.unread .notification-panel-copy b{font-weight:800}
+.notification-panel-copy small{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  color:var(--muted-foreground);
+  font-size:11px;
+  line-height:1.75;
+}
+.notification-panel-copy em{color:var(--muted-foreground);font-size:10px;font-style:normal}
+.notification-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 14%,transparent)}
+.notification-read-check{width:15px;color:var(--muted-foreground);opacity:.55;margin-top:2px}
+.notification-panel-empty{display:grid;justify-items:center;gap:5px;padding:38px 20px;text-align:center}
+.notification-panel-empty svg{width:34px;color:var(--primary);opacity:.7}
+.notification-panel-empty b{margin-top:4px;font-size:13px}
+.notification-panel-empty p{margin:0;color:var(--muted-foreground);font-size:11px;line-height:1.8}
+.notification-panel-empty button{
+  margin-top:9px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:transparent;
+  padding:7px 12px;
+  color:var(--primary);
+  cursor:pointer;
+  font-size:11px;
+  font-weight:700;
+}
+.notification-panel-empty button:hover{background:var(--accent)}
+.notification-panel-foot{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border-top:1px solid var(--border);
+  background:var(--surface-2);
+  padding:12px 18px;
+}
+.notification-panel-foot svg{width:15px;color:var(--primary)}
+.notification-panel-foot a{color:var(--primary);font-size:12px;font-weight:750;text-decoration:none}
+.notification-panel-foot a:hover{text-decoration:underline}
+
+/* ---------- Command palette refinements ---------- */
+.command-dialog .command-results{max-height:380px}
+.command-dialog .command-search{height:56px}
+.command-dialog .command-search .command-clear{
+  display:grid;
+  width:26px;
+  height:26px;
+  flex:none;
+  place-items:center;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:var(--muted-foreground);
+  cursor:pointer;
+  transition:.14s ease;
+}
+.command-dialog .command-search .command-clear:hover{background:var(--muted);color:var(--foreground)}
+.command-dialog .command-search .command-clear svg{width:14px}
+.command-results{scrollbar-width:thin}
+.command-results .command-label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:0;
+  padding:13px 10px 6px;
+  color:var(--muted-foreground);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.command-results .command-label svg{width:12px}
+.command-results button{transition:background .12s ease}
+.command-results button em{
+  margin-inline-start:auto;
+  color:var(--muted-foreground);
+  font-size:10px;
+  font-style:normal;
+  opacity:0;
+}
+.command-results button.selected em,.command-results button:hover em{opacity:.8}
+.command-recent{display:grid}
+.command-recent>button{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  padding:9px 10px;
+  cursor:pointer;
+  text-align:start;
+  color:var(--foreground);
+}
+.command-recent>button svg{width:15px;color:var(--muted-foreground)}
+.command-recent>button b{font-size:12px;font-weight:650}
+.command-recent>button small{margin-inline-start:auto;color:var(--muted-foreground);font-size:10px}
+.command-recent>button:hover{background:var(--accent)}
+.command-recent .command-recent-clear{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  justify-self:start;
+  margin:8px 10px 4px;
+  border:0;
+  background:transparent;
+  padding:4px 2px;
+  color:var(--muted-foreground);
+  cursor:pointer;
+  font-size:10px;
+  font-weight:700;
+}
+.command-recent .command-recent-clear:hover{color:var(--destructive)}
+.command-recent .command-recent-clear svg{width:12px}
+.command-results .empty-command{display:grid;justify-items:center;gap:4px;padding:34px 20px;text-align:center}
+.command-results .empty-command svg{width:30px;color:var(--muted-foreground);opacity:.6}
+.command-results .empty-command b{font-size:13px}
+.command-results .empty-command p{margin:0;color:var(--muted-foreground);font-size:11px}
+.command-footer{display:flex;flex-wrap:wrap;gap:14px;border-top:1px solid var(--border);background:var(--surface-2);padding:10px 16px;color:var(--muted-foreground);font-size:10px}
+.command-footer span{display:inline-flex;align-items:center;gap:5px}
+
+/* Mobile: panel adapts to small viewports (Radix keeps it collision-safe) */
+@media (max-width:680px){
+  .notification-panel{
+    width:min(392px,calc(100vw - 20px));
+    max-height:min(480px,calc(100vh - 140px));
+  }
+  .command-dialog{max-width:calc(100% - 20px)!important}
+}
+
+/* ---------- Off-canvas sidebar hygiene (mobile) ----------
+   The translated-off-screen sidebar previously kept contributing to
+   layout width on mobile; clip it without touching open/close logic. */
+@media (max-width:1080px){
+  body:not(:has(.sidebar.is-open)) .sidebar{
+    visibility:hidden;
+  }
+  .sidebar.is-open{visibility:visible}
+  /* The closed drawer is translated off-canvas but still extends layout in
+     some engines: clip it against the viewport without touching open/close. */
+  .app-shell{overflow-x:clip}
+  /* Anchor the closed drawer to its open edge so translateX moves it fully
+     out of the document scroll area. */
+  html[dir="rtl"] .sidebar{inset-inline-end:auto;inset-inline-start:0}
+  html[dir="ltr"] .sidebar{inset-inline-start:auto;inset-inline-end:0}
+}

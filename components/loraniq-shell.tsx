@@ -6,8 +6,8 @@ import "../app/astra-apps.css";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import {
   Bell,
   Boxes,
@@ -42,6 +42,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useUiPreferences } from "@/components/ui-preferences-provider";
+import { NotificationBell } from "@/components/notification-bell";
+import { notificationsStore, unreadCount } from "@/components/notifications-store";
+import type { PaletteCommand } from "@/components/command-palette";
 
 const LoraniqOverlays = dynamic(() => import("@/components/loraniq-overlays").then((mod) => mod.LoraniqOverlays), { ssr: false });
 
@@ -125,31 +128,68 @@ export function LoraniqShell({
   active?: NavigationKey;
 }) {
   const pathname = usePathname() ?? "/";
+  const router = useRouter();
   const { preferences, resolvedTheme, updatePreferences } = useUiPreferences();
   const rtl = preferences.direction === "rtl";
   const dark = resolvedTheme === "dark";
+  const notificationItems = useSyncExternalStore(
+    notificationsStore.subscribe,
+    notificationsStore.getSnapshot,
+    notificationsStore.getServerSnapshot,
+  );
+  const liveUnread = unreadCount(notificationItems);
   const routeActive = resolveActive(pathname, active);
   const activeItem = allNavigation.find((item) => item.key === routeActive) ?? dashboards[0];
   const ActiveIcon = activeItem.icon;
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [query, setQuery] = useState("");
+  const [paletteSession, setPaletteSession] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const commandItems = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return allNavigation;
-    return allNavigation.filter((item) =>
-      `${item.label} ${item.labelEn}`.toLowerCase().includes(needle)
-    );
-  }, [query]);
+  const commands = useMemo<PaletteCommand[]>(() => {
+    const go = (href: string) => () => router.push(href);
+    const navCommands: PaletteCommand[] = allNavigation.map((item) => ({
+      id: `nav-${item.key}`,
+      label: item.label,
+      labelEn: item.labelEn,
+      group: dashboards.some((dash) => dash.key === item.key)
+        ? rtl ? "فضای مدیریت" : "Dashboards"
+        : item.key === settings.key
+          ? rtl ? "ترجیحات" : "Preferences"
+          : rtl ? "ابزارها و اپلیکیشن‌ها" : "Apps & tools",
+      groupEn: "",
+      icon: item.icon,
+      run: go(item.href),
+    }));
+    const actionCommands: PaletteCommand[] = [
+      {
+        id: "action-theme",
+        label: dark ? "روشن کردن پوسته" : "تیره کردن پوسته",
+        labelEn: dark ? "Switch to light theme" : "Switch to dark theme",
+        group: rtl ? "عملیات سریع" : "Quick actions",
+        groupEn: "",
+        icon: dark ? Sun : Moon,
+        run: () => updatePreferences({ theme: dark ? "light" : "dark" }),
+      },
+      {
+        id: "action-direction",
+        label: rtl ? "تغییر جهت به LTR" : "Switch direction to RTL",
+        labelEn: rtl ? "Toggle direction to LTR" : "Toggle direction to RTL",
+        group: rtl ? "عملیات سریع" : "Quick actions",
+        groupEn: "",
+        icon: Languages,
+        run: () => updatePreferences({ direction: rtl ? "ltr" : "rtl" }),
+      },
+    ];
+    return [...actionCommands, ...navCommands];
+  }, [rtl, dark, router, updatePreferences]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        setQuery("");
+        setPaletteSession((session) => session + 1);
         setPaletteOpen(true);
       }
       if (event.key === "Escape") setMobileOpen(false);
@@ -171,7 +211,7 @@ export function LoraniqShell({
       >
         <Icon />
         <span>{rtl ? item.label : item.labelEn}</span>
-        {item.badge ? <small className="nav-badge">{item.badge}</small> : null}
+        {item.key === "notifications" && liveUnread ? <small className="nav-badge">{liveUnread > 9 ? "۹+" : liveUnread.toLocaleString("fa-IR")}</small> : item.badge && item.key !== "notifications" ? <small className="nav-badge">{item.badge}</small> : null}
         {selected ? <i className="active-pip" aria-hidden="true" /> : null}
       </Link>
     );
@@ -288,7 +328,7 @@ export function LoraniqShell({
             <button
               className="search-button search-trigger"
               onClick={() => {
-                setQuery("");
+                setPaletteSession((session) => session + 1);
                 setPaletteOpen(true);
               }}
               aria-label="جستجو در لورانیک"
@@ -329,10 +369,7 @@ export function LoraniqShell({
               {dark ? <Sun /> : <Moon />}
             </button>
 
-            <Link className="square-button icon-button bell-button notification" href="/notifications/" aria-label="اعلان‌ها">
-              <Bell />
-              <i />
-            </Link>
+            <NotificationBell rtl={rtl} />
 
             <button className="user-avatar avatar" aria-label="پروفایل نمایشی" onClick={() => setHelpOpen(true)}>
               حم
@@ -348,9 +385,8 @@ export function LoraniqShell({
           rtl={rtl}
           paletteOpen={paletteOpen}
           setPaletteOpen={setPaletteOpen}
-          query={query}
-          setQuery={setQuery}
-          commandItems={commandItems}
+          paletteSession={paletteSession}
+          commands={commands}
           helpOpen={helpOpen}
           setHelpOpen={setHelpOpen}
         />

@@ -1,62 +1,28 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { CommandPalette } from "@/components/command-palette";
-import type { LucideIcon } from "lucide-react";
-
-type CommandItem = {
-  key: string;
-  label: string;
-  labelEn: string;
-  href: string;
-  icon: LucideIcon;
-};
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CommandPalette, type PaletteCommand } from "@/components/command-palette";
 
 export function LoraniqOverlays({
   rtl,
   paletteOpen,
   setPaletteOpen,
-  query,
-  setQuery,
-  commandItems,
+  paletteSession,
+  commands,
   helpOpen,
   setHelpOpen,
 }: {
   rtl: boolean;
   paletteOpen: boolean;
   setPaletteOpen: (open: boolean) => void;
-  query: string;
-  setQuery: (value: string) => void;
-  commandItems: CommandItem[];
+  paletteSession: number;
+  commands: PaletteCommand[];
   helpOpen: boolean;
   setHelpOpen: (open: boolean) => void;
 }) {
-  const router = useRouter();
-
   return (
     <>
-      <CommandPalette
-        open={paletteOpen}
-        onOpenChange={setPaletteOpen}
-        query={query}
-        onQueryChange={setQuery}
-        items={commandItems}
-        onSelect={(item) => {
-          const target = commandItems.find(
-            (candidate) => candidate.label === item.label && candidate.labelEn === item.labelEn,
-          );
-          if (!target) return;
-          setPaletteOpen(false);
-          router.push(target.href);
-        }}
-      />
+      <CommandPalette key={paletteSession} open={paletteOpen} onOpenChange={setPaletteOpen} items={commands} rtl={rtl} />
 
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="detail-dialog">
@@ -70,7 +36,7 @@ export function LoraniqOverlays({
           </DialogHeader>
           <div className="help-copy">
             <p>
-              <kbd>Ctrl / ⌘ + K</kbd> {rtl ? "جستجوی سریع صفحات" : "Quick page search"}
+              <kbd>Ctrl / ⌘ + K</kbd> {rtl ? "جستجوی سریع صفحات و عملیات" : "Quick page & action search"}
             </p>
             <p>
               <kbd>↑ / ↓</kbd> {rtl ? "انتخاب نتیجه" : "Select result"} · <kbd>Enter</kbd>{" "}

@@ -64,3 +64,47 @@ The main Chromium suite covers 31 product routes × 3 viewports × 2 direction/t
 **NOT READY FOR RELEASE.**
 
 The product breadth, Chromium regression gate and automated Accessibility gate have passed. Performance/security/package/marketplace gates have not all passed yet.
+
+## Premium upgrade — 2026-09-19 (arena/01a0b4f2-loraniq-admin)
+
+Scope verified with a real Chromium (built from source in-sandbox) against the
+production static export: 33 routes × desktop/tablet/mobile × RTL/LTR × light/dark.
+
+### Notification system (was: bell jumped straight to a page)
+
+- Bell now opens a **dropdown notification panel** (Radix Popover, portaled, RTL/LTR aware).
+- Latest 5 notifications, **unread badge** on the bell + live sidebar badge, **mark as read**
+  (per item), **mark all read**, **clear-all empty state** with sample-data restore,
+  and a **View all notifications** footer link to the hub page.
+- Hub page (`/notifications/`) shares one store with the topbar
+  (`components/notifications-store.ts`, localStorage-persisted via `useSyncExternalStore`).
+
+### Search system (was: flat page list)
+
+- `Ctrl/Cmd + K` palette rebuilt: **categorized results** (Quick actions / Dashboards /
+  Apps & tools / Preferences), **live filtering** with Persian normalization
+  (ی/ك/ZWNJ) + subsequence fuzzy match, **keyboard navigation**
+  (↑/↓/Enter/Esc, roving aria-activedescendant), **recent searches** persisted and
+  restoreable, **clear (×) button**, and **quick actions** (theme/direction toggles) runnable
+  from the palette.
+- Search Center page keeps category filters, recent chips and clear affordances.
+
+### Visual polish & QA
+
+- Fixed mobile horizontal overflow: off-canvas drawer no longer extends document
+  width (anchored to its open edge + `overflow-x: clip` on the shell); verified
+  **0 px overflow across 20 pages × 3 viewports** in RTL and LTR.
+- Notification panel: mobile-collision-safe positioning, bottom-sheet spacing,
+  badge ring matching card background.
+- Command palette: taller results area (380 px), clearer group labels, footer
+  legend with kbd chips.
+
+### Verified behaviors (production build, Chromium)
+
+- Ctrl+K opens palette; typing filters (FA + EN + fuzzy); Enter navigates and closes;
+  Esc closes; × clears; recents persist across opens.
+- Bell: click toggles panel; badge counts sync instantly after mark-as-read from the
+  hub page; outside click and Esc close; `aria-expanded` correct.
+- All 7 preference controls produce real DOM effects (density/skin/boxed/sidebar/
+  motion/theme/direction); settings persist across reloads.
+- 33 routes: zero console/page errors; all buttons labelled; no images without alt.
