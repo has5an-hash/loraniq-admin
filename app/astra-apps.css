@@ -1,0 +1,246 @@
+/* Astra application-system layer for operational routes. */
+
+/* Page heads stay data-first: no decorative glass or oversized gradients. */
+.table-hero,.form-hero,.calendar-hero,.projects-hero,.files-hero,.invoice-hero,
+.settings-hero,.components-hero,.search-hero,.notifications-hero,.kanban-hero,.users-hero{
+  margin-bottom:24px!important;
+  background:transparent!important;
+  background-image:none!important;
+}
+.table-hero h1,.form-hero h1,.calendar-hero h1,.projects-hero h1,.files-hero h1,.invoice-hero h1,
+.settings-hero h1,.components-hero h1,.search-hero h1,.notifications-hero h1,.kanban-hero h1,.users-hero h1{
+  color:var(--foreground)!important;
+  font-size:29px!important;
+  font-weight:780!important;
+  line-height:1.6!important;
+  letter-spacing:-.9px!important;
+}
+.table-kicker,.form-kicker,.calendar-kicker,.projects-kicker,.files-kicker,.invoice-kicker,
+.settings-kicker,.components-kicker,.search-kicker,.notifications-kicker,.kanban-kicker,.users-kicker{
+  color:var(--primary)!important;
+  font:9px/1.8 var(--font-vazirmatn),Vazirmatn,sans-serif!important;
+}
+.table-hero p,.form-hero p,.calendar-hero p,.projects-hero p,.files-hero p,.invoice-hero p,
+.settings-hero p,.components-hero p,.search-hero p,.notifications-hero p,.kanban-hero p,.users-hero p{
+  color:var(--muted-foreground)!important;
+  font-size:12px!important;
+  line-height:1.9!important;
+}
+
+/* Shared Astra surfaces. */
+.data-panel,.form-card,.form-progress-card,.calendar-shell,.projects-panel,.project-card,
+.chat-shell,.mail-shell,.files-shell,.storage-card,.invoice-shell,.invoice-paper,
+.settings-card,.settings-preview,.settings-benchmark,.components-hero-card,.component-card,
+.search-surface,.notifications-feed,.notifications-settings,.kanban-column,.users-panel,
+.users-modal-card,.compose-window,.file-upload-window{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+  backdrop-filter:none!important;
+}
+.project-card,.kanban-card,.notification-list>article,.search-result-list>article{
+  transition:border-color .15s ease,box-shadow .15s ease!important;
+}
+.project-card:hover,.kanban-card:hover,.notification-list>article:hover,.search-result-list>article:hover{
+  transform:none!important;
+  border-color:color-mix(in srgb,var(--primary) 22%,var(--border))!important;
+  box-shadow:var(--shadow-card-hover)!important;
+}
+
+/* Toolbars / fields use the Astra compact-control grammar. */
+.data-search,.projects-search,.chat-search,.mail-search,.files-search,.invoice-search,
+.search-main-input,.kanban-search,.users-search,.auth-input,.component-input-icon,.component-select,
+.compose-fields input,.compose-fields textarea,.invite-fields input,.invite-fields select{
+  border:1px solid var(--input)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  color:var(--foreground)!important;
+  box-shadow:none!important;
+}
+.data-search:focus-within,.projects-search:focus-within,.chat-search:focus-within,.mail-search:focus-within,
+.files-search:focus-within,.invoice-search:focus-within,.search-main-input:focus-within,
+.kanban-search:focus-within,.users-search:focus-within,.component-input-icon:focus-within,
+.compose-fields input:focus,.compose-fields textarea:focus,.invite-fields input:focus,.invite-fields select:focus{
+  border-color:var(--ring)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 15%,transparent)!important;
+  outline:0!important;
+}
+.data-toolbar button,.projects-toolbar button,.calendar-toolbar button,.files-toolbar button,
+.invoice-list-toolbar button,.notifications-actions button,.kanban-actions button,.kanban-toolbar button,
+.users-actions button,.users-toolbar button,.search-filters button,.settings-reset,
+.compose-button,.send-button,.team-button,.file-upload-window button,.users-modal-card button{
+  min-height:39px!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+
+/* Chat */
+.chat-shell{overflow:hidden!important}
+.chat-list,.chat-profile,.mail-sidebar,.mail-list,.files-sidebar{
+  background:var(--surface-2)!important;
+  border-color:var(--border)!important;
+}
+.chat-list-head,.conversation-head,.mail-list-head,.mail-reader-actions,.files-toolbar{
+  border-color:var(--border)!important;
+  background:var(--card)!important;
+}
+.chat-contact-copy b,.conversation-person b,.mail-row-copy b,.file-copy b{color:var(--foreground)!important}
+.chat-contact-copy small,.conversation-person small,.mail-row-copy small,.file-copy small{color:var(--muted-foreground)!important}
+.chat-avatar,.mail-avatar,.chat-profile-avatar{
+  border-radius:10px!important;
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+  box-shadow:none!important;
+}
+.message-bubble{
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+  line-height:1.8!important;
+}
+.message-row.mine .message-bubble{
+  border-color:color-mix(in srgb,var(--primary) 16%,var(--border))!important;
+  background:var(--accent)!important;
+  color:var(--foreground)!important;
+}
+.message-row.theirs .message-bubble{background:var(--card)!important}
+.composer{
+  border-top:1px solid var(--border)!important;
+  background:var(--card)!important;
+}
+.send-button{background:var(--primary)!important;color:var(--primary-foreground)!important}
+
+/* Email */
+.compose-button{background:var(--primary)!important;color:var(--primary-foreground)!important}
+.mail-labels button,.mail-items button{border-radius:7px!important}
+.mail-open{background:var(--accent)!important;color:var(--primary)!important}
+.mail-label-chip{border-radius:5px!important;background:var(--accent)!important;color:var(--primary)!important}
+.mail-reader{background:var(--card)!important}
+.mail-body-text{color:var(--foreground)!important;line-height:2!important}
+.mail-attachment{border:1px solid var(--border)!important;border-radius:8px!important;background:var(--surface-2)!important}
+
+/* Files */
+.storage-track,.file-storage-mini span{background:var(--muted)!important}
+.storage-track i,.file-storage-mini i{background:var(--primary)!important}
+.folder-tree button,.files-view button,.file-menu{border-radius:7px!important}
+.file-icon{border-radius:9px!important;background:var(--accent)!important;color:var(--primary)!important}
+.files-items{gap:10px!important}
+.files-items>article{
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.file-drop{
+  border:1px dashed color-mix(in srgb,var(--primary) 35%,var(--border))!important;
+  border-radius:10px!important;
+  background:var(--surface-2)!important;
+}
+
+/* Invoice */
+.invoice-list{border-color:var(--border)!important;background:var(--surface-2)!important}
+.invoice-items button{border-radius:8px!important}
+.invoice-items button[aria-current="true"],.invoice-items button:hover{background:var(--accent)!important}
+.invoice-icon,.invoice-mark{border-radius:9px!important;background:var(--accent)!important;color:var(--primary)!important}
+.invoice-paper{box-shadow:none!important}
+.invoice-table-head{background:var(--surface-2)!important}
+.invoice-line,.invoice-totals,.invoice-payment,.invoice-note{border-color:var(--border)!important}
+.invoice-payment,.invoice-note{border-radius:8px!important;background:var(--surface-2)!important}
+
+/* Settings + Component lab */
+.settings-grid,.component-grid{gap:18px!important}
+.settings-card,.component-card{padding:22px!important}
+.settings-options button,.state-switcher button,.button-showcase button,.icon-actions button{
+  border-radius:8px!important;
+}
+.settings-options button[aria-pressed="true"],.state-switcher button.active{
+  border-color:color-mix(in srgb,var(--primary) 30%,var(--border))!important;
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+}
+.preview-shell,.mini-table,.states-card{
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  background:var(--surface-2)!important;
+  box-shadow:none!important;
+}
+.status-pill,.user-role-pill,.user-status{
+  border-radius:5px!important;
+  box-shadow:none!important;
+}
+
+/* Search + notifications */
+.search-surface{padding:22px!important}
+.search-result-list>article,.notification-list>article{
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.search-result-icon,.notification-icon{
+  border-radius:9px!important;
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+}
+.search-result-type,.notifications-filters button{
+  border-radius:5px!important;
+}
+.notifications-filters button.active,.search-filters button.active{
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+}
+.notification-policy,.notification-preference{
+  border-color:var(--border)!important;
+  border-radius:8px!important;
+  background:var(--surface-2)!important;
+}
+
+/* Kanban */
+.kanban-board{gap:16px!important}
+.kanban-column{padding:14px!important}
+.kanban-card{
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.kanban-tags span,.task-priority{border-radius:5px!important}
+.kanban-avatar{border-radius:9px!important;background:var(--accent)!important;color:var(--primary)!important}
+.kanban-move{border-radius:7px!important}
+
+/* Users */
+.users-table-head{background:var(--surface-2)!important;color:var(--muted-foreground)!important}
+.users-rows>div{border-color:var(--border)!important}
+.users-rows>div:hover{background:color-mix(in srgb,var(--accent) 35%,transparent)!important}
+.user-avatar{border-radius:10px!important;background:var(--accent)!important;color:var(--primary)!important}
+.user-menu{border-radius:7px!important}
+.users-modal{backdrop-filter:blur(5px)!important}
+
+/* Table / form / calendar / projects */
+.premium-table th,.users-table-head{font-size:10px!important;font-weight:500!important}
+.premium-table td{font-size:10px!important}
+.form-card,.form-progress-card{padding:22px!important}
+.form-step,.review-panel,.upload-zone{
+  border-color:var(--border)!important;
+  border-radius:10px!important;
+  background:var(--surface-2)!important;
+}
+.calendar-day,.calendar-detail,.calendar-agenda{
+  border-color:var(--border)!important;
+  background:var(--card)!important;
+}
+.calendar-day{border-radius:8px!important}
+.calendar-event-type{border-radius:5px!important}
+.project-card{padding:18px!important}
+.project-status,.task-priority{border-radius:5px!important}
+.project-avatars span{background:var(--accent)!important;color:var(--primary)!important}
+
+@media(max-width:760px){
+  .table-hero h1,.form-hero h1,.calendar-hero h1,.projects-hero h1,.files-hero h1,.invoice-hero h1,
+  .settings-hero h1,.components-hero h1,.search-hero h1,.notifications-hero h1,.kanban-hero h1,.users-hero h1{
+    font-size:26px!important;
+  }
+  .settings-card,.component-card,.form-card,.form-progress-card,.search-surface{padding:18px!important}
+}
