@@ -1,3 +1,4 @@
+import "../marketing-premium.css";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Check, HeartPulse, LayoutDashboard, LineChart, ShoppingBag, UsersRound, WalletCards } from "lucide-react";
