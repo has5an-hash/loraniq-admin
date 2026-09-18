@@ -1,5 +1,7 @@
 "use client";
 
+import "../email-premium.css";
+
 import { useMemo, useState } from "react";
 import { Archive, ChevronLeft, Inbox, Mail, MailOpen, MoreHorizontal, Paperclip, PenLine, Reply, Search, Send, Star, Trash2, X } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
