@@ -1,9 +1,8 @@
 "use client";
 
 import "../app/auth-polish.css";
-import "../app/astra-auth.css";
-
 import "../app/auth-premium.css";
+import "../app/astra-auth.css";
 
 import Link from "next/link";
 import { ArrowLeft, Check, Languages, Moon, ShieldCheck, Sparkles, Sun } from "lucide-react";
