@@ -1,8 +1,6 @@
 "use client";
 
-import "../app/shell-data-polish.css";
 
-import "../app/flagship-polish.css";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
