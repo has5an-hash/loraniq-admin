@@ -6,6 +6,7 @@ All notable development milestones for Loraniq Admin are recorded here. This is 
 
 ### Added
 
+- Refreshed competitor benchmark at `docs/COMPETITOR-BENCHMARK.md`, re-verified against the live Metronic and Vuexy pages on 2026-09-18, with a measured Loraniq baseline, a dimension scorecard, ranked gaps, the mandatory three-question identity gate and the binding non-copy policy.
 - Canonical Astra visual reference document at `docs/ASTRA-VISUAL-REFERENCE.md`.
 - Global Astra visual normalization layer at `app/astra-reference.css`.
 - Lazy-loaded command/help overlay module for lower first-load cost.
