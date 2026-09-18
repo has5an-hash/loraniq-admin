@@ -12,6 +12,7 @@ import "./accents.css";
 import "./premium-final-polish.css";
 import "./loraniq-vuexy-final-polish.css";
 import "./loraniq-feature-showcase-polish.css";
+import "./loraniq-showcase-polish.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const vazirmatn = localFont({src:"./fonts/Vazirmatn.woff2",display:"swap",variable:"--font-vazirmatn",preload:true});
