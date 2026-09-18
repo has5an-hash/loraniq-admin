@@ -1,5 +1,7 @@
 "use client";
 
+import "../finance-premium.css";
+
 import { useState } from "react";
 import {
   ArrowDownRight,
