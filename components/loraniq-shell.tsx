@@ -3,25 +3,402 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import {Bell,Boxes,CalendarDays,ChartNoAxesCombined,ChevronDown,Columns3,Command as CommandIcon,FileText,FolderKanban,HardDrive,HeartPulse,Languages,LayoutDashboard,Mail,Menu,MessageCircle,Moon,PanelLeft,ReceiptText,Search,Settings,ShoppingBag,Sparkles,Sun,Table2,UserCog,UsersRound,WalletCards,X,type LucideIcon} from "lucide-react";
-import {Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle} from "@/components/ui/dialog";
-import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuLabel,DropdownMenuSeparator,DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {Input} from "@/components/ui/input";
-import {Progress} from "@/components/ui/progress";
-import {useUiPreferences} from "@/components/ui-preferences-provider";
+import {
+  Bell,
+  Boxes,
+  CalendarDays,
+  ChartNoAxesCombined,
+  ChevronDown,
+  CircleHelp,
+  Columns3,
+  Command as CommandIcon,
+  FileText,
+  FolderKanban,
+  HardDrive,
+  HeartPulse,
+  Languages,
+  LayoutDashboard,
+  Mail,
+  Menu,
+  MessageCircle,
+  Moon,
+  PanelLeft,
+  ReceiptText,
+  Search,
+  Settings,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Sun,
+  Table2,
+  UserCog,
+  UsersRound,
+  WalletCards,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useUiPreferences } from "@/components/ui-preferences-provider";
 
-type NavigationKey="executive"|"analytics"|"ecommerce"|"crm"|"finance"|"healthcare"|"tables"|"forms"|"calendar"|"projects"|"chat"|"email"|"files"|"invoice"|"components"|"search"|"notifications"|"kanban"|"users"|"settings";
-type NavigationItem={key?:NavigationKey;label:string;labelEn:string;icon:LucideIcon;href?:string;badge?:string};
-const dashboardNav:NavigationItem[]=[
-{key:"executive",label:"نمای مدیریتی",labelEn:"Executive",icon:LayoutDashboard,href:"/"},{key:"analytics",label:"تحلیل داده",labelEn:"Analytics",icon:ChartNoAxesCombined,href:"/analytics/"},{key:"ecommerce",label:"فروشگاه",labelEn:"Ecommerce",icon:ShoppingBag,href:"/ecommerce/"},{key:"crm",label:"مدیریت مشتری",labelEn:"CRM",icon:UsersRound,href:"/crm/"},{key:"finance",label:"امور مالی",labelEn:"Finance",icon:WalletCards,href:"/finance/"},{key:"healthcare",label:"سلامت",labelEn:"Healthcare",icon:HeartPulse,href:"/healthcare/"}];
-const appNav:NavigationItem[]=[
-{key:"search",label:"جستجوی سراسری",labelEn:"Global Search",icon:Search,href:"/search/"},{key:"notifications",label:"اعلان‌ها",labelEn:"Notifications",icon:Bell,href:"/notifications/",badge:"۳"},{key:"tables",label:"جداول پیشرفته",labelEn:"Data Tables",icon:Table2,href:"/tables/"},{key:"forms",label:"فرم‌ها",labelEn:"Forms",icon:FileText,href:"/forms/"},{key:"calendar",label:"تقویم",labelEn:"Calendar",icon:CalendarDays,href:"/calendar/"},{key:"projects",label:"پروژه‌ها",labelEn:"Projects",icon:FolderKanban,href:"/projects/"},{key:"kanban",label:"کانبان",labelEn:"Kanban",icon:Columns3,href:"/kanban/"},{key:"users",label:"مدیریت کاربران",labelEn:"User Management",icon:UserCog,href:"/users/"},{key:"chat",label:"گفتگو",labelEn:"Chat",icon:MessageCircle,href:"/chat/",badge:"۲"},{key:"email",label:"ایمیل",labelEn:"Email",icon:Mail,href:"/email/",badge:"۲"},{key:"files",label:"مدیریت فایل",labelEn:"File Manager",icon:HardDrive,href:"/files/"},{key:"invoice",label:"فاکتورها",labelEn:"Invoice",icon:ReceiptText,href:"/invoice/"},{key:"components",label:"آزمایشگاه UI",labelEn:"UI Components",icon:Boxes,href:"/components/"}];
-const settingsNav:NavigationItem={key:"settings",label:"تنظیمات ظاهر",labelEn:"Appearance Settings",icon:Settings,href:"/settings/"};
-function Logo(){return <div className="brand-lockup" aria-label="Loraniq Admin"><span className="brand-mark" aria-hidden="true"><i/><i/><i/></span><span className="brand-name">لورانیک <b>ادمین</b></span></div>}
-export function LoraniqShell({children,active="executive"}:{children:ReactNode;active?:NavigationKey}){
-const pathname=usePathname();const{preferences,resolvedTheme,updatePreferences}=useUiPreferences();const rtl=preferences.direction==="rtl";const dark=resolvedTheme==="dark";const[sidebar,setSidebar]=useState(false);const[palette,setPalette]=useState(false);const[query,setQuery]=useState("");const[toast,setToast]=useState("");
-const routeActive=useMemo<NavigationKey>(()=>{const p=pathname||"";if(p.includes("/analytics"))return"analytics";if(p.includes("/ecommerce"))return"ecommerce";if(p.includes("/crm"))return"crm";if(p.includes("/finance"))return"finance";if(p.includes("/healthcare"))return"healthcare";if(p.includes("/tables"))return"tables";if(p.includes("/forms"))return"forms";if(p.includes("/calendar"))return"calendar";if(p.includes("/projects"))return"projects";if(p.includes("/kanban"))return"kanban";if(p.includes("/users"))return"users";if(p.includes("/chat"))return"chat";if(p.includes("/email"))return"email";if(p.includes("/files"))return"files";if(p.includes("/invoice"))return"invoice";if(p.includes("/components"))return"components";if(p.includes("/search"))return"search";if(p.includes("/notifications"))return"notifications";if(p.includes("/settings"))return"settings";return active},[pathname,active]);
-useEffect(()=>{const onKey=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();setPalette((value)=>!value)}if(event.key==="Escape")setSidebar(false)};window.addEventListener("keydown",onKey);return()=>window.removeEventListener("keydown",onKey)},[]);
-const allCommands=useMemo(()=>[...dashboardNav,...appNav,settingsNav],[]);const activeItem=useMemo(()=>allCommands.find((item)=>item.key===routeActive)??dashboardNav[0],[allCommands,routeActive]);const filteredCommands=useMemo(()=>allCommands.filter((item)=>`${item.label} ${item.labelEn}`.toLowerCase().includes(query.toLowerCase())),[query,allCommands]);const notify=(message:string)=>{setToast(message);window.setTimeout(()=>setToast(""),2400)};
-const renderNavItem=(item:NavigationItem)=>{const Icon=item.icon;const isActive=item.key===routeActive;const content=<><Icon/><span>{rtl?item.label:item.labelEn}</span>{item.badge&&<span className="nav-badge">{item.badge}</span>}{isActive&&<span className="active-pip"/>}</>;return item.href?<Link key={item.label} className={`nav-item ${isActive?"active":""}`} href={item.href} aria-current={isActive?"page":undefined} onClick={()=>setSidebar(false)}>{content}</Link>:<button key={item.label} className="nav-item" onClick={()=>notify(`${item.label} به‌زودی اضافه می‌شود`)}>{content}</button>};
-return <div className="app-shell"><a className="skip-link" href="#main-content">پرش به محتوای اصلی</a>{sidebar&&<button className="sidebar-backdrop" aria-label="بستن منو" onClick={()=>setSidebar(false)}/>}<aside className={`sidebar ${sidebar?"is-open":""}`} aria-label="ناوبری اصلی"><div className="sidebar-head"><Logo/><button className="mobile-close" onClick={()=>setSidebar(false)} aria-label="بستن منو"><X/></button></div><nav className="sidebar-scroll"><p className="nav-eyebrow">داشبوردها</p><div className="nav-stack">{dashboardNav.map(renderNavItem)}</div><p className="nav-eyebrow nav-space">ابزارها و اپلیکیشن‌ها</p><div className="nav-stack">{appNav.map(renderNavItem)}</div></nav><div className="sidebar-foot"><div className="workspace-card"><span className="workspace-icon"><Sparkles/></span><div><strong>فضای کاری حرفه‌ای</strong><small>۷۳٪ از ظرفیت فعال</small></div><Progress value={73} aria-label="۷۳ درصد ظرفیت"/></div>{renderNavItem(settingsNav)}</div></aside><div className="app-body"><header className="topbar"><div className="topbar-start"><button className="icon-button menu-button" onClick={()=>setSidebar(true)} aria-label="باز کردن منو"><Menu/></button><button className="search-trigger" onClick={()=>setPalette(true)} aria-label="جستجو در لورانیک"><Search/><span>جستجو در صفحات و عملیات...</span><kbd><CommandIcon/> K</kbd></button><span className="topbar-context" aria-label="نمای فعال"><i/><span><small>{rtl?"نمای فعال":"Active view"}</small><b>{rtl?activeItem.label:activeItem.labelEn}</b></span></span></div><div className="topbar-actions"><button className="icon-button sidebar-quick-toggle" onClick={()=>updatePreferences({sidebar:preferences.sidebar==="full"?"compact":"full"})} aria-label="تغییر حالت سایدبار" aria-pressed={preferences.sidebar==="compact"}><PanelLeft/></button><button className="icon-button" onClick={()=>updatePreferences({direction:rtl?"ltr":"rtl"})} aria-label="تغییر جهت و زبان"><Languages/></button><button className="icon-button" onClick={()=>updatePreferences({theme:dark?"light":"dark"})} aria-label="تغییر پوسته">{dark?<Sun/>:<Moon/>}</button><Link className="icon-button notification" href="/notifications/" aria-label="اعلان‌ها"><Bell/><span/></Link><DropdownMenu><DropdownMenuTrigger asChild><button className="profile-button" aria-label="منوی حساب کاربری"><span className="avatar">حم</span><span className="profile-copy"><b>حسن مجتهدی</b><small>مدیر محصول</small></span><ChevronDown/></button></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-48"><DropdownMenuLabel>حساب کاربری</DropdownMenuLabel><DropdownMenuSeparator/><DropdownMenuItem>مشاهده پروفایل</DropdownMenuItem><DropdownMenuItem asChild><Link href="/settings/">تنظیمات حساب و ظاهر</Link></DropdownMenuItem><DropdownMenuSeparator/><DropdownMenuItem variant="destructive">خروج امن</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div></header>{children}</div><Dialog open={palette} onOpenChange={setPalette}><DialogContent className="command-dialog" showCloseButton={false}><DialogHeader className="sr-only"><DialogTitle>جستجوی سریع</DialogTitle><DialogDescription>در صفحات و عملیات لورانیک جستجو کنید</DialogDescription></DialogHeader><div className="command-search"><Search/><Input autoFocus value={query} onChange={(event)=>setQuery(event.target.value)} placeholder="نام صفحه یا عملیات را بنویسید..."/><kbd>ESC</kbd></div><p className="command-label">پیشنهادها</p><div className="command-results">{filteredCommands.map((item)=>{const Icon=item.icon;return item.href?<Link key={item.label} href={item.href} onClick={()=>setPalette(false)}><Icon/><span><b>{item.label}</b><small>{item.labelEn}</small></span></Link>:<button key={item.label} onClick={()=>{setPalette(false);notify(`${item.label} به‌زودی اضافه می‌شود`)}}><Icon/><span><b>{item.label}</b><small>{item.labelEn}</small></span></button>})}</div></DialogContent></Dialog>{toast&&<div className="toast" role="status">{toast}</div>}</div>}
+type NavigationKey =
+  | "executive"
+  | "analytics"
+  | "ecommerce"
+  | "crm"
+  | "finance"
+  | "healthcare"
+  | "tables"
+  | "forms"
+  | "calendar"
+  | "projects"
+  | "chat"
+  | "email"
+  | "files"
+  | "invoice"
+  | "components"
+  | "search"
+  | "notifications"
+  | "kanban"
+  | "users"
+  | "settings";
+
+type NavigationItem = {
+  key: NavigationKey;
+  label: string;
+  labelEn: string;
+  icon: LucideIcon;
+  href: string;
+  badge?: string;
+};
+
+const dashboards: NavigationItem[] = [
+  { key: "executive", label: "نمای مدیریتی", labelEn: "Executive", icon: LayoutDashboard, href: "/" },
+  { key: "analytics", label: "تحلیل داده", labelEn: "Analytics", icon: ChartNoAxesCombined, href: "/analytics/" },
+  { key: "ecommerce", label: "فروشگاه", labelEn: "Ecommerce", icon: ShoppingBag, href: "/ecommerce/" },
+  { key: "crm", label: "مدیریت مشتری", labelEn: "CRM", icon: UsersRound, href: "/crm/" },
+  { key: "finance", label: "امور مالی", labelEn: "Finance", icon: WalletCards, href: "/finance/" },
+  { key: "healthcare", label: "سلامت", labelEn: "Healthcare", icon: HeartPulse, href: "/healthcare/" },
+];
+
+const applications: NavigationItem[] = [
+  { key: "search", label: "جستجوی سراسری", labelEn: "Global Search", icon: Search, href: "/search/" },
+  { key: "notifications", label: "اعلان‌ها", labelEn: "Notifications", icon: Bell, href: "/notifications/", badge: "۳" },
+  { key: "tables", label: "جداول پیشرفته", labelEn: "Data Tables", icon: Table2, href: "/tables/" },
+  { key: "forms", label: "فرم‌ها", labelEn: "Forms", icon: FileText, href: "/forms/" },
+  { key: "calendar", label: "تقویم", labelEn: "Calendar", icon: CalendarDays, href: "/calendar/" },
+  { key: "projects", label: "پروژه‌ها", labelEn: "Projects", icon: FolderKanban, href: "/projects/" },
+  { key: "kanban", label: "کانبان", labelEn: "Kanban", icon: Columns3, href: "/kanban/" },
+  { key: "users", label: "مدیریت کاربران", labelEn: "User Management", icon: UserCog, href: "/users/" },
+  { key: "chat", label: "گفتگو", labelEn: "Chat", icon: MessageCircle, href: "/chat/", badge: "۲" },
+  { key: "email", label: "ایمیل", labelEn: "Email", icon: Mail, href: "/email/", badge: "۲" },
+  { key: "files", label: "مدیریت فایل", labelEn: "File Manager", icon: HardDrive, href: "/files/" },
+  { key: "invoice", label: "فاکتورها", labelEn: "Invoice", icon: ReceiptText, href: "/invoice/" },
+  { key: "components", label: "آزمایشگاه UI", labelEn: "UI Components", icon: Boxes, href: "/components/" },
+];
+
+const settings: NavigationItem = {
+  key: "settings",
+  label: "تنظیمات نمایش",
+  labelEn: "Appearance Settings",
+  icon: Settings,
+  href: "/settings/",
+};
+
+const allNavigation = [...dashboards, ...applications, settings];
+
+function resolveActive(pathname: string, fallback: NavigationKey): NavigationKey {
+  const match = allNavigation.find((item) => item.href !== "/" && pathname.includes(item.href.replaceAll("/", "")));
+  if (match) return match.key;
+  return pathname === "/" ? "executive" : fallback;
+}
+
+export function LoraniqShell({
+  children,
+  active = "executive",
+}: {
+  children: ReactNode;
+  active?: NavigationKey;
+}) {
+  const pathname = usePathname() ?? "/";
+  const { preferences, resolvedTheme, updatePreferences } = useUiPreferences();
+  const rtl = preferences.direction === "rtl";
+  const dark = resolvedTheme === "dark";
+  const routeActive = resolveActive(pathname, active);
+  const activeItem = allNavigation.find((item) => item.key === routeActive) ?? dashboards[0];
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  const commandItems = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return allNavigation;
+    return allNavigation.filter((item) =>
+      `${item.label} ${item.labelEn}`.toLowerCase().includes(needle)
+    );
+  }, [query]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setQuery("");
+        setPaletteOpen(true);
+      }
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const renderLink = (item: NavigationItem) => {
+    const Icon = item.icon;
+    const selected = item.key === routeActive;
+    return (
+      <Link
+        key={item.key}
+        className={`nav-link nav-item ${selected ? "selected active" : ""}`}
+        href={item.href}
+        aria-current={selected ? "page" : undefined}
+        onClick={() => setMobileOpen(false)}
+      >
+        <Icon />
+        <span>{rtl ? item.label : item.labelEn}</span>
+        {item.badge ? <small className="nav-badge">{item.badge}</small> : null}
+        {selected ? <i className="active-pip" aria-hidden="true" /> : null}
+      </Link>
+    );
+  };
+
+  return (
+    <div className="studio-shell app-shell">
+      <a href="#main-content" className="skip-link">
+        پرش به محتوای اصلی
+      </a>
+
+      {mobileOpen ? (
+        <button
+          className="sidebar-backdrop"
+          aria-label="بستن منو"
+          onClick={() => setMobileOpen(false)}
+        />
+      ) : null}
+
+      <aside
+        className={`studio-sidebar sidebar ${mobileOpen ? "is-open" : ""}`}
+        aria-label="ناوبری اصلی"
+      >
+        <div className="sidebar-head">
+          <Link className="studio-brand brand-lockup" href="/" onClick={() => setMobileOpen(false)}>
+            <span className="monogram" aria-hidden="true">
+              L<span>•</span>
+            </span>
+            <span className="brand-name">
+              لورانیک
+              <small>LORANIQ / WORKSPACE</small>
+            </span>
+          </Link>
+          <button className="mobile-close" onClick={() => setMobileOpen(false)} aria-label="بستن منو">
+            <X />
+          </button>
+        </div>
+
+        <div className="sidebar-scroll">
+          <div className="workspace-switch">
+            <span className="workspace-avatar">ل</span>
+            <div>
+              <b>{rtl ? "فضای کاری لورانیک" : "Loraniq Workspace"}</b>
+              <small>
+                {rtl ? "طرح حرفه‌ای" : "Professional plan"} <i>PRO</i>
+              </small>
+            </div>
+            <ShieldCheck size={17} />
+          </div>
+
+          <p className="nav-caption nav-eyebrow">{rtl ? "فضای مدیریت" : "Dashboards"}</p>
+          <nav className="nav-stack">{dashboards.map(renderLink)}</nav>
+
+          <p className="nav-caption nav-eyebrow nav-space">{rtl ? "ابزارها و اپلیکیشن‌ها" : "Apps & tools"}</p>
+          <nav className="nav-stack">{applications.map(renderLink)}</nav>
+
+          <p className="nav-caption nav-eyebrow nav-space">{rtl ? "ترجیحات" : "Preferences"}</p>
+          <nav className="nav-stack">
+            {renderLink(settings)}
+            <button className="nav-link nav-item" onClick={() => setHelpOpen(true)}>
+              <CircleHelp />
+              <span>{rtl ? "راهنما و میان‌برها" : "Help & shortcuts"}</span>
+            </button>
+          </nav>
+        </div>
+
+        <div className="sidebar-bottom sidebar-foot">
+          <div className="workspace-note workspace-card">
+            <span className="tiny-orbit workspace-icon">
+              <Sparkles />
+            </span>
+            <div>
+              <b>{rtl ? "یک نگاه، تصمیم‌های بهتر." : "One view, better decisions."}</b>
+              <p>
+                {rtl
+                  ? "همهٔ آنچه برای مدیریت روزانه نیاز دارید، در یک فضای منظم."
+                  : "Everything you need for daily management in one calm workspace."}
+              </p>
+              <button onClick={() => setHelpOpen(true)}>
+                {rtl ? "کشف امکانات" : "Explore features"}
+              </button>
+            </div>
+          </div>
+          <div className="sidebar-status">
+            <i />
+            {rtl ? "نسخهٔ پیش‌نمایش" : "Preview build"}
+            <span>1.0</span>
+          </div>
+        </div>
+      </aside>
+
+      <div className="studio-body app-body">
+        <header className="studio-topbar topbar">
+          <div className="topbar-context">
+            <button
+              className="square-button icon-button mobile-menu menu-button"
+              aria-label="باز کردن منو"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu />
+            </button>
+            <span className="context-mark">
+              <activeItem.icon size={18} />
+            </span>
+            <span>
+              {rtl ? "فضای کاری" : "Workspace"}
+              <span className="slash">/</span>
+              <b>{rtl ? activeItem.label : activeItem.labelEn}</b>
+            </span>
+            <span className="demo-tag">{rtl ? "دادهٔ نمونه" : "Demo data"}</span>
+          </div>
+
+          <div className="topbar-tools topbar-actions">
+            <button
+              className="search-button search-trigger"
+              onClick={() => {
+                setQuery("");
+                setPaletteOpen(true);
+              }}
+              aria-label="جستجو در لورانیک"
+            >
+              <Search />
+              <span>{rtl ? "جستجو" : "Search"}</span>
+              <kbd>
+                <CommandIcon /> K
+              </kbd>
+            </button>
+
+            <span className="tool-divider" />
+
+            <button
+              className="square-button icon-button sidebar-quick-toggle"
+              onClick={() =>
+                updatePreferences({ sidebar: preferences.sidebar === "full" ? "compact" : "full" })
+              }
+              aria-label="تغییر حالت سایدبار"
+              aria-pressed={preferences.sidebar === "compact"}
+            >
+              <PanelLeft />
+            </button>
+
+            <button
+              className="square-button icon-button"
+              aria-label="تغییر جهت و زبان"
+              onClick={() => updatePreferences({ direction: rtl ? "ltr" : "rtl" })}
+            >
+              <Languages />
+            </button>
+
+            <button
+              className="square-button icon-button"
+              aria-label="تغییر پوسته"
+              onClick={() => updatePreferences({ theme: dark ? "light" : "dark" })}
+            >
+              {dark ? <Sun /> : <Moon />}
+            </button>
+
+            <Link className="square-button icon-button bell-button notification" href="/notifications/" aria-label="اعلان‌ها">
+              <Bell />
+              <i />
+            </Link>
+
+            <button className="user-avatar avatar" aria-label="پروفایل نمایشی" onClick={() => setHelpOpen(true)}>
+              حم
+            </button>
+          </div>
+        </header>
+
+        {children}
+      </div>
+
+      <Dialog open={paletteOpen} onOpenChange={setPaletteOpen}>
+        <DialogContent className="command-dialog" showCloseButton={false}>
+          <DialogHeader className="sr-only">
+            <DialogTitle>جستجوی سریع</DialogTitle>
+            <DialogDescription>در صفحات و عملیات لورانیک جستجو کنید</DialogDescription>
+          </DialogHeader>
+          <div className="command-search">
+            <Search />
+            <Input
+              autoFocus
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="نام صفحه یا عملیات را بنویسید..."
+            />
+            <kbd>ESC</kbd>
+          </div>
+          <p className="command-label">{rtl ? "پیشنهادها" : "Suggestions"}</p>
+          <div className="command-results">
+            {commandItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.key} href={item.href} onClick={() => setPaletteOpen(false)}>
+                  <Icon />
+                  <span>
+                    <b>{item.label}</b>
+                    <small>{item.labelEn}</small>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+        <DialogContent className="detail-dialog">
+          <DialogHeader>
+            <DialogTitle>{rtl ? "لورانیک؛ فضای کاری حرفه‌ای" : "Loraniq professional workspace"}</DialogTitle>
+            <DialogDescription>
+              {rtl
+                ? "میان‌برها و کنترل‌های اصلی قالب در همین پیش‌نمایش فعال‌اند."
+                : "Core shortcuts and display controls are active in this preview."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="help-copy">
+            <p>
+              <kbd>Ctrl / ⌘ + K</kbd> {rtl ? "جستجوی سریع صفحات" : "Quick page search"}
+            </p>
+            <p>
+              <kbd>Tab</kbd> {rtl ? "حرکت بین کنترل‌ها" : "Move through controls"} · <kbd>Esc</kbd>{" "}
+              {rtl ? "بستن پنجره یا منوی موبایل" : "Close dialogs or mobile navigation"}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
