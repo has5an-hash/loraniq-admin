@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type ComponentType } from "react";
-import { Search } from "lucide-react";
+import { useState } from "react";
+import { Search, type LucideIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
 export type AstraCommandItem = {
   label: string;
   labelEn: string;
-  icon: ComponentType<{ className?: string }>;
+  icon: LucideIcon;
 };
 
 export function CommandPalette({
