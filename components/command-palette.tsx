@@ -52,7 +52,7 @@ export function CommandPalette({
             aria-controls="command-options"
             aria-activedescendant={items.length ? `command-${active}` : undefined}
             value={query}
-            placeholder="کجا می‌خواهید بروید؟"
+            placeholder="نام صفحه یا عملیات را بنویسید..."
             onChange={(event) => {
               onQueryChange(event.target.value);
               setIndex(0);
