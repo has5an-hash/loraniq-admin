@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, type LucideIcon } from "lucide-react";
+import { Search, X, type LucideIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -71,8 +71,14 @@ export function CommandPalette({
                 event.preventDefault();
                 onSelect(items[active]);
               }
+              if (event.key === "Escape") {
+                event.preventDefault();
+                onQueryChange("");
+                onOpenChange(false);
+              }
             }}
           />
+          {query ? <button className="command-clear" aria-label="پاک کردن جستجو" onClick={() => { onQueryChange(""); setIndex(0); }}><X /></button> : null}
           <kbd>ESC</kbd>
         </div>
 
