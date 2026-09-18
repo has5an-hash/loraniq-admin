@@ -1,5 +1,7 @@
 "use client";
 
+import "../calendar-premium.css";
+
 import { useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock3, MapPin, Plus, UsersRound, Video } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
