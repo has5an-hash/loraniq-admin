@@ -1,5 +1,7 @@
 "use client";
 
+import "../app-breadth-premium.css";
+
 import { useMemo, useState } from "react";
 import { Check, CheckCircle2, ChevronDown, MoreHorizontal, Plus, Search, ShieldCheck, Sparkles, UserPlus, UsersRound, X } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
