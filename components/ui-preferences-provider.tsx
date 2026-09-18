@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, u
 export type ThemeMode = "light" | "dark" | "system";
 export type DirectionMode = "rtl" | "ltr";
 export type DensityMode = "comfortable" | "compact";
-export type SkinMode = "soft" | "bordered";
+export type SkinMode = "soft" | "bordered" | "semi-dark";
 export type ContentWidthMode = "fluid" | "boxed";
 export type SidebarMode = "full" | "compact";
 export type MotionMode = "full" | "reduced";

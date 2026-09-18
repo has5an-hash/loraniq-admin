@@ -9,3 +9,58 @@ html[data-sidebar="compact"] .sidebar{width:88px}html[data-sidebar="compact"] .a
 html[data-density="compact"] .settings-options>button{min-height:68px}html[data-density="compact"] .files-toolbar,html[data-density="compact"] .mail-toolbar{padding-block:10px}
 @media(prefers-reduced-motion:reduce){:root{--motion-fast:1ms;--motion-base:1ms;--motion-slow:1ms}.main-content>section{animation:none}}
 @media(max-width:900px){html[data-sidebar="compact"] .sidebar{width:min(320px,88vw)}html[data-sidebar="compact"] .app-body{margin-inline-start:0}html[data-sidebar="compact"] .sidebar-head{justify-content:space-between;padding:0 20px}html[data-sidebar="compact"] .brand-name,html[data-sidebar="compact"] .nav-eyebrow,html[data-sidebar="compact"] .nav-badge{display:initial}html[data-sidebar="compact"] .nav-item{justify-content:flex-start;padding:0 13px}html[data-sidebar="compact"] .nav-item span:nth-child(2){position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal}html[data-sidebar="compact"] .active-pip{position:static}html[data-sidebar="compact"] .workspace-card{display:grid;place-items:initial;padding:13px}html[data-sidebar="compact"] .workspace-card>div{display:grid}html[data-sidebar="compact"] .workspace-card>[data-slot="progress"]{display:block}}
+
+/* Semi-dark skin: dark navigation chrome with independent light/dark content theme. */
+html[data-skin="semi-dark"] .sidebar{
+  --sidebar:#2f3349;
+  --sidebar-foreground:#e7e3fc;
+  --sidebar-accent:#443d72;
+  --sidebar-accent-foreground:#fff;
+  --sidebar-border:#44485f;
+  background:#2f3349!important;
+  color:#e7e3fc;
+  border-color:#44485f;
+  box-shadow:0 12px 34px rgba(24,27,42,.24);
+}
+html[data-skin="semi-dark"] .sidebar-head{border-color:#44485f}
+html[data-skin="semi-dark"] .sidebar .brand-name{color:#f4f2ff}
+html[data-skin="semi-dark"] .sidebar .brand-name b{
+  background:none;
+  -webkit-background-clip:border-box;
+  background-clip:border-box;
+  color:#b9b2ff;
+}
+html[data-skin="semi-dark"] .sidebar .nav-eyebrow{color:#8f8ba3}
+html[data-skin="semi-dark"] .sidebar .nav-item{color:#bab6cb}
+html[data-skin="semi-dark"] .sidebar .nav-item:hover{
+  background:rgba(255,255,255,.055);
+  color:#f3f1ff;
+}
+html[data-skin="semi-dark"] .sidebar .nav-item:hover svg{color:#b9b2ff}
+html[data-skin="semi-dark"] .sidebar .nav-item.active{
+  color:#fff;
+  background:linear-gradient(118deg,#7367f0,#8f86f7);
+  box-shadow:0 8px 22px rgba(10,11,20,.24),inset 0 1px 0 rgba(255,255,255,.12);
+}
+html[data-skin="semi-dark"] .sidebar .nav-item.active svg{color:#fff}
+html[data-skin="semi-dark"] .sidebar .nav-badge{background:#543745;color:#ff9aaa}
+html[data-skin="semi-dark"] .sidebar-foot{
+  border-color:#44485f;
+  background:linear-gradient(to top,rgba(20,22,34,.18),transparent);
+}
+html[data-skin="semi-dark"] .sidebar .workspace-card{
+  border-color:#484d67;
+  background:#34384f;
+  color:#f0edff;
+}
+html[data-skin="semi-dark"] .sidebar .workspace-card small{color:#a9a5b9}
+html[data-skin="semi-dark"] .sidebar .workspace-icon{
+  background:#443d72;
+  color:#d2cdff;
+  box-shadow:none;
+}
+html[data-skin="semi-dark"] .sidebar [data-slot="progress"]{background:#464b64}
+html[data-skin="semi-dark"] .sidebar [data-slot="progress"]>div{background:#8f86f7}
+@media(max-width:900px){
+  html[data-skin="semi-dark"] .sidebar{box-shadow:0 20px 60px rgba(12,14,25,.42)}
+}
