@@ -1,5 +1,7 @@
 "use client";
 
+import "../tables-premium.css";
+
 import { useMemo, useState } from "react";
 import { ArrowDownUp, Check, ChevronDown, Columns3, Filter, MoreHorizontal, RefreshCw, Search, SlidersHorizontal, Trash2, UsersRound, XCircle } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
