@@ -1,5 +1,7 @@
 "use client";
 
+import "../flagship-polish.css";
+
 import { useState } from "react";
 import {
   ArrowDownRight,
