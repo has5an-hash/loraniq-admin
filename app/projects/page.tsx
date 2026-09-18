@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowUpRight, CalendarDays, CheckCircle2, ChevronDown, CircleAlert, FolderKanban, MoreHorizontal, Plus, Search, UsersRound } from "lucide-react";
+import { ArrowUpRight, CalendarDays, CheckCircle2, CircleAlert, FolderKanban, MoreHorizontal, Plus, Search, UsersRound } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";

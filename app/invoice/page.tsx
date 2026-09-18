@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Banknote, CheckCircle2, ChevronLeft, Download, FileText, MoreHorizontal, Plus, Search, Send, WalletCards } from "lucide-react";
+import { Banknote, CheckCircle2, Download, FileText, MoreHorizontal, Plus, Search, Send, WalletCards } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
