@@ -1,6 +1,7 @@
 "use client";
 
 import "./executive-premium.css";
+import "./flagship-polish.css";
 
 import { useState } from "react";
 import {
