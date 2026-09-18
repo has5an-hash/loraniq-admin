@@ -1,5 +1,7 @@
 "use client";
 
+import "../settings-premium.css";
+
 import { Check, Contrast, Gauge, LayoutGrid, Monitor, Moon, MoveHorizontal, PanelLeft, RotateCcw, Sparkles, Sun, WandSparkles } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
 import { Button } from "@/components/ui/button";
