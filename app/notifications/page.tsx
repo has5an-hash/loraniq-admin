@@ -1,5 +1,7 @@
 "use client";
 
+import "../app-breadth-premium.css";
+
 import { useMemo, useState } from "react";
 import { Bell, BellRing, CheckCheck, CircleAlert, CreditCard, FolderKanban, Mail, Megaphone, Settings2, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
