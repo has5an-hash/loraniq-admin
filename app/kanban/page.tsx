@@ -1,5 +1,7 @@
 "use client";
 
+import "../app-breadth-premium.css";
+
 import { useMemo, useState } from "react";
 import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, CircleAlert, Clock3, GripVertical, MoreHorizontal, Plus, Search, Sparkles, Tag, UsersRound } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
