@@ -1,6 +1,7 @@
 "use client";
 
 import "../app/auth-polish.css";
+import "../app/astra-auth.css";
 
 import "../app/auth-premium.css";
 
