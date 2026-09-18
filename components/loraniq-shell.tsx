@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -37,15 +38,9 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { useUiPreferences } from "@/components/ui-preferences-provider";
+
+const LoraniqOverlays = dynamic(() => import("@/components/loraniq-overlays").then((mod) => mod.LoraniqOverlays), { ssr: false });
 
 type NavigationKey =
   | "executive"
@@ -345,61 +340,18 @@ export function LoraniqShell({
         {children}
       </div>
 
-      <Dialog open={paletteOpen} onOpenChange={setPaletteOpen}>
-        <DialogContent className="command-dialog" showCloseButton={false}>
-          <DialogHeader className="sr-only">
-            <DialogTitle>جستجوی سریع</DialogTitle>
-            <DialogDescription>در صفحات و عملیات لورانیک جستجو کنید</DialogDescription>
-          </DialogHeader>
-          <div className="command-search">
-            <Search />
-            <Input
-              autoFocus
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="نام صفحه یا عملیات را بنویسید..."
-            />
-            <kbd>ESC</kbd>
-          </div>
-          <p className="command-label">{rtl ? "پیشنهادها" : "Suggestions"}</p>
-          <div className="command-results">
-            {commandItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.key} href={item.href} onClick={() => setPaletteOpen(false)}>
-                  <Icon />
-                  <span>
-                    <b>{item.label}</b>
-                    <small>{item.labelEn}</small>
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
-        <DialogContent className="detail-dialog">
-          <DialogHeader>
-            <DialogTitle>{rtl ? "لورانیک؛ فضای کاری حرفه‌ای" : "Loraniq professional workspace"}</DialogTitle>
-            <DialogDescription>
-              {rtl
-                ? "میان‌برها و کنترل‌های اصلی قالب در همین پیش‌نمایش فعال‌اند."
-                : "Core shortcuts and display controls are active in this preview."}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="help-copy">
-            <p>
-              <kbd>Ctrl / ⌘ + K</kbd> {rtl ? "جستجوی سریع صفحات" : "Quick page search"}
-            </p>
-            <p>
-              <kbd>Tab</kbd> {rtl ? "حرکت بین کنترل‌ها" : "Move through controls"} · <kbd>Esc</kbd>{" "}
-              {rtl ? "بستن پنجره یا منوی موبایل" : "Close dialogs or mobile navigation"}
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {(paletteOpen || helpOpen) ? (
+        <LoraniqOverlays
+          rtl={rtl}
+          paletteOpen={paletteOpen}
+          setPaletteOpen={setPaletteOpen}
+          query={query}
+          setQuery={setQuery}
+          commandItems={commandItems}
+          helpOpen={helpOpen}
+          setHelpOpen={setHelpOpen}
+        />
+      ) : null}
     </div>
   );
 }
