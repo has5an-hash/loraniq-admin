@@ -11,6 +11,8 @@ import "./astra-apps.css";
 import "./accents.css";
 import "./premium-final-polish.css";
 import "./loraniq-vuexy-final-polish.css";
+import "./loraniq-feature-showcase-polish.css";
+import "./loraniq-marketing-conversion-polish.css";
 import "./header-premium.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";

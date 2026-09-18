@@ -1,0 +1,18 @@
+/* Loraniq Vuexy-inspired feature and showcase refinement */
+.landing-showcase-grid,.feature-grid,.landing-demo-grid{align-items:stretch}
+.feature-grid article,.showcase-card,.landing-demo-card{position:relative;overflow:hidden}
+.feature-grid article:before,.showcase-card:before,.landing-demo-card:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 5%,transparent),transparent 45%);opacity:0;transition:opacity .3s ease;pointer-events:none}
+.feature-grid article:hover:before,.showcase-card:hover:before,.landing-demo-card:hover:before{opacity:1}
+.feature-grid article>span{width:48px;height:48px;border-radius:15px;box-shadow:0 12px 30px color-mix(in srgb,var(--primary) 14%,transparent)}
+.feature-grid h3{margin-top:22px;font-weight:900}
+.showcase-media{overflow:hidden;background:var(--surface-2)}
+.showcase-media img{display:block;width:100%;height:auto}
+.showcase-copy{padding:26px!important;gap:16px!important}
+.showcase-icon{flex:none!important;width:46px!important;height:46px!important;border-radius:15px!important;box-shadow:0 12px 28px color-mix(in srgb,var(--primary) 12%,transparent)}
+.landing-demo-card{backdrop-filter:blur(8px)}
+.landing-demo-card .demo-shot{aspect-ratio:16/9}
+.landing-demo-card>div:last-child{min-height:210px}
+.landing-demo-card em{padding-top:8px}
+.section-heading{position:relative}
+.section-heading:after{content:"";display:block;width:70px;height:3px;border-radius:99px;background:var(--primary);margin:22px auto 0;opacity:.55}
+@media(max-width:900px){.showcase-copy{padding:20px!important}.landing-demo-card>div:last-child{min-height:auto}}

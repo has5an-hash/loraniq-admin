@@ -1,0 +1,18 @@
+/* Loraniq demo showcase premium pass */
+.landing-showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px!important}
+.showcase-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:30px!important;overflow:hidden;min-height:420px;box-shadow:0 24px 70px rgba(31,33,49,.1)}
+.showcase-media{position:relative;padding:28px;background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 8%,transparent),var(--surface-2));min-height:230px;display:flex;align-items:center;justify-content:center}
+.showcase-media img{width:100%;height:230px;object-fit:contain}
+.showcase-copy{display:flex;gap:18px;padding:28px;align-items:flex-start}
+.showcase-icon{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:16px;background:color-mix(in srgb,var(--primary) 10%,var(--card));color:var(--primary)}
+.showcase-icon svg{width:22px}
+.showcase-copy small{color:var(--primary);font-size:10px;font-weight:900;text-transform:uppercase}
+.showcase-copy h3{margin-top:8px;font-size:20px;font-weight:900}
+.showcase-copy p{margin-top:10px;color:var(--muted-foreground);font-size:12px;line-height:2}
+.showcase-card:hover{transform:translateY(-8px);box-shadow:0 35px 90px rgba(31,33,49,.16)}
+.landing-demo-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}
+.landing-demo-card{border-radius:28px!important}
+.demo-shot{aspect-ratio:16/11}
+.demo-shot>span{width:38px;height:30px;border-radius:10px;font-size:10px}
+.landing-demo-card em{padding-top:12px;border-top:1px solid var(--border)}
+@media(max-width:1000px){.landing-showcase-grid,.landing-demo-grid{grid-template-columns:1fr}}
