@@ -1,5 +1,7 @@
 "use client";
 
+import "../app/astra-apps.css";
+
 
 
 import dynamic from "next/dynamic";
