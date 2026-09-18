@@ -1,5 +1,7 @@
 "use client";
 
+import "../forms-premium.css";
+
 import { FormEvent, useState } from "react";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, CheckCircle2, ChevronDown, FileUp, Loader2, Mail, MapPin, Phone, ShieldCheck, Sparkles, UserRound, XCircle } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
