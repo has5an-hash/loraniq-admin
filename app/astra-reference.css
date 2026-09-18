@@ -189,7 +189,7 @@ html[data-skin="semi-dark"] .sidebar{
 }
 .nav-item:hover svg{color:#fff!important;transform:none!important}
 .nav-item.active{
-  background:#8470d6!important;
+  background:#7560d7!important;
   color:#fff!important;
   font-weight:500!important;
   box-shadow:0 5px 15px rgba(0,0,0,.07)!important;
@@ -530,7 +530,7 @@ html[data-skin="semi-dark"] .sidebar{
 
 /* Dark mode keeps the Astra hierarchy; sidebar intentionally unchanged. */
 .dark .sidebar{background:#202131!important;color:#b3b4c7!important}
-.dark .nav-item.active{background:#8470d6!important;color:#fff!important}
+.dark .nav-item.active{background:#7560d7!important;color:#fff!important}
 .dark .avatar{background:#4b4037!important;color:#ead8c6!important}
 .dark .main-content [class*="-hero-main"],
 .dark .main-content [class*="-command-card"],
