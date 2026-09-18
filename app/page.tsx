@@ -1,5 +1,7 @@
 "use client";
 
+import "./astra-executive.css";
+
 import { useMemo, useState } from "react";
 import {
   ArrowDownToLine,
