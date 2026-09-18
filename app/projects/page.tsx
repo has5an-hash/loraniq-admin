@@ -1,5 +1,7 @@
 "use client";
 
+import "../projects-premium.css";
+
 import { useMemo, useState } from "react";
 import { ArrowUpRight, CalendarDays, CheckCircle2, CircleAlert, FolderKanban, MoreHorizontal, Plus, Search, UsersRound } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
