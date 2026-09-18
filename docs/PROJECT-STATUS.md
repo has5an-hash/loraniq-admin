@@ -19,7 +19,7 @@ Status: **In progress**
 - Public Landing and real Demo Selector using screenshots captured from the deployed product.
 - Four original Loraniq SVG illustrations for design system, responsive composition, motion and application depth.
 - High-DPI dashboard preview pipeline: 3360×2100 source capture at DPR2 / JPEG quality 96.
-- Vuexy-oriented visual polish with Metronic-oriented layout/component discipline, without copying proprietary code/assets/layouts.
+- Astra handoff is now the canonical Loraniq visual/UI language. Vuexy and Metronic remain benchmark references for product quality and architecture only; proprietary code/assets/layouts are not copied.
 
 ### Latest verified quality gate
 
@@ -33,7 +33,7 @@ Artifact digest: `sha256:d50b4677fa654c42c00f3ff6ad1bb5763fc9e914d0f75fc0438fbc0
 
 The main Chromium suite covers 31 product routes × 3 viewports × 2 direction/theme states = 186 screenshots/check states per run. Marketing QA adds Landing + Demos across the same three viewports and two states (12 more captures), for 198 state screenshots in the combined artifact.
 
-### Latest visual-system work verified
+### Latest visual-system work\n\nThe items below were verified in the last green pre-Astra run. A newer Astra visual migration is currently on `main` and requires a fresh full screenshot/CI verification before it is promoted to the verified list.\n\n### Last verified visual-system baseline
 
 - semantic Vuexy-like primary/success/info/warning/danger palette
 - lower-radius, calmer shell hierarchy
