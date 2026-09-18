@@ -1,3 +1,4 @@
+import "../marketing-premium.css";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Blocks, Check, Code2, Command, Gauge, Languages, Layers3, LayoutDashboard, MoonStar, MousePointer2, PanelsTopLeft, ShieldCheck, Sparkles, SwatchBook, Table2, WandSparkles } from "lucide-react";
