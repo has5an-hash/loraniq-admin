@@ -1,0 +1,136 @@
+/* Astra marketing skin — same visual language as the product workspace. */
+.marketing-shell,.landing-page,.demos-page{background:var(--background)!important;color:var(--foreground)!important}
+.marketing-nav{
+  min-height:72px!important;
+  border-bottom:1px solid var(--border)!important;
+  background:color-mix(in srgb,var(--card) 98%,transparent)!important;
+  backdrop-filter:blur(14px)!important;
+  box-shadow:none!important;
+}
+.marketing-brand{color:var(--foreground)!important;font-weight:750!important;letter-spacing:-.5px!important}
+.marketing-brand em{color:var(--primary)!important;font-style:normal!important}
+.marketing-primary,.marketing-cta{
+  min-height:39px!important;
+  border:1px solid transparent!important;
+  border-radius:8px!important;
+  background:var(--primary)!important;
+  color:var(--primary-foreground)!important;
+  box-shadow:0 3px 8px #7560d71c!important;
+}
+.marketing-primary:hover,.marketing-cta:hover{filter:brightness(1.06)!important;transform:none!important}
+.marketing-ghost{
+  min-height:39px!important;
+  border:1px solid var(--border)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  color:var(--foreground)!important;
+  box-shadow:none!important;
+}
+.landing-hero{
+  min-height:auto!important;
+  padding-block:76px 64px!important;
+  background:transparent!important;
+}
+.landing-hero::before,.landing-hero::after,.stage-glow{display:none!important}
+.landing-kicker,.demos-intro>span,.section-heading>span,.section-heading>div>span{
+  color:var(--primary)!important;
+  font-size:10px!important;
+  letter-spacing:.02em!important;
+}
+.landing-hero h1,.demos-intro h1{
+  color:var(--foreground)!important;
+  font-weight:780!important;
+  letter-spacing:-1px!important;
+  line-height:1.5!important;
+}
+.landing-hero-copy>p,.demos-intro>p,.section-heading p,.showcase-copy>p,.landing-demo-card p{
+  color:var(--muted-foreground)!important;
+  line-height:1.9!important;
+}
+.landing-proof span{
+  border:1px solid var(--border)!important;
+  border-radius:7px!important;
+  background:var(--card)!important;
+  color:var(--muted-foreground)!important;
+  box-shadow:none!important;
+}
+.landing-stage,.stage-window,.showcase-card,.landing-demo-card,.selector-card,.feature-grid article,.architecture-stack>div,.demos-note{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+  backdrop-filter:none!important;
+}
+.stage-window{overflow:hidden!important}
+.stage-browser{
+  border-bottom:1px solid var(--border)!important;
+  background:var(--surface-2)!important;
+}
+.float-one,.float-two,.stage-chip{border-radius:7px!important;box-shadow:var(--shadow-card)!important}
+.landing-strip{
+  border-block:1px solid var(--border)!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.landing-strip>div{color:var(--muted-foreground)!important}
+.landing-showcase,.landing-section,.landing-demos,.landing-architecture{
+  background:transparent!important;
+}
+.showcase-card{
+  overflow:hidden!important;
+  transition:box-shadow .18s ease,border-color .18s ease!important;
+}
+.showcase-card:hover,.landing-demo-card:hover,.selector-card:hover{
+  transform:none!important;
+  border-color:color-mix(in srgb,var(--primary) 24%,var(--border))!important;
+  box-shadow:var(--shadow-card-hover)!important;
+}
+.showcase-media,.demo-shot,.selector-shot{
+  background:var(--surface-2)!important;
+  border-color:var(--border)!important;
+}
+.showcase-icon,.selector-title>span,.architecture-stack span{
+  border-radius:7px!important;
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+}
+.feature-grid article{
+  padding:22px!important;
+}
+.feature-grid article>span{
+  width:38px!important;height:38px!important;
+  border-radius:10px!important;
+  background:var(--accent)!important;
+  color:var(--primary)!important;
+}
+.landing-cta{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  color:var(--foreground)!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.landing-cta.invert{background:#202131!important;color:#f0eff7!important;border-color:#35364b!important}
+.landing-cta.invert p{color:#b3b4c7!important}
+.demos-grid{gap:18px!important}
+.selector-card{border-top:1px solid var(--border)!important}
+.selector-index{border-radius:6px!important;background:var(--surface-2)!important;color:var(--muted-foreground)!important}
+.selector-open{border-radius:7px!important;background:var(--accent)!important;color:var(--primary)!important}
+.selector-tags span{
+  border:1px solid var(--border)!important;
+  border-radius:6px!important;
+  background:var(--surface-2)!important;
+  color:var(--muted-foreground)!important;
+}
+.marketing-footer{
+  border-top:1px solid var(--border)!important;
+  background:var(--card)!important;
+  color:var(--muted-foreground)!important;
+}
+@media(max-width:760px){
+  .landing-hero{padding-block:48px 38px!important}
+  .landing-hero h1{font-size:38px!important}
+  .marketing-nav{min-height:64px!important}
+}
