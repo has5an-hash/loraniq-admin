@@ -3,11 +3,9 @@ import localFont from "next/font/local";
 import { UiPreferencesProvider } from "@/components/ui-preferences-provider";
 import "./globals.css";
 import "./visual-reset.css";
-import "./flagship-polish.css";
 import "./system-premium.css";
 import "./typography-premium.css";
 import "./vuexy-polish.css";
-import "./shell-data-polish.css";
 import "./a11y-polish.css";
 import "./astra-reference.css";
 
