@@ -5,7 +5,6 @@ import "./globals.css";
 import "./visual-reset.css";
 import "./system-premium.css";
 import "./typography-premium.css";
-import "./vuexy-polish.css";
 import "./a11y-polish.css";
 import "./astra-reference.css";
 
