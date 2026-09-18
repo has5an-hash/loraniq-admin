@@ -1,0 +1,54 @@
+html[data-accent="violet"] {
+  --primary: #7367f0;
+  --ring: #7367f0;
+  --accent: rgba(115, 103, 240, 0.1);
+}
+
+html[data-accent="blue"] {
+  --primary: #2563eb;
+  --ring: #2563eb;
+  --accent: rgba(37, 99, 235, 0.1);
+}
+
+html[data-accent="emerald"] {
+  --primary: #059669;
+  --ring: #059669;
+  --accent: rgba(5, 150, 105, 0.1);
+}
+
+html[data-accent="rose"] {
+  --primary: #e11d48;
+  --ring: #e11d48;
+  --accent: rgba(225, 29, 72, 0.1);
+}
+
+html[data-accent="amber"] {
+  --primary: #d97706;
+  --ring: #d97706;
+  --accent: rgba(217, 119, 6, 0.12);
+}
+
+.accent-swatch {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--card);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.accent-violet { background: #7367f0; }
+.accent-blue { background: #2563eb; }
+.accent-emerald { background: #059669; }
+.accent-rose { background: #e11d48; }
+.accent-amber { background: #d97706; }
+
+.settings-options button > span {
+  position: relative;
+}
+
+.settings-options .accent-swatch {
+  position: absolute;
+  inset-inline-end: -4px;
+  inset-block-end: -4px;
+}
