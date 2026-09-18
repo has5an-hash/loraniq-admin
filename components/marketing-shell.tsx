@@ -1,5 +1,7 @@
 "use client";
 
+import "../app/astra-marketing.css";
+
 import Link from "next/link";
 import { ArrowLeft, Languages, Moon, Sparkles, Sun } from "lucide-react";
 import { type ReactNode } from "react";
