@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { Bell, BellRing, CheckCheck, CircleAlert, CreditCard, FolderKanban, Mail, Megaphone, Settings2, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
 import { Button } from "@/components/ui/button";
+import { useNotificationCenter } from "@/components/notifications-provider";
 
 const seed=[
 {id:1,title:"نسخه جدید آماده بررسی است",body:"Build لورانیک با موفقیت در محیط Preview منتشر شد.",kind:"سیستم",time:"۲ دقیقه پیش",read:false,icon:"system"},
@@ -17,10 +18,9 @@ const seed=[
 ];
 const icons={system:Sparkles,team:UserPlus,payment:CreditCard,project:FolderKanban,security:ShieldCheck,report:Mail};
 export default function NotificationsPage(){
- const[items,setItems]=useState(seed);const[filter,setFilter]=useState("همه");const[channel,setChannel]=useState({product:true,email:true,security:true});
+ const {items,unreadCount:unread,markRead,markAllRead,clear}=useNotificationCenter();const setItems=(updater:(current:typeof items)=>typeof items)=>updater(items).filter((item)=>item.read).forEach((item)=>markRead(item.id));const[filter,setFilter]=useState("همه");const[channel,setChannel]=useState({product:true,email:true,security:true});
  const visible=useMemo(()=>items.filter((item)=>filter==="همه"||(filter==="خوانده‌نشده"?!item.read:item.kind===filter)),[items,filter]);
- const unread=items.filter((item)=>!item.read).length;
- const markAll=()=>setItems((current)=>current.map((item)=>({...item,read:true})));
+ const markAll=markAllRead;
  return <LoraniqShell active="notifications"><main id="main-content" className="main-content notifications-page">
   <section className="notifications-hero" aria-labelledby="page-title"><div><span className="notifications-kicker"><BellRing/> Notification hub</span><h1 id="page-title">اعلان مهم را ببین؛ نویز را کنترل کن.</h1><p>Inbox رویدادها، دسته‌بندی، unread state و تنظیم کانال‌ها در یک مرکز اعلان responsive.</p><div className="notifications-actions"><Button onClick={markAll} disabled={!unread}><CheckCheck/> علامت‌گذاری همه به‌عنوان خوانده</Button><Button variant="outline"><Settings2/> تنظیمات کانال‌ها</Button></div></div><div className="notification-pulse"><span>Unread</span><strong>{unread.toLocaleString("fa-IR")}</strong><small>از {items.length.toLocaleString("fa-IR")} اعلان اخیر</small><div><i style={{width:`${Math.max(8,(unread/items.length)*100)}%`}}/></div></div></section>
   <section className="notifications-layout"><article className="notifications-feed"><header><div><h2>مرکز اعلان‌ها</h2><p>رویدادهای محصول، تیم، مالی و پروژه</p></div><span>{visible.length.toLocaleString("fa-IR")} مورد</span></header><div className="notifications-filters">{["همه","خوانده‌نشده","سیستم","تیم","مالی","پروژه"].map((item)=><button key={item} className={filter===item?"active":""} onClick={()=>setFilter(item)}>{item}</button>)}</div><div className="notification-list">{visible.map((item)=>{const Icon=icons[item.icon as keyof typeof icons];return <button key={item.id} className={item.read?"read":"unread"} onClick={()=>setItems((current)=>current.map((entry)=>entry.id===item.id?{...entry,read:true}:entry))}><span className={`notification-icon tone-${item.icon}`}><Icon/></span><div><span className="notification-row-head"><b>{item.title}</b>{!item.read&&<i/>}</span><p>{item.body}</p><small>{item.kind} · {item.time}</small></div></button>})}{!visible.length&&<div className="notifications-empty"><Bell/><h3>اعلانی در این فیلتر نیست</h3><p>فیلتر دیگری انتخاب کنید.</p></div>}</div></article>

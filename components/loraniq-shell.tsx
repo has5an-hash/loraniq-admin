@@ -1,8 +1,5 @@
 "use client";
 
-import "../app/astra-apps.css";
-
-
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -42,6 +39,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useUiPreferences } from "@/components/ui-preferences-provider";
+import { NotificationBell } from "@/components/notification-bell";
 
 const LoraniqOverlays = dynamic(() => import("@/components/loraniq-overlays").then((mod) => mod.LoraniqOverlays), { ssr: false });
 
@@ -329,10 +327,7 @@ export function LoraniqShell({
               {dark ? <Sun /> : <Moon />}
             </button>
 
-            <Link className="square-button icon-button bell-button notification" href="/notifications/" aria-label="اعلان‌ها">
-              <Bell />
-              <i />
-            </Link>
+            <NotificationBell rtl={rtl} />
 
             <button className="user-avatar avatar" aria-label="پروفایل نمایشی" onClick={() => setHelpOpen(true)}>
               حم
