@@ -1,0 +1,160 @@
+/* Shell + data presentation milestone.
+   Original Loraniq refinements benchmarked against mature enterprise admin patterns. */
+
+/* Navigation shell */
+.sidebar{
+  border-radius:16px;
+  box-shadow:0 8px 28px rgba(47,43,61,.075);
+}
+.sidebar-head{height:74px}
+.brand-mark{width:38px;height:38px;border-radius:11px}
+.brand-name{font-size:16px}
+.sidebar-scroll{padding-block:13px}
+.nav-eyebrow{
+  position:relative;
+  margin-block:8px 7px;
+  padding-inline-start:12px;
+  color:var(--muted-foreground);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.06em;
+}
+.nav-eyebrow::before{
+  content:"";
+  position:absolute;
+  inset-inline-start:0;
+  top:50%;
+  width:4px;
+  height:4px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--primary) 55%,var(--border));
+  transform:translateY(-50%);
+}
+.nav-stack{gap:3px}
+.nav-item{min-height:42px;padding-inline:11px;border-radius:8px;font-size:11.5px}
+.nav-item svg{
+  width:17px;
+  height:17px;
+  transition:transform var(--motion-fast) var(--motion-spring),color var(--motion-fast);
+}
+.nav-item:hover svg{transform:translateY(-1px) scale(1.04);color:var(--primary)}
+.nav-item.active svg{transform:none;color:#fff}
+.workspace-card{border-radius:11px;padding:11px}
+.workspace-icon{width:31px;height:31px;border-radius:9px}
+.workspace-card strong{font-size:9.5px}
+.workspace-card small{font-size:8px}
+
+/* Top bar becomes a product toolbar, not another large card */
+.topbar{
+  height:62px;
+  border-radius:12px;
+  padding-inline:14px;
+  box-shadow:0 4px 18px rgba(47,43,61,.055);
+}
+.search-trigger{
+  width:min(390px,34vw);
+  height:38px;
+  border-radius:8px;
+}
+.icon-button{width:37px;height:37px;border-radius:8px}
+.profile-button{min-height:40px;border-radius:8px}
+.avatar{width:33px;height:33px;border-radius:9px}
+.topbar-context{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  margin-inline-start:10px;
+  padding-inline:10px 12px;
+  border-inline-start:1px solid var(--border);
+  color:var(--muted-foreground);
+}
+.topbar-context>i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--success) 12%,transparent);
+}
+.topbar-context>span{display:grid;line-height:1.12}
+.topbar-context small{font-size:7.5px}
+.topbar-context b{margin-top:3px;color:var(--foreground);font-size:9.5px;font-weight:800}
+.sidebar-quick-toggle[aria-pressed="true"]{
+  background:var(--accent);
+  color:var(--primary);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary) 12%,transparent);
+}
+
+/* Metric cards get semantic identity without loud gradients */
+.exec-stat{box-shadow:inset 0 2px 0 color-mix(in srgb,var(--stat-accent,var(--primary)) 52%,transparent),var(--shadow-card)!important}
+.ana-metric,.eco-metric,.crm-metric,.fin-metric,.health-metric{
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--metric,var(--primary)) 50%,transparent),var(--shadow-card)!important;
+}
+.exec-stat:hover{box-shadow:inset 0 2px 0 var(--stat-accent,var(--primary)),var(--shadow-card-hover)!important}
+.ana-metric:hover,.eco-metric:hover,.crm-metric:hover,.fin-metric:hover,.health-metric:hover{
+  box-shadow:inset 0 2px 0 var(--metric,var(--primary)),var(--shadow-card-hover)!important;
+}
+
+/* Primary visualization panels are visually different from secondary cards */
+.exec-chart-card,.ana-chart-card,.eco-sales-card,.crm-lifecycle-card,.fin-chart-card,.health-flow-card{
+  border-color:color-mix(in srgb,var(--primary) 12%,var(--border))!important;
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--primary) 45%,transparent),var(--shadow-card)!important;
+}
+.ana-chart-card,.health-flow-card{
+  border-color:color-mix(in srgb,var(--success) 13%,var(--border))!important;
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--success) 45%,transparent),var(--shadow-card)!important;
+}
+.eco-sales-card{
+  border-color:color-mix(in srgb,var(--warning) 14%,var(--border))!important;
+  box-shadow:inset 0 2px 0 color-mix(in srgb,var(--warning) 42%,transparent),var(--shadow-card)!important;
+}
+
+/* Chart surfaces: cleaner grid, stronger plotted data */
+.exec-chart-wrap,.ana-chart-canvas,.eco-chart-canvas,.crm-chart-canvas,.fin-chart-canvas,.health-chart-canvas,.line-chart{
+  background-color:color-mix(in srgb,var(--surface-2) 72%,var(--card))!important;
+  background-image:
+    linear-gradient(180deg,color-mix(in srgb,var(--primary) 4%,transparent),transparent 62%),
+    linear-gradient(color-mix(in srgb,var(--border) 40%,transparent) 1px,transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,var(--border) 32%,transparent) 1px,transparent 1px)!important;
+  background-size:auto,100% 25%,12.5% 100%!important;
+  border-color:color-mix(in srgb,var(--border) 82%,transparent)!important;
+}
+.exec-chart-line,.ana-main-line,.eco-sales-line,.crm-retention-line,.fin-cash-line,.health-visits-line{
+  stroke-width:3.25px!important;
+  filter:drop-shadow(0 5px 5px color-mix(in srgb,var(--primary) 18%,transparent));
+}
+.ana-second-line,.exec-chart-goal,.crm-value-line,.fin-profit-line,.health-wait-line{
+  opacity:.82;
+}
+
+/* Data rows behave like interactive product UI */
+.exec-order-table tbody tr,.ana-pages-table tbody tr,.table-wrap tbody tr{
+  transition:background var(--motion-fast),transform var(--motion-fast);
+}
+.exec-order-table tbody tr:hover,.ana-pages-table tbody tr:hover,.table-wrap tbody tr:hover{
+  background:color-mix(in srgb,var(--primary) 4%,var(--card));
+}
+.eco-product-row,.crm-account-row,.fin-expense-row,.health-dept-list>div,.health-clinician-list>div{
+  transition:background var(--motion-fast),border-color var(--motion-fast),transform var(--motion-fast);
+}
+.eco-product-row:hover,.crm-account-row:hover,.fin-expense-row:hover,.health-dept-list>div:hover,.health-clinician-list>div:hover{
+  background:color-mix(in srgb,var(--primary) 3.5%,var(--surface-2));
+  border-color:color-mix(in srgb,var(--primary) 14%,var(--border));
+  transform:translateY(-1px);
+}
+
+/* Mobile/tablet: preserve the already-clean shell */
+@media(max-width:1350px){.topbar-context{display:none}}
+@media(max-width:900px){
+  .sidebar{border-radius:16px}
+  .sidebar-quick-toggle{display:none}
+  .topbar{height:62px;border-radius:12px}
+}
+@media(max-width:680px){
+  .topbar{padding-inline:9px}
+  .search-trigger{height:38px;border-radius:8px}
+  .icon-button{width:36px;height:36px}
+}
+@media(prefers-reduced-motion:reduce){
+  .nav-item:hover svg,.eco-product-row:hover,.crm-account-row:hover,.fin-expense-row:hover,.health-dept-list>div:hover,.health-clinician-list>div:hover{transform:none}
+}
