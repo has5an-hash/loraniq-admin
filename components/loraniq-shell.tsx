@@ -13,7 +13,6 @@ import {
   Boxes,
   CalendarDays,
   ChartNoAxesCombined,
-  ChevronDown,
   CircleHelp,
   Columns3,
   Command as CommandIcon,
