@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 
-export type NotificationItem = { id: number; title: string; body: string; kind: string; time: string; read: boolean };
+export type NotificationItem = { id: number; title: string; body: string; kind: string; time: string; read: boolean; icon?: string };
 const seed: NotificationItem[] = [
   { id: 1, title: "نسخه جدید آماده بررسی است", body: "Build لورانیک با موفقیت در محیط Preview منتشر شد.", kind: "سیستم", time: "۲ دقیقه پیش", read: false },
   { id: 2, title: "سارا به پروژه اضافه شد", body: "عضویت سارا یوسفی در Loraniq Commerce تأیید شد.", kind: "تیم", time: "۱۸ دقیقه پیش", read: false },
