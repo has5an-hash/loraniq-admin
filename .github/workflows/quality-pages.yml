@@ -56,13 +56,18 @@ jobs:
 
       - name: Install Chromium QA runtime
         run: |
-          pnpm add --save-dev --lockfile=false playwright@1.55.0
+          pnpm add --save-dev --lockfile=false playwright@1.55.0 @axe-core/playwright@4.13.0
           pnpm exec playwright install --with-deps chromium
 
       - name: Chromium product QA
         env:
           QA_URL: http://127.0.0.1:4173/loraniq-admin/
         run: pnpm qa:pages
+
+      - name: Chromium accessibility QA
+        env:
+          QA_URL: http://127.0.0.1:4173/loraniq-admin/
+        run: node scripts/qa-accessibility.mjs
 
       - name: Chromium landing and demos QA
         env:

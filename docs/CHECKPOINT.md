@@ -1,82 +1,72 @@
 # Checkpoint
 
-Last updated: 2026-09-17
+Last updated: 2026-09-18
 
-## Last completed work
+## Live source
 
-- Replaced the earlier starter-like visual direction with a premium flagship visual system.
-- Rebuilt Executive and Analytics with distinct compositions.
-- Added Ecommerce as a real routed dashboard and connected it to sidebar/command navigation.
-- Added CRM as a real routed dashboard and connected it to sidebar/command navigation.
-- Vendored official Vazirmatn variable WOFF2 and bundled its SIL OFL 1.1 license.
-- Expanded automated Chromium QA from the initial routes to Executive, Analytics, Ecommerce and CRM.
-- QA now captures RTL/light and LTR/dark across desktop, tablet and mobile.
-- Added real browser interaction checks for Ecommerce revenue/orders and CRM retention/value controls.
-- Inspected generated desktop/mobile screenshots for Ecommerce and CRM.
+Repository: `has5an-hash/loraniq-admin`
+Branch: `main`
+GitHub is the live source. Historical ZIP files are not the development reference.
 
-## Important fix during this milestone
+## Current verified product commit
 
-The first CRM commit (`aeb54d9`) failed lint because `DropdownMenuContent` was missing a closing tag. It was corrected in commit `73aebac9`; do not treat the failed run as a pass.
+`560b98ef03d51df52575e32a3f10e0ed6f606c06`
 
-## Current verified commit
+Verified workflow: `35289957203`
+Quality build: **PASS**
+GitHub Pages deploy: **PASS**
 
-`73aebac9d107a2a4bd4c3598a1619dc9de5a9d16`
+## Current verified scope
 
-## Latest verified QA
+- 6 flagship dashboards: Executive, Analytics, Ecommerce, CRM, Finance, Healthcare.
+- 14 operational shell routes: Tables, Forms, Calendar, Projects, Kanban, Users, Chat, Email, Files, Invoice, Components, Search, Notifications, Settings.
+- 7 auth routes.
+- 4 utility routes.
+- Landing and Demos marketing routes.
+- True RTL/LTR runtime direction, Light/Dark, density, content width, full/compact sidebar, reduced motion, Soft/Bordered/Semi-dark skin preferences.
+- Command palette and responsive mobile navigation.
+- High-DPI real screenshot generation from deployed Pages.
+- Original illustration set and licensed local Vazirmatn.
 
-Workflow run: `35259952552`
+## Browser QA matrix
 
-Passed:
+Main product suite:
+- 31 routes
+- Desktop 1440×1000
+- Tablet 820×1180
+- Mobile 390×844
+- RTL + Light
+- LTR + Dark
+- horizontal overflow checks
+- console error checks
+- failed network request checks
+- command palette flow
+- mobile sidebar flow
+- compact/full sidebar preference flow
+- route-specific functional interactions
 
-- clean dependency installation
-- ESLint
-- TypeScript typecheck
-- static production build
-- Chromium smoke/interaction QA
-- desktop 1440×1000
-- tablet 820×1180
-- mobile 390×844
-- RTL/light
-- LTR/dark
-- horizontal-overflow check
-- dark-mode toggle
-- RTL/LTR toggle
-- command palette open/search/close
-- mobile sidebar open/close
-- Ecommerce revenue/orders switch
-- CRM retention/value switch
-- console-error collection
-- failed-request collection
-- GitHub Pages deployment
+Marketing suite:
+- Landing + Demos
+- same 3 viewports
+- RTL/Light + LTR/Dark
+- real preview-image presence
+- CTA/navigation checks
 
-Screenshot artifact: `loraniq-qa-screenshots`, artifact ID `10514527023`.
+Combined screenshot states per quality run: 198.
 
-## Key files added/changed in the latest development sequence
+## Visual checkpoint
 
-- `app/page.tsx`
-- `app/analytics/page.tsx`
-- `app/ecommerce/page.tsx`
-- `app/crm/page.tsx`
-- `app/visual-reset.css`
-- `app/executive-premium.css`
-- `app/flagship-polish.css`
-- `app/ecommerce-premium.css`
-- `app/crm-premium.css`
-- `app/layout.tsx`
-- `app/fonts/Vazirmatn.woff2`
-- `components/loraniq-shell.tsx`
-- `scripts/qa-pages.mjs`
-- `ASSET-LICENSES.md`
-- `Licenses/Vazirmatn-OFL-1.1.txt`
+Run 39 screenshots were manually reviewed after shell/data polish. Executive, Analytics, Ecommerce, CRM, Finance and Healthcare remain visually coherent on desktop; representative mobile views for flagship and app routes were also reviewed after the preceding visual milestone.
 
-## Open work / do not regress
+## Do not regress
 
-- Do not revert the premium visual reset to the earlier generic card-grid look.
-- Do not remove local Vazirmatn or reintroduce a required runtime font CDN.
-- Keep true RTL/LTR and light/dark QA for every new flagship.
-- Every new flagship must have a distinct page composition rather than cloning Executive/Analytics/Ecommerce/CRM.
-- Do not mark release-ready while Finance, Healthcare, tables/forms/apps, accessibility/performance/security, documentation, release packaging and marketplace gates remain open.
+- Do not return to the earlier generic card-grid visual language.
+- Do not remove local Vazirmatn or add required runtime font/CDN dependencies.
+- Do not remove real RTL/LTR or Dark/Light testing.
+- Do not replace real high-DPI dashboard screenshots with mock or decorative fake previews.
+- Do not copy proprietary Vuexy/Metronic code, assets, branding or exact layouts.
+- Do not mark release-ready before accessibility, performance, security, packaging and RTL-Theme gates pass.
 
 ## Exact next step
 
-Build the **Finance flagship dashboard** on the existing shell/design system, connect `/finance/` to navigation and command search, add Finance to automated QA, run the full clean CI/Chromium pipeline, inspect its generated desktop/mobile screenshots, then proceed to Healthcare.
+Add automated axe accessibility scans on representative dashboard/data/form/auth/marketing routes in desktop/mobile and RTL-Light/LTR-Dark states. Treat serious/critical WCAG findings as blockers, remediate them, and only then move to measured performance profiling.
