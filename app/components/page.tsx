@@ -1,5 +1,7 @@
 "use client";
 
+import "../components-premium.css";
+
 import { useState } from "react";
 import { AlertTriangle, Bell, Check, ChevronDown, CircleHelp, Copy, Database, Download, Inbox, LoaderCircle, MoreHorizontal, Plus, Search, Sparkles, UploadCloud, UserRound, X } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
