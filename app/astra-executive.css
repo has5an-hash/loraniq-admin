@@ -1,6 +1,6 @@
 /* Exact Executive component layer from the ChatGPT Work Astra handoff. */
 .heading-row{display:flex;align-items:center;justify-content:space-between;gap:20px}
-.overline{font:8px/2 Arial,sans-serif;color:#9898aa;letter-spacing:2.3px;margin-bottom:8px}
+.overline{font:8px/2 Arial,sans-serif;color:#656a7c;letter-spacing:2.3px;margin-bottom:8px}
 .heading-row h1{font-size:29px!important;font-weight:780!important;line-height:1.6!important;letter-spacing:-.9px!important}
 .title-dot{color:var(--primary);margin-right:3px}
 .heading-description{font-size:12px;color:var(--muted-foreground);margin-top:5px}
@@ -25,7 +25,7 @@
 .metric-heading{display:flex;justify-content:space-between;align-items:center}
 .metric-symbol{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;flex-shrink:0}
 .purple{background:#eee9fb;color:#8066c9}.blue{background:#eaf1fd;color:#4f7fae}.green{background:#e6f4ef;color:#277a60}.amber{background:#fbf1e3;color:#956b30}
-.metric-index{color:#aeb1c2;font:9px Arial;letter-spacing:1px}
+.metric-index{color:#656a7c;font:9px Arial;letter-spacing:1px}
 .metric>p{font-size:11px!important;color:var(--muted-foreground);margin-top:14px}
 .metric-value{display:flex;align-items:baseline;gap:7px;font-size:29px;font-weight:760;line-height:1.7;font-variant-numeric:tabular-nums;letter-spacing:-.4px;white-space:nowrap}
 .metric-value small{font-size:10px!important;font-weight:400;letter-spacing:0;color:var(--muted-foreground)}
@@ -76,7 +76,7 @@
 .goal-teams>div:nth-child(2) i{background:#8ab5a6}.goal-teams>div:nth-child(3) i{background:#cbb18d}
 .goal-surface>.outline-button{width:100%;min-height:35px;font-size:10px}
 
-.count-tag{font-size:10px;color:var(--primary);background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:4px}
+.count-tag{font-size:10px;color:var(--a11y-primary,#6254cf);background:var(--accent);padding:1px 6px;border-radius:5px;margin-right:4px}
 .text-button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--primary);font-size:10px;padding:5px 0}
 .table-toolbar{display:flex;align-items:center;gap:10px;margin:20px 0 15px}
 .table-search{flex:1;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:7px;padding:0 10px;color:var(--muted-foreground)}
@@ -92,7 +92,7 @@
 .orders-table tbody tr:hover{background:color-mix(in srgb,var(--accent) 30%,var(--card))}
 .customer-cell{display:flex;align-items:center;gap:9px}
 .customer-avatar{display:grid;place-items:center;width:33px;height:33px;flex-shrink:0;border-radius:10px;font-size:10px;font-weight:650}
-.color-0{background:#eae5f5;color:#71548d}.color-1{background:#e5eef3;color:#4d7891}.color-2{background:#f7e8df;color:#956e56}.color-3{background:#e5efeb;color:#537c6d}
+.color-0{background:#eae5f5;color:#71548d}.color-1{background:#e5eef3;color:#365f78}.color-2{background:#f7e8df;color:#754d38}.color-3{background:#e5efeb;color:#3d6457}
 .customer-cell b{display:block;color:var(--foreground);font-size:11px;font-weight:550}
 .customer-cell small{display:block;color:var(--muted-foreground);font:9px/1.8 Arial;text-align:start}
 .orders-table .amount{color:var(--foreground);font-size:11px;font-weight:550;font-variant-numeric:tabular-nums}
