@@ -1,5 +1,9 @@
 "use client";
 
+import "../app/auth-polish.css";
+
+import "../app/auth-premium.css";
+
 import Link from "next/link";
 import { ArrowLeft, Check, Languages, Moon, ShieldCheck, Sparkles, Sun } from "lucide-react";
 import { type ReactNode } from "react";
