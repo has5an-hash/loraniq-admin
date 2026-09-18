@@ -1333,3 +1333,388 @@ html[data-sidebar="compact"] .sidebar-status span{display:none!important}
   .auth-card{border-radius:12px!important}
   .stage-window.float-one,.stage-window.float-two{transform:none!important}
 }
+
+
+/* Astra component primitives mapped onto every newer Loraniq route. */
+.exec-stat-grid,
+.ana-metric-ribbon,
+.eco-metrics,
+.crm-metrics,
+.fin-metrics,
+.health-metrics,
+.projects-metrics{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:18px!important;
+  margin-bottom:22px!important;
+}
+.exec-stat,
+.ana-metric,
+.eco-metric,
+.crm-metric,
+.fin-metric,
+.health-metric,
+.projects-metrics>article{
+  min-width:0!important;
+  min-height:0!important;
+  padding:19px 20px 14px!important;
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  box-shadow:var(--shadow-card)!important;
+  transform:none!important;
+}
+.exec-stat:hover,
+.ana-metric:hover,
+.eco-metric:hover,
+.crm-metric:hover,
+.fin-metric:hover,
+.health-metric:hover,
+.projects-metrics>article:hover{
+  transform:none!important;
+  box-shadow:var(--shadow-card-hover)!important;
+}
+.exec-stat-icon,
+.ana-metric-icon,
+.eco-metric-icon,
+.crm-metric-icon,
+.fin-metric-icon,
+.health-metric-icon,
+.projects-metrics [class*="icon"]{
+  display:grid!important;
+  width:37px!important;
+  height:37px!important;
+  place-items:center!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+.exec-stat-grid>article:nth-child(1) .exec-stat-icon,
+.ana-metric-ribbon>article:nth-child(1) .ana-metric-icon,
+.eco-metrics>article:nth-child(1) .eco-metric-icon,
+.crm-metrics>article:nth-child(1) .crm-metric-icon,
+.fin-metrics>article:nth-child(1) .fin-metric-icon,
+.health-metrics>article:nth-child(1) .health-metric-icon{
+  background:#eee9fb!important;color:#8066c9!important;
+}
+.exec-stat-grid>article:nth-child(2) .exec-stat-icon,
+.ana-metric-ribbon>article:nth-child(2) .ana-metric-icon,
+.eco-metrics>article:nth-child(2) .eco-metric-icon,
+.crm-metrics>article:nth-child(2) .crm-metric-icon,
+.fin-metrics>article:nth-child(2) .fin-metric-icon,
+.health-metrics>article:nth-child(2) .health-metric-icon{
+  background:#eaf1fd!important;color:#6194cc!important;
+}
+.exec-stat-grid>article:nth-child(3) .exec-stat-icon,
+.ana-metric-ribbon>article:nth-child(3) .ana-metric-icon,
+.eco-metrics>article:nth-child(3) .eco-metric-icon,
+.crm-metrics>article:nth-child(3) .crm-metric-icon,
+.fin-metrics>article:nth-child(3) .fin-metric-icon,
+.health-metrics>article:nth-child(3) .health-metric-icon{
+  background:#e6f4ef!important;color:#409b7c!important;
+}
+.exec-stat-grid>article:nth-child(4) .exec-stat-icon,
+.ana-metric-ribbon>article:nth-child(4) .ana-metric-icon,
+.eco-metrics>article:nth-child(4) .eco-metric-icon,
+.crm-metrics>article:nth-child(4) .crm-metric-icon,
+.fin-metrics>article:nth-child(4) .fin-metric-icon,
+.health-metrics>article:nth-child(4) .health-metric-icon{
+  background:#fbf1e3!important;color:#a7742d!important;
+}
+.dark .exec-stat-icon,
+.dark .ana-metric-icon,
+.dark .eco-metric-icon,
+.dark .crm-metric-icon,
+.dark .fin-metric-icon,
+.dark .health-metric-icon{
+  background:var(--accent)!important;
+  color:var(--accent-foreground)!important;
+}
+.exec-stat-label,
+.ana-metric p,
+.eco-metric p,
+.crm-metric p,
+.fin-metric p,
+.health-metric p{
+  margin-top:14px!important;
+  color:var(--muted-foreground)!important;
+  font-size:11px!important;
+}
+.exec-stat-value strong,
+.ana-metric strong,
+.eco-metric strong,
+.crm-metric strong,
+.fin-metric strong,
+.health-metric strong{
+  font-size:29px!important;
+  font-weight:760!important;
+  line-height:1.7!important;
+  letter-spacing:-.4px!important;
+  font-variant-numeric:tabular-nums;
+}
+.exec-stat-value small,
+.ana-metric small,
+.eco-metric small,
+.crm-metric small,
+.fin-metric small,
+.health-metric small{
+  color:var(--muted-foreground)!important;
+  font-size:10px!important;
+  font-weight:400!important;
+}
+
+/* All secondary panels use Astra surfaces, not glass/gradient cards. */
+.exec-focus-card,
+.exec-chart-card,
+.exec-goal-card,
+.exec-cash-card,
+.exec-orders-card,
+.exec-activity-card,
+.ana-quality-card,
+.ana-chart-card,
+.ana-source-card,
+.ana-funnel-card,
+.ana-cohort-card,
+.ana-geo-card,
+.ana-pages-card,
+.eco-live-orders,
+.eco-sales-card,
+.eco-channel-card,
+.eco-products-card,
+.eco-funnel-card,
+.eco-inventory-card,
+.eco-logistics-card,
+.crm-priority-card,
+.crm-lifecycle-card,
+.crm-segment-card,
+.crm-accounts-card,
+.crm-churn-card,
+.crm-activity-card,
+.crm-opportunity-card,
+.fin-health-card,
+.fin-flow-card,
+.fin-budget-card,
+.fin-expense-card,
+.fin-liquidity-card,
+.fin-receivable-card,
+.fin-obligation-card,
+.health-triage-card,
+.health-flow-card,
+.health-capacity-card,
+.health-dept-card,
+.health-quality-card,
+.health-clinician-card,
+.health-alert-card,
+.data-panel,
+.form-card,
+.form-progress-card,
+.calendar-shell,
+.projects-panel,
+.project-card,
+[class*="chat-"][class*="-card"],
+[class*="mail-"][class*="-card"],
+[class*="files-"][class*="-card"],
+[class*="invoice-"][class*="-card"],
+.component-card,
+.settings-card{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+  backdrop-filter:none!important;
+}
+
+/* Astra data hierarchy */
+.exec-chart-card,
+.ana-chart-card,
+.eco-sales-card,
+.crm-lifecycle-card,
+.fin-flow-card,
+.health-flow-card{
+  padding:23px!important;
+}
+.exec-chart-head h2,
+.ana-chart-toolbar h2,
+.eco-chart-head h2,
+.crm-chart-head h2,
+.fin-chart-head h2,
+.health-chart-head h2,
+.exec-card-head h2,
+.ana-card-head h2,
+.eco-section-head h2,
+.crm-section-head h2,
+.fin-section-head h2,
+.health-section-head h2{
+  font-size:16px!important;
+  font-weight:650!important;
+}
+.exec-chart-head p,
+.ana-chart-toolbar p,
+.eco-chart-head p,
+.crm-chart-head p,
+.fin-chart-head p,
+.health-chart-head p,
+.exec-card-head p,
+.eco-section-head p,
+.crm-section-head p,
+.fin-section-head p,
+.health-section-head p{
+  color:var(--muted-foreground)!important;
+  font-size:10px!important;
+}
+.exec-chart-total strong,
+.ana-chart-summary strong,
+.eco-chart-summary strong,
+.crm-chart-summary strong,
+.fin-chart-summary strong,
+.health-chart-summary strong{
+  font-size:30px!important;
+  font-weight:700!important;
+}
+.exec-chart-legend,
+.ana-chart-legend,
+.eco-chart-foot,
+.crm-chart-foot,
+.fin-chart-foot,
+.health-chart-foot{
+  color:var(--muted-foreground)!important;
+  font-size:10px!important;
+}
+
+/* Original Astra table language. */
+.exec-order-table,
+.premium-table,
+.ana-pages-table{
+  width:100%!important;
+  border-collapse:collapse!important;
+  font-size:10px!important;
+}
+.exec-order-table th,
+.premium-table th,
+.ana-pages-table th{
+  padding:11px 13px!important;
+  border-bottom:1px solid var(--border)!important;
+  background:var(--surface-2)!important;
+  color:var(--muted-foreground)!important;
+  font-size:9px!important;
+  font-weight:500!important;
+}
+.exec-order-table td,
+.premium-table td,
+.ana-pages-table td{
+  padding:12px 13px!important;
+  border-bottom:1px solid var(--border)!important;
+  color:var(--muted-foreground)!important;
+  font-size:10px!important;
+}
+.exec-order-table tbody tr:hover td,
+.premium-table tbody tr:hover td,
+.ana-pages-table tbody tr:hover td{
+  background:color-mix(in srgb,var(--accent) 42%,transparent)!important;
+}
+.exec-status,
+.status-chip,
+.order-status,
+.plan-chip,
+.project-status{
+  padding:3px 7px!important;
+  border-radius:5px!important;
+  font-size:9px!important;
+  font-weight:500!important;
+  box-shadow:none!important;
+}
+
+/* Astra inputs, search and toolbars. */
+.data-toolbar,
+.projects-toolbar,
+.calendar-toolbar{
+  gap:9px!important;
+}
+.data-search,
+.projects-search,
+.input-shell,
+.select-shell{
+  border:1px solid var(--input)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.data-search:focus-within,
+.projects-search:focus-within,
+.input-shell:focus-within,
+.select-shell:focus-within{
+  border-color:var(--ring)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 15%,transparent)!important;
+}
+.data-toolbar button,
+.projects-toolbar button,
+.calendar-toolbar button,
+.form-actions button{
+  min-height:39px!important;
+  border-radius:8px!important;
+}
+
+/* Mobile/desktop proportions copied from the Astra handoff. */
+@media(min-width:1600px){
+  .main-content{padding-inline:46px!important}
+  .exec-stat,.ana-metric,.eco-metric,.crm-metric,.fin-metric,.health-metric{padding:23px!important}
+}
+@media(min-width:1081px) and (max-width:1240px){
+  .sidebar{width:224px!important}
+  .app-body{margin-inline-start:224px!important}
+  .sidebar-scroll{padding-inline:15px!important}
+  .topbar{padding-inline:24px!important}
+  .main-content{padding:26px 24px 0!important}
+}
+@media(min-width:801px) and (max-width:1080px){
+  .sidebar{
+    display:flex!important;
+    width:208px!important;
+    transform:none!important;
+    box-shadow:none!important;
+  }
+  .app-body{margin-inline-start:208px!important}
+  .sidebar-head{padding-inline:22px!important}
+  .sidebar-scroll{padding-inline:14px!important}
+  .studio-brand{font-size:22px!important}
+  .workspace-switch{padding:9px 7px!important}
+  .workspace-switch b{font-size:10px!important}
+  .topbar{height:68px!important;padding-inline:18px!important}
+  .main-content{padding:26px 20px 0!important}
+  .exec-stat-grid,.ana-metric-ribbon,.eco-metrics,.crm-metrics,.fin-metrics,.health-metrics,.projects-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .mobile-menu{display:none!important}
+}
+@media(max-width:800px){
+  .sidebar{
+    display:flex!important;
+    width:254px!important;
+    transform:translateX(105%)!important;
+  }
+  [dir="ltr"] .sidebar{transform:translateX(-105%)!important}
+  .sidebar.is-open{transform:translateX(0)!important}
+  .app-body{margin-inline-start:0!important}
+  .topbar{padding-inline:15px!important}
+  .mobile-menu{display:grid!important}
+  .sidebar-quick-toggle{display:none!important}
+  .search-button kbd{display:none!important}
+}
+@media(max-width:640px){
+  .main-content{padding:24px 16px 0!important}
+  .topbar{height:64px!important;gap:5px!important}
+  .topbar-tools{gap:3px!important}
+  .square-button{width:34px!important;height:36px!important}
+  .user-avatar{width:31px!important;height:31px!important}
+  .exec-stat-grid,.ana-metric-ribbon,.eco-metrics,.crm-metrics,.fin-metrics,.health-metrics,.projects-metrics{
+    gap:12px!important;
+    margin-bottom:16px!important;
+  }
+  .exec-stat,.ana-metric,.eco-metric,.crm-metric,.fin-metric,.health-metric{
+    padding:15px 13px 12px!important;
+  }
+  .exec-stat-value strong,.ana-metric strong,.eco-metric strong,.crm-metric strong,.fin-metric strong,.health-metric strong{
+    font-size:26px!important;
+    line-height:1.4!important;
+  }
+}
