@@ -577,3 +577,29 @@ html[data-density="compact"] .main-content [class*="-stat"]{min-height:136px!imp
 @media(prefers-reduced-motion:reduce){
   .main-content article,.nav-item,.icon-button,.sidebar{transition:none!important;animation:none!important}
 }
+
+
+/* Preference compatibility: keep the tested controls functional while Astra remains the default. */
+html[data-skin="semi-dark"] .sidebar{background:#2f3349!important}
+html[data-sidebar="compact"] .sidebar{width:86px!important}
+html[data-sidebar="compact"] .app-body{margin-inline-start:86px!important}
+html[data-sidebar="compact"] .brand-name,
+html[data-sidebar="compact"] .nav-item>span:not(.nav-badge):not(.active-pip),
+html[data-sidebar="compact"] .nav-eyebrow,
+html[data-sidebar="compact"] .workspace-card div,
+html[data-sidebar="compact"] .workspace-card [data-slot="progress"],
+html[data-sidebar="compact"] .sidebar-foot>.nav-item>span:not(.active-pip){display:none!important}
+html[data-sidebar="compact"] .sidebar-head{padding-inline:23px!important}
+html[data-sidebar="compact"] .sidebar-scroll{padding-inline:15px!important}
+html[data-sidebar="compact"] .nav-item{justify-content:center!important;padding-inline:0!important}
+html[data-sidebar="compact"] .workspace-card{display:grid!important;place-items:center!important;padding:11px!important}
+html[data-sidebar="compact"] .sidebar-foot{padding-inline:15px!important}
+@media(max-width:1080px){
+  html[data-sidebar="compact"] .sidebar{width:254px!important}
+  html[data-sidebar="compact"] .app-body{margin-inline-start:0!important}
+  html[data-sidebar="compact"] .brand-name,
+  html[data-sidebar="compact"] .nav-item>span:not(.nav-badge):not(.active-pip),
+  html[data-sidebar="compact"] .nav-eyebrow,
+  html[data-sidebar="compact"] .workspace-card div,
+  html[data-sidebar="compact"] .workspace-card [data-slot="progress"]{display:initial!important}
+}
