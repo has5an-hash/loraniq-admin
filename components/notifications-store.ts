@@ -18,7 +18,7 @@ export type LoraniqNotification = {
   icon: NotificationIconKey;
 };
 
-const STORAGE_KEY = "loraniq-notifications-v1";
+const STORAGE_KEY = "loraniq-notifications-v2";
 
 export const notificationSeed: LoraniqNotification[] = [
   { id: 1, title: "نسخه جدید آماده بررسی است", body: "Build لورانیک با موفقیت در محیط Preview منتشر شد.", kind: "سیستم", kindEn: "System", time: "۲ دقیقه پیش", timeEn: "2 min ago", read: false, icon: "system" },
