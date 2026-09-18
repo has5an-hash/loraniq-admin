@@ -1,5 +1,7 @@
 "use client";
 
+import "../ecommerce-premium.css";
+
 import { useState } from "react";
 import {
   ArrowDownRight,
