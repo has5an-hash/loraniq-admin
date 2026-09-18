@@ -46,7 +46,12 @@ async function scan(page,label){
 
 for(const route of routes){
   for(const viewport of viewports){
-    const context=await browser.newContext({viewport,colorScheme:"light",reducedMotion:"reduce"});\n    const page=await context.newPage();
+    const context=await browser.newContext({
+      viewport,
+      colorScheme:"light",
+      reducedMotion:"reduce",
+    });
+    const page=await context.newPage();
     const response=await page.goto(new URL(route.path,baseURL).toString(),{waitUntil:"networkidle",timeout:60000});
     if(!response?.ok())failures.push(`${route.name}/${viewport.name}: response ${response?.status()??"none"}`);
     await page.locator(route.ready).first().waitFor({state:"visible"});
