@@ -132,6 +132,7 @@ export function LoraniqShell({
   const dark = resolvedTheme === "dark";
   const routeActive = resolveActive(pathname, active);
   const activeItem = allNavigation.find((item) => item.key === routeActive) ?? dashboards[0];
+  const ActiveIcon = activeItem.icon;
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -275,7 +276,7 @@ export function LoraniqShell({
               <Menu />
             </button>
             <span className="context-mark">
-              <activeItem.icon size={18} />
+              <ActiveIcon size={18} />
             </span>
             <span>
               {rtl ? "فضای کاری" : "Workspace"}
