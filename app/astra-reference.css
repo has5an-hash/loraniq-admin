@@ -23,6 +23,10 @@
   --input:#e1e3eb!important;
   --ring:#8b76e1!important;
   --green:#138468;
+  --success:#138468;
+  --info:#4f86c6;
+  --warning:#a97935;
+  --danger:#b75c6a;
   --soft-green:#e7f5ef;
   --radius:1rem!important;
   --surface-2:#f9f9fc!important;
@@ -55,6 +59,10 @@
   --border:#303648!important;
   --input:#41465a!important;
   --green:#7bddb6;
+  --success:#7bddb6;
+  --info:#8dbcf0;
+  --warning:#e6c27d;
+  --danger:#f0a0b1;
   --soft-green:#203b34;
   --surface-2:#181c28!important;
   --shadow-card:0 8px 26px rgba(0,0,0,.12)!important;
