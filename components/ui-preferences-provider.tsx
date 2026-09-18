@@ -9,6 +9,7 @@ export type SkinMode = "soft" | "bordered" | "semi-dark";
 export type ContentWidthMode = "fluid" | "boxed";
 export type SidebarMode = "full" | "compact";
 export type MotionMode = "full" | "reduced";
+export type AccentMode = "violet" | "blue" | "emerald" | "rose" | "amber";
 
 export type UiPreferences = {
   theme: ThemeMode;
@@ -18,6 +19,7 @@ export type UiPreferences = {
   contentWidth: ContentWidthMode;
   sidebar: SidebarMode;
   motion: MotionMode;
+  accent: AccentMode;
 };
 
 const STORAGE_KEY = "loraniq-ui-preferences-v1";
@@ -29,6 +31,7 @@ export const defaultUiPreferences: UiPreferences = {
   contentWidth: "fluid",
   sidebar: "full",
   motion: "full",
+  accent: "violet",
 };
 
 type UiPreferencesContextValue = {
@@ -114,6 +117,7 @@ function applyPreferences(preferences: UiPreferences) {
   root.dataset.contentWidth = preferences.contentWidth;
   root.dataset.sidebar = preferences.sidebar;
   root.dataset.motion = preferences.motion;
+  root.dataset.accent = preferences.accent;
 }
 
 export function UiPreferencesProvider({ children }: { children: ReactNode }) {

@@ -8,6 +8,7 @@ import "./typography-premium.css";
 import "./a11y-polish.css";
 import "./astra-reference.css";
 import "./astra-apps.css";
+import "./accents.css";
 import "./premium-final-polish.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
