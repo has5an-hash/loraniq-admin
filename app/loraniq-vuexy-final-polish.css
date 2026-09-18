@@ -27,4 +27,15 @@
 .architecture-stack{border-radius:32px;padding:38px}
 .architecture-stack article{min-height:170px;border-radius:22px}
 .landing-cta{border-radius:34px;padding:54px}
-@media(max-width:900px){.landing-hero{min-height:auto;padding-top:60px}.landing-hero h1{letter-spacing:-1.5px}.landing-architecture{gap:40px}.landing-cta{padding:32px;margin-bottom:50px}}
+
+/* Premium hero presentation pass */
+.landing-hero-copy{max-width:700px}
+.landing-kicker{backdrop-filter:blur(12px);box-shadow:0 12px 30px color-mix(in srgb,var(--primary) 12%,transparent)}
+.landing-hero-actions .marketing-cta{box-shadow:0 18px 45px color-mix(in srgb,var(--primary) 28%,transparent)}
+.landing-proof span{padding:7px 12px;border:1px solid color-mix(in srgb,var(--border) 80%,transparent);border-radius:999px;background:color-mix(in srgb,var(--card) 70%,transparent)}
+.landing-stage:after{content:"";position:absolute;inset:14% 5% auto auto;width:72%;height:70%;border-radius:40px;background:linear-gradient(145deg,color-mix(in srgb,var(--primary) 8%,transparent),transparent);filter:blur(30px);z-index:-1}
+.stage-window.main img{filter:saturate(1.04) contrast(1.02)}
+.stage-window.float-one,.stage-window.float-two{border-width:2px}
+.landing-demo-card,.feature-grid article,.showcase-card{transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.landing-demo-card:hover,.feature-grid article:hover,.showcase-card:hover{box-shadow:0 28px 70px rgba(31,33,49,.14)}
+@media(max-width:900px){.landing-hero{min-height:auto;padding-top:60px}.landing-hero h1{letter-spacing:-1.5px}.landing-architecture{gap:40px}.landing-cta{padding:32px;margin-bottom:50px}.landing-proof span{width:100%;justify-content:center}}
