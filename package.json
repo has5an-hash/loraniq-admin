@@ -14,7 +14,10 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "build:pages": "node scripts/build-pages.mjs",
-    "qa:pages": "node scripts/qa-pages.mjs"
+    "qa:pages": "node scripts/qa-pages.mjs",
+    "qa:accessibility": "node scripts/qa-accessibility.mjs",
+    "qa:performance": "node scripts/qa-performance.mjs",
+    "qa:security": "node scripts/qa-security.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

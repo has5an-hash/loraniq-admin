@@ -41,10 +41,31 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Source security scan
+        run: pnpm qa:security
+
+      - name: Dependency security audit
+        shell: bash
+        run: |
+          mkdir -p artifacts/security
+          set +e
+          pnpm audit --prod --audit-level high --json > artifacts/security/pnpm-audit-production.json
+          PROD_AUDIT=$?
+          pnpm audit --audit-level critical --json > artifacts/security/pnpm-audit-all.json
+          ALL_AUDIT=$?
+          set -e
+          if [ "$PROD_AUDIT" -ne 0 ] || [ "$ALL_AUDIT" -ne 0 ]; then
+            echo "Dependency audit failed: production-high=$PROD_AUDIT all-critical=$ALL_AUDIT"
+            exit 1
+          fi
+
       - name: Build static GitHub Pages output
         env:
           NEXT_PUBLIC_BASE_PATH: /loraniq-admin
         run: pnpm build:pages
+
+      - name: Static performance budget
+        run: pnpm qa:performance
 
       - name: Prepare local Pages mount
         run: |

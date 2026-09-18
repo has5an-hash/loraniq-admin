@@ -23,13 +23,13 @@ Status: **In progress**
 
 ### Latest verified quality gate
 
-Verified commit: `560b98ef03d51df52575e32a3f10e0ed6f606c06`
-Workflow run: `35289957203`
+Verified commit: `a5be8e1ac8893b46ba077fe22c1f70345347bb06`
+Workflow run: `35294882433`
 Result: **PASS**
 Pages deployment: **PASS**
 Screenshot artifact: `loraniq-qa-screenshots`
-Artifact ID: `10525528997`
-Artifact digest: `sha256:e7045409f65c9081c990eed19f078bd353e37cddd5b0d15ee866d6d9615a4c10`
+Artifact ID: `10527811892`
+Artifact digest: `sha256:d50b4677fa654c42c00f3ff6ad1bb5763fc9e914d0f75fc0438fbc05891ae9c6`
 
 The main Chromium suite covers 31 product routes × 3 viewports × 2 direction/theme states = 186 screenshots/check states per run. Marketing QA adds Landing + Demos across the same three viewports and two states (12 more captures), for 198 state screenshots in the combined artifact.
 
@@ -45,22 +45,22 @@ The main Chromium suite covers 31 product routes × 3 viewports × 2 direction/t
 - interactive row hover states
 - persistent Semi-dark sidebar skin
 - high-DPI real dashboard previews
+- automated representative accessibility gate passed with zero serious/critical Axe blockers
 
 ## Open release gates
 
-1. Automated accessibility audit and remediation — current next gate.
-2. Measured performance profiling and optimization.
-3. Security/dependency review.
-4. Final licensing/asset provenance audit.
-5. Full documentation/developer guide reconciliation.
-6. Final cross-browser/manual visual regression.
-7. Clean extracted release-package install/build test.
-8. Release manifest/checksums and marketplace package.
-9. Current RTL-Theme rules review and compliant marketplace assets.
-10. Final submission gate only after every blocking item above passes.
+1. Measured performance profiling and optimization — current next gate.
+2. Security/dependency/secret/external-request review — current next gate.
+3. Final licensing/asset provenance audit.
+4. Full documentation/developer guide reconciliation.
+5. Final cross-browser/manual visual regression.
+6. Clean extracted release-package install/build test.
+7. Release manifest/checksums and marketplace package.
+8. Current RTL-Theme rules review and compliant marketplace assets.
+9. Final submission gate only after every blocking item above passes.
 
 ## Release status
 
 **NOT READY FOR RELEASE.**
 
-The product breadth and current Chromium regression gate are substantially ahead of the old checkpoint, but accessibility/performance/security/package/marketplace gates have not all passed yet.
+The product breadth, Chromium regression gate and automated Accessibility gate have passed. Performance/security/package/marketplace gates have not all passed yet.

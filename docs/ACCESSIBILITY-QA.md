@@ -32,6 +32,18 @@ Axe findings with impact `critical` or `serious` are treated as CI blockers. The
 
 Moderate/minor findings are retained in the report for later remediation and final manual audit; passing automated axe does not by itself prove full WCAG conformance.
 
+## Latest verified automated result
+
+- Commit: `a5be8e1ac8893b46ba077fe22c1f70345347bb06`
+- GitHub Actions run: `35294882433`
+- Result: **PASS**
+- Scans: 32
+- Blocking findings: **0 serious / 0 critical**
+- QA artifact ID: `10527811892`
+- Artifact digest: `sha256:d50b4677fa654c42c00f3ff6ad1bb5763fc9e914d0f75fc0438fbc05891ae9c6`
+
+The first real Axe run exposed contrast, ARIA, focusability and accessible-name blockers. Those issues were remediated and the final representative matrix passed without suppressing the blocker rules.
+
 ## Manual work still required
 
 - keyboard-only end-to-end review

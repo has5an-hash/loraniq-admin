@@ -4,12 +4,12 @@ Date: 2026-09-18
 
 ## Latest verified build
 
-- Commit: `560b98ef03d51df52575e32a3f10e0ed6f606c06`
-- GitHub Actions run: `35289957203`
+- Commit: `a5be8e1ac8893b46ba077fe22c1f70345347bb06`
+- GitHub Actions run: `35294882433`
 - Quality build: **PASS**
 - GitHub Pages deployment: **PASS**
-- Screenshot artifact ID: `10525528997`
-- Artifact digest: `sha256:e7045409f65c9081c990eed19f078bd353e37cddd5b0d15ee866d6d9615a4c10`
+- Screenshot artifact ID: `10527811892`
+- Artifact digest: `sha256:d50b4677fa654c42c00f3ff6ad1bb5763fc9e914d0f75fc0438fbc05891ae9c6`
 
 ## Route coverage
 
@@ -72,6 +72,7 @@ Combined: 198 screenshots/states per full quality run.
 - TypeScript typecheck
 - static Pages production build
 - Chromium product QA
+- representative Axe accessibility QA: 32 scans, zero serious/critical blockers
 - Chromium marketing QA
 - QA artifact upload
 - Pages artifact upload
@@ -84,6 +85,6 @@ The current flagship shell/data-polish artifact was manually reviewed. No visual
 ## Current gate result
 
 Functional/browser regression gate: **PASS** for the checks above.
-Accessibility gate: **being added next; not yet passed**.
+Accessibility gate: **PASS** for the automated representative matrix in Run 48. This does not claim full WCAG conformance; manual keyboard/screen-reader/reflow review remains in the final audit.
 Performance/security/package/marketplace gates: **not yet passed**.
 Full release gate: **NOT PASSED**.
