@@ -45,7 +45,7 @@ Astra sidebar:
 - Border: `#35364b`
 - Text: `#b3b4c7`
 - Muted text: `#8e90a7`
-- Active item: `#8470d6`
+- Active item reference: `#8470d6`; implementation uses Astra primary `#7560d7` for white-text WCAG contrast
 - Brand/monogram: `#8c78df`
 - Detail accent: `#ddcc95`
 
