@@ -902,3 +902,426 @@ html[data-sidebar="compact"] .sidebar-status span{display:none!important}
   html[data-sidebar="compact"] .sidebar-status{justify-content:flex-start!important;font-size:10px!important}
   html[data-sidebar="compact"] .sidebar-status span{display:inline!important}
 }
+
+/* Astra final application/auth/marketing unification */
+/* Keep every post-Astra route inside the same quiet workspace language.
+   Route CSS owns layout/behavior; this block owns visual identity only. */
+
+/* Operational app surfaces */
+.main-content :is(
+  .table-hero,.form-hero,.calendar-hero,.projects-hero,.kanban-hero,.users-hero,
+  .files-hero,.invoice-hero,.search-hero,.notifications-hero,.settings-hero,.components-hero
+){
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.main-content :is(
+  .chat-shell,.mail-shell,.files-shell,.invoice-shell,.calendar-shell,.data-panel,
+  .projects-panel,.users-panel,.notifications-feed,.notifications-settings,
+  .settings-preview,.components-hero-card
+){
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.main-content :is(
+  .chat-list,.conversation,.chat-profile,.mail-sidebar,.mail-list,.mail-reader,
+  .files-sidebar,.files-content,.invoice-list,.invoice-preview,.calendar-board,
+  .calendar-agenda
+){
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.main-content :is(.chat-list,.conversation,.mail-sidebar,.mail-list,.files-sidebar,.invoice-list){
+  border-color:var(--border)!important;
+}
+.main-content :is(
+  .chat-search,.mail-search,.files-search,.projects-search,.kanban-search,.users-search,
+  .invoice-search,.search-main-input,.data-search
+){
+  min-height:40px!important;
+  border:1px solid var(--input)!important;
+  border-radius:8px!important;
+  background:var(--surface-2)!important;
+  box-shadow:none!important;
+}
+.main-content :is(
+  .chat-search,.mail-search,.files-search,.projects-search,.kanban-search,.users-search,
+  .invoice-search,.search-main-input,.data-search
+) input{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.main-content :is(
+  .project-card,.kanban-card,.files-items article,.mobile-data-cards article,
+  .calendar-detail,.review-panel,.states-card,.storage-card
+){
+  border:1px solid var(--border)!important;
+  border-radius:11px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.main-content :is(.project-card,.kanban-card,.files-items article):hover{
+  border-color:color-mix(in srgb,var(--primary) 18%,var(--border))!important;
+  background:color-mix(in srgb,var(--accent) 22%,var(--card))!important;
+  box-shadow:var(--shadow-card)!important;
+  transform:none!important;
+}
+.main-content :is(
+  .mail-items article,.notification-list article,.user-identity,.chat-contacts button,
+  .calendar-event-list article
+){
+  border-color:var(--border)!important;
+  box-shadow:none!important;
+}
+.main-content :is(.mail-items article,.notification-list article,.chat-contacts button):hover{
+  background:color-mix(in srgb,var(--accent) 28%,transparent)!important;
+}
+.main-content :is(
+  .data-toolbar,.projects-toolbar,.kanban-toolbar,.users-toolbar,.files-toolbar,
+  .invoice-list-toolbar,.calendar-toolbar,.mail-list-actions
+){
+  border-color:var(--border)!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+}
+.main-content :is(
+  .file-bulk,.users-bulk,.bulk-bar,.calendar-created,.projects-created,.kanban-toast,
+  .users-success,.compose-success,.file-upload-success,.invoice-sent,.form-success
+){
+  border:1px solid color-mix(in srgb,var(--green) 24%,var(--border))!important;
+  border-radius:10px!important;
+  background:var(--soft-green)!important;
+  box-shadow:none!important;
+}
+.main-content :is(
+  .mail-label-chip,.status-chip,.status-pill,.project-status,.task-priority,.user-role-pill,
+  .user-status,.calendar-event-type,.plan-chip,.data-state
+){
+  border-radius:6px!important;
+  box-shadow:none!important;
+}
+.main-content :is(
+  .composer,.compose-window,.file-upload-window,.users-modal-card
+){
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  box-shadow:0 18px 60px rgba(32,32,64,.14)!important;
+}
+.main-content :is(.message-bubble,.typing-state){
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+.main-content :is(.message-row.mine .message-bubble,.send-button,.compose-button){
+  background:var(--primary)!important;
+  color:#fff!important;
+  background-image:none!important;
+}
+.main-content :is(.file-icon,.project-avatars span,.chat-avatar,.mail-avatar,.person-avatar,.user-avatar){
+  box-shadow:none!important;
+}
+.main-content :is(.file-icon,.project-avatars span,.person-avatar){
+  border-radius:9px!important;
+}
+.main-content :is(.chat-avatar,.mail-avatar,.user-avatar){
+  border-radius:50%!important;
+}
+.main-content :is(
+  .form-card,.form-progress-card,.form-guidance,.review-notice,.upload-zone,
+  .search-results,.search-no-result,.search-empty-start,.notification-policy,
+  .demos-note
+){
+  border-color:var(--border)!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.main-content :is(.input-shell,.select-shell,.auth-input){
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+
+/* Astra identity for auth + utility pages */
+.auth-layout{
+  background:var(--background)!important;
+}
+.auth-visual{
+  padding:32px!important;
+  background:var(--astra-sidebar)!important;
+  background-image:none!important;
+  color:#fff!important;
+}
+.auth-brand{gap:12px!important}
+.auth-brand-mark{
+  position:relative!important;
+  display:block!important;
+  width:40px!important;
+  height:43px!important;
+  padding:0!important;
+  border-radius:12px!important;
+  background:#8c78df!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.auth-brand-mark i{display:none!important}
+.auth-brand-mark::before{
+  content:"L";
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-family:Georgia,serif;
+  font-style:italic;
+  font-size:29px;
+  font-weight:800;
+  line-height:1;
+}
+.auth-brand-mark::after{
+  content:"•";
+  position:absolute;
+  top:-7px;
+  inset-inline-end:4px;
+  color:var(--astra-gold);
+  font-size:20px;
+  line-height:1;
+}
+.auth-brand b{font-size:17px!important;letter-spacing:-.35px}
+.auth-brand em{color:#c7b8f8!important}
+.auth-eyebrow{
+  padding:6px 9px!important;
+  border-color:var(--astra-sidebar-border)!important;
+  border-radius:7px!important;
+  background:var(--astra-sidebar-2)!important;
+  color:#c7b8f8!important;
+}
+.auth-visual-copy h1{
+  max-width:600px;
+  font-size:clamp(34px,3.4vw,54px)!important;
+  font-weight:780!important;
+  letter-spacing:-1.5px!important;
+}
+.auth-visual-copy p{color:var(--astra-sidebar-text)!important}
+.auth-trust span{
+  border-color:var(--astra-sidebar-border)!important;
+  border-radius:8px!important;
+  background:var(--astra-sidebar-2)!important;
+  color:var(--astra-sidebar-text)!important;
+}
+.auth-art-window{
+  border-color:var(--astra-sidebar-border)!important;
+  border-radius:13px!important;
+  background:var(--astra-sidebar-2)!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.15)!important;
+  backdrop-filter:none!important;
+  transform:none!important;
+}
+[dir="ltr"] .auth-art-window{transform:none!important}
+.auth-art-card,.auth-art-grid div{
+  border-color:var(--astra-sidebar-border)!important;
+  border-radius:9px!important;
+  background:#2d2e42!important;
+}
+.auth-art-card b{background:#8470d6!important}
+.auth-orb{display:none!important}
+.auth-content{
+  padding:28px 34px!important;
+  background:var(--background)!important;
+  background-image:none!important;
+}
+.auth-content-top button{
+  border:0!important;
+  border-radius:9px!important;
+  background:var(--card)!important;
+  color:var(--muted-foreground)!important;
+  box-shadow:none!important;
+}
+.auth-content-top button:hover{background:var(--muted)!important;color:var(--primary)!important}
+.auth-card{
+  padding:26px!important;
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.auth-card-head>span,.auth-success-state>span{
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+.auth-input{
+  height:43px!important;
+  border-color:var(--input)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+}
+.auth-input:focus-within{
+  border-color:var(--ring)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 12%,transparent)!important;
+}
+.auth-submit,.auth-secondary button,.utility-actions a,.utility-actions button{
+  min-height:40px!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+.utility-code{
+  background:none!important;
+  color:var(--primary)!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+.maintenance-progress i{background:var(--primary)!important}
+
+/* Public marketing pages use the same Astra geometry instead of a second brand. */
+.marketing-nav{
+  min-height:78px!important;
+  padding-inline:clamp(18px,4vw,64px)!important;
+  border-bottom:1px solid var(--border)!important;
+  background:color-mix(in srgb,var(--card) 98%,transparent)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(16px)!important;
+}
+.marketing-brand{gap:11px!important}
+.marketing-brand>span{
+  position:relative!important;
+  display:block!important;
+  width:36px!important;
+  height:39px!important;
+  padding:0!important;
+  border-radius:11px!important;
+  background:#8c78df!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.marketing-brand>span i{display:none!important}
+.marketing-brand>span::before{
+  content:"L";
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-family:Georgia,serif;
+  font-style:italic;
+  font-size:26px;
+  font-weight:800;
+  line-height:1;
+}
+.marketing-brand>span::after{
+  content:"•";
+  position:absolute;
+  top:-6px;
+  inset-inline-end:4px;
+  color:var(--astra-gold);
+  font-size:18px;
+}
+.marketing-brand b{font-size:15px!important;letter-spacing:-.3px}
+.marketing-brand em{color:var(--primary)!important}
+.marketing-actions>button{
+  border:0!important;
+  border-radius:9px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.marketing-actions>button:hover{background:var(--muted)!important;color:var(--primary)!important}
+.marketing-primary,.marketing-cta{
+  border-radius:8px!important;
+  background:var(--primary)!important;
+  background-image:none!important;
+  box-shadow:0 3px 8px rgba(117,96,215,.11)!important;
+  transform:none!important;
+}
+.marketing-primary:hover,.marketing-cta:hover{filter:brightness(1.055);transform:none!important}
+.marketing-ghost{
+  border-radius:8px!important;
+  background:var(--card)!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.marketing-ghost:hover{transform:none!important}
+.landing-hero{
+  background:var(--background)!important;
+  background-image:none!important;
+}
+.landing-hero::before{display:none!important}
+.landing-kicker{
+  border-radius:7px!important;
+  background:var(--accent)!important;
+}
+.landing-hero h1{
+  font-size:clamp(40px,4.8vw,70px)!important;
+  font-weight:820!important;
+  letter-spacing:-2.2px!important;
+}
+.landing-hero h1 em{
+  background:none!important;
+  color:var(--primary)!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+.stage-glow{display:none!important}
+.stage-window{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  box-shadow:0 18px 50px rgba(32,32,64,.09)!important;
+}
+.stage-window.main{
+  transform:none!important;
+  animation:none!important;
+}
+.stage-window.float-one{transform:rotate(2deg)!important}
+.stage-window.float-two{transform:rotate(-2deg)!important}
+.stage-chip{
+  border-radius:8px!important;
+  background:var(--card)!important;
+  box-shadow:var(--shadow-card)!important;
+  backdrop-filter:none!important;
+}
+.feature-grid article,.landing-demo-card,.selector-card,.architecture-stack,.architecture-stack article{
+  border-color:var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.feature-grid article:hover,.landing-demo-card:hover{
+  border-color:color-mix(in srgb,var(--primary) 18%,var(--border))!important;
+  box-shadow:var(--shadow-card-hover)!important;
+  transform:none!important;
+}
+.feature-grid article::after{display:none!important}
+.feature-grid article>span,.selector-title>span,.architecture-stack span{
+  border-radius:9px!important;
+  background:var(--accent)!important;
+}
+.landing-demos{
+  background:var(--surface-2)!important;
+}
+.demo-shot>span,.selector-index,.selector-open{
+  border-radius:7px!important;
+  box-shadow:none!important;
+}
+.architecture-stack::before{display:none!important}
+.architecture-stack article:nth-child(2),.architecture-stack article:nth-child(3){transform:none!important}
+.landing-cta{
+  border:1px solid var(--astra-sidebar-border)!important;
+  border-radius:13px!important;
+  background:var(--astra-sidebar)!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.landing-cta .marketing-cta{background:#fff!important;color:#3f355f!important}
+.marketing-footer{background:var(--card)!important}
+
+@media(max-width:980px){
+  .auth-content{padding-inline:18px!important}
+}
+@media(max-width:760px){
+  .auth-card{border-radius:12px!important}
+  .stage-window.float-one,.stage-window.float-two{transform:none!important}
+}
