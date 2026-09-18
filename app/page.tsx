@@ -1,5 +1,7 @@
 "use client";
 
+import "./executive-premium.css";
+
 import { useState } from "react";
 import {
   ArrowUpRight,
