@@ -1,0 +1,105 @@
+/* Astra auth skin — compact, calm and consistent with the workspace. */
+.auth-layout{background:var(--background)!important;color:var(--foreground)!important}
+.auth-visual{
+  background:#202131!important;
+  background-image:radial-gradient(ellipse at top right,#37324c,transparent 68%)!important;
+  color:#f2f0f8!important;
+}
+.auth-brand{color:#fff!important;font-weight:750!important}
+.auth-brand-mark{
+  border-radius:12px!important;
+  background:#8c78df!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+.auth-eyebrow{color:#ccb79a!important;font-size:10px!important;letter-spacing:.08em!important}
+.auth-visual-copy h1{color:#fff!important;font-weight:760!important;letter-spacing:-.8px!important}
+.auth-visual-copy p,.auth-trust{color:#b3b4c7!important}
+.auth-trust span{
+  border:1px solid #39384f!important;
+  border-radius:7px!important;
+  background:#292a3d!important;
+  color:#c9c8d7!important;
+  box-shadow:none!important;
+}
+.auth-art-window,.auth-art-card{
+  border:1px solid #39384f!important;
+  border-radius:13px!important;
+  background:#292a3d!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+.auth-orb.one{background:#8c78df!important;opacity:.18!important}
+.auth-orb.two{background:#ccb79a!important;opacity:.12!important}
+.auth-content{background:var(--background)!important}
+.auth-content-top{color:var(--muted-foreground)!important}
+.auth-mobile-heading{color:var(--foreground)!important}
+.auth-form-wrap{max-width:470px!important}
+.auth-card{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+  padding:28px!important;
+}
+.auth-card-head h1,.auth-card-head h2{color:var(--foreground)!important;font-weight:760!important;letter-spacing:-.5px!important}
+.auth-card-head p,.auth-help,.auth-card-foot{color:var(--muted-foreground)!important;line-height:1.9!important}
+.auth-field label{color:var(--foreground)!important;font-size:11px!important;font-weight:600!important}
+.auth-input{
+  min-height:42px!important;
+  border:1px solid var(--input)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  color:var(--foreground)!important;
+  box-shadow:none!important;
+}
+.auth-input:focus-within{
+  border-color:var(--ring)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ring) 15%,transparent)!important;
+}
+.auth-submit{
+  min-height:41px!important;
+  border-radius:8px!important;
+  background:var(--primary)!important;
+  color:var(--primary-foreground)!important;
+  box-shadow:0 3px 8px #7560d71c!important;
+}
+.auth-submit:hover{filter:brightness(1.06)!important;transform:none!important}
+.auth-secondary{
+  min-height:39px!important;
+  border:1px solid var(--border)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  color:var(--foreground)!important;
+  box-shadow:none!important;
+}
+.auth-divider::before,.auth-divider::after{background:var(--border)!important}
+.auth-divider span{color:var(--muted-foreground)!important;background:var(--card)!important}
+.auth-error{
+  border:1px solid color-mix(in srgb,var(--danger) 24%,var(--border))!important;
+  border-radius:7px!important;
+  background:color-mix(in srgb,var(--danger) 8%,var(--card))!important;
+  color:var(--a11y-danger,var(--danger))!important;
+}
+.password-meter span{background:var(--border)!important}
+.password-meter.weak span:nth-child(-n+1),
+.password-meter.medium span:nth-child(-n+2),
+.password-meter.strong span{border-radius:999px!important}
+.otp-grid input{
+  border:1px solid var(--input)!important;
+  border-radius:8px!important;
+  background:var(--card)!important;
+  color:var(--foreground)!important;
+}
+.auth-success-state{
+  border:1px solid var(--border)!important;
+  border-radius:13px!important;
+  background:var(--card)!important;
+  box-shadow:var(--shadow-card)!important;
+}
+@media(max-width:900px){
+  .auth-visual{display:none!important}
+  .auth-content{padding:28px 18px!important}
+  .auth-card{padding:24px!important}
+}
