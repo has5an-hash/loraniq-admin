@@ -16,7 +16,9 @@
     "qa:accessibility": "node scripts/qa-accessibility.mjs",
     "qa:performance": "node scripts/qa-performance.mjs",
     "qa:security": "node scripts/qa-security.mjs",
-    "qa:dependencies": "node scripts/qa-dependencies.mjs"
+    "qa:dependencies": "node scripts/qa-dependencies.mjs",
+    "qa:runtime-performance": "node scripts/qa-runtime-performance.mjs",
+    "qa:cross-browser": "node scripts/qa-cross-browser.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

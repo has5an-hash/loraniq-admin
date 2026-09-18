@@ -41,6 +41,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Portable Next.js production build
+        run: pnpm build
+
       - name: Source security scan
         run: pnpm qa:security
 
@@ -73,6 +76,11 @@ jobs:
           QA_URL: http://127.0.0.1:4173/loraniq-admin/
         run: pnpm qa:pages
 
+      - name: Throttled Chromium runtime performance
+        env:
+          QA_URL: http://127.0.0.1:4173/loraniq-admin/
+        run: pnpm qa:runtime-performance
+
       - name: Chromium accessibility QA
         env:
           QA_URL: http://127.0.0.1:4173/loraniq-admin/
@@ -82,6 +90,14 @@ jobs:
         env:
           QA_URL: http://127.0.0.1:4173/loraniq-admin/
         run: node scripts/qa-marketing.mjs
+
+      - name: Install Firefox and WebKit QA runtimes
+        run: pnpm exec playwright install --with-deps firefox webkit
+
+      - name: Firefox and WebKit smoke QA
+        env:
+          QA_URL: http://127.0.0.1:4173/loraniq-admin/
+        run: pnpm qa:cross-browser
 
       - name: Upload QA screenshots
         if: always()
