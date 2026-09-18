@@ -1,5 +1,7 @@
 "use client";
 
+import "../files-premium.css";
+
 import { useMemo, useState } from "react";
 import { Archive, ChevronDown, File, FileArchive, FileImage, FileText, Folder, FolderOpen, Grid2X2, HardDrive, List, MoreHorizontal, Plus, Search, Star, Trash2, UploadCloud } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
