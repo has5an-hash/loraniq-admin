@@ -1,0 +1,140 @@
+/* Loraniq accessibility contrast layer.
+   Loaded after visual polish so semantic text remains WCAG-readable without
+   flattening the brand palette used for decorative surfaces and charts. */
+:root{
+  --a11y-primary:#6254cf;
+  --a11y-success:#087a63;
+  --a11y-warning:#8c5200;
+  --a11y-danger:#b8324a;
+  --a11y-info:#006f7d;
+  --a11y-primary-button:#6254cf;
+}
+.dark{
+  --a11y-primary:#b9b2ff;
+  --a11y-success:#72dec8;
+  --a11y-warning:#ffd08a;
+  --a11y-danger:#ff9cab;
+  --a11y-info:#77e4ef;
+  --a11y-primary-button:#5f51d8;
+}
+
+/* Brand/primary text on neutral surfaces. */
+.exec-eyebrow,
+.table-kicker,
+.form-kicker,
+.settings-kicker,
+.form-card-head>div>span,
+.auth-field a,
+.auth-card-foot a,
+.auth-mobile-heading>span,
+.landing-kicker,
+.section-heading>span,
+.section-heading>div>span,
+.section-heading.inline>a,
+.landing-demo-card p,
+.demos-intro>span,
+.demos-note>a,
+.marketing-brand em,
+.marketing-footer>small svg,
+.selector-title>span,
+.architecture-stack span,
+.feature-grid article>span,
+.stage-chip svg{
+  color:var(--a11y-primary)!important;
+}
+
+/* Identity chips and avatars use readable purple foregrounds. */
+.exec-avatars span,
+.exec-customer span,
+.customer-cell>span,
+.plan-chip{
+  color:var(--a11y-primary)!important;
+}
+.plan-chip{
+  background:color-mix(in srgb,var(--a11y-primary) 13%,var(--card))!important;
+}
+
+/* Semantic state foregrounds. */
+.exec-status.success,
+.status.success,
+.status-chip.success{
+  color:var(--a11y-success)!important;
+  background:color-mix(in srgb,var(--a11y-success) 10%,var(--card))!important;
+}
+.exec-status.warning,
+.status.warning,
+.status-chip.waiting{
+  color:var(--a11y-warning)!important;
+  background:color-mix(in srgb,var(--a11y-warning) 10%,var(--card))!important;
+}
+.exec-status.danger,
+.status.danger,
+.bulk-danger,
+.field-error,
+.auth-error{
+  color:var(--a11y-danger)!important;
+}
+.exec-status.danger,
+.status.danger{
+  background:color-mix(in srgb,var(--a11y-danger) 10%,var(--card))!important;
+}
+
+/* Healthcare uses teal/yellow as meaningful text, not only decoration. */
+.health-kicker,
+.health-live,
+.health-live-score>em,
+.health-chart-summary>em,
+.health-capacity-note,
+.health-quality-score em,
+.health-avatar,
+.health-clinician-list em.active,
+.health-capacity-note svg{
+  color:var(--a11y-success)!important;
+}
+.health-clinician-list em.active{
+  background:color-mix(in srgb,var(--a11y-success) 12%,var(--card))!important;
+}
+.health-clinician-list em.break,
+.health-hero-strip small.neutral,
+.health-metric>em.neutral{
+  color:var(--a11y-warning)!important;
+}
+.health-clinician-list em.break{
+  background:color-mix(in srgb,var(--a11y-warning) 12%,var(--card))!important;
+}
+.form-security,
+.form-hero-card>svg,
+.review-notice>svg,
+.form-success>span{
+  color:var(--a11y-success)!important;
+}
+
+/* Primary action contrast: keep a Vuexy-adjacent violet but meet text contrast. */
+.auth-submit,
+.text-primary-foreground{
+  background:var(--a11y-primary-button)!important;
+  color:#fff!important;
+}
+.marketing-primary,
+.marketing-cta{
+  background:linear-gradient(135deg,#6d5fdd,var(--a11y-primary-button))!important;
+  color:#fff!important;
+}
+
+/* Preserve visible keyboard affordances on horizontally scrollable data. */
+.exec-order-table:focus-visible{
+  outline:3px solid color-mix(in srgb,var(--a11y-primary) 70%,transparent);
+  outline-offset:3px;
+  border-radius:10px;
+}
+
+/* Marketing labels that sit on dark CTA surfaces already use purpose-built light text. */
+.landing-cta .marketing-cta{
+  background:#fff!important;
+  color:#3d367f!important;
+}
+
+@media(prefers-contrast:more){
+  :focus-visible{outline-width:3px!important}
+  .nav-item,.panel,.exec-stat,.ana-metric,.eco-metric,.crm-metric,.fin-metric,.health-metric{border-color:color-mix(in srgb,var(--foreground) 28%,var(--border))!important}
+}

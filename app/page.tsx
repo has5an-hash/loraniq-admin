@@ -129,14 +129,14 @@ export default function Home() {
 
           <div className="exec-side-stack">
             <article className="exec-goal-card"><h2>هدف فصل جاری</h2><p>پیشرفت تجمعی تیم‌ها</p><div className="exec-goal-ring"><div><strong>۷۸٪</strong><span>پیشرفت کل</span></div></div><div className="exec-goal-meta"><div><span>فروش</span><b>۹۲٪</b></div><div><span>محصول</span><b>۶۸٪</b></div><div><span>بازاریابی</span><b>۷۴٪</b></div></div></article>
-            <article className="exec-cash-card"><h2>جریان نقدی هفتگی</h2><p>ورودی خالص نسبت به هزینه‌ها</p><div className="exec-bars" aria-label="نمودار میله‌ای جریان نقدی"><i className="exec-bar" style={{height:"42%"}}/><i className="exec-bar" style={{height:"58%"}}/><i className="exec-bar" style={{height:"51%"}}/><i className="exec-bar" style={{height:"72%"}}/><i className="exec-bar" style={{height:"67%"}}/><i className="exec-bar" style={{height:"88%"}}/><i className="exec-bar" style={{height:"79%"}}/></div><div className="exec-cash-foot"><span>خالص هفته</span><b>+۴۶٫۲ میلیون</b></div></article>
+            <article className="exec-cash-card"><h2>جریان نقدی هفتگی</h2><p>ورودی خالص نسبت به هزینه‌ها</p><div className="exec-bars" role="img" aria-label="نمودار میله‌ای جریان نقدی"><i className="exec-bar" style={{height:"42%"}}/><i className="exec-bar" style={{height:"58%"}}/><i className="exec-bar" style={{height:"51%"}}/><i className="exec-bar" style={{height:"72%"}}/><i className="exec-bar" style={{height:"67%"}}/><i className="exec-bar" style={{height:"88%"}}/><i className="exec-bar" style={{height:"79%"}}/></div><div className="exec-cash-foot"><span>خالص هفته</span><b>+۴۶٫۲ میلیون</b></div></article>
           </div>
         </section>
 
         <section className="exec-lower-grid">
           <article className="exec-orders-card">
             <div className="exec-card-head"><div><h2>آخرین سفارش‌ها</h2><p>تراکنش‌های تازه و وضعیت پردازش</p></div><button className="exec-card-link">مشاهده همه</button></div>
-            <table className="exec-order-table"><thead><tr><th>سفارش</th><th>مشتری</th><th>محصول</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>{orders.map((order) => <tr key={order.id}><td><b>{order.id}</b></td><td><div className="exec-customer"><span>{order.initials}</span><b>{order.name}</b></div></td><td>{order.product}</td><td>{order.amount}</td><td><span className={`exec-status ${order.tone}`}>{order.status}</span></td></tr>)}</tbody></table>
+            <table className="exec-order-table" tabIndex={0} aria-label="آخرین سفارش‌ها"><thead><tr><th>سفارش</th><th>مشتری</th><th>محصول</th><th>مبلغ</th><th>وضعیت</th></tr></thead><tbody>{orders.map((order) => <tr key={order.id}><td><b>{order.id}</b></td><td><div className="exec-customer"><span>{order.initials}</span><b>{order.name}</b></div></td><td>{order.product}</td><td>{order.amount}</td><td><span className={`exec-status ${order.tone}`}>{order.status}</span></td></tr>)}</tbody></table>
           </article>
 
           <article className="exec-activity-card">
