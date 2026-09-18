@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { UiPreferencesProvider } from "@/components/ui-preferences-provider";
 import "./globals.css";
-import "./visual-reset.css";
 import "./system-premium.css";
 import "./typography-premium.css";
 import "./a11y-polish.css";
