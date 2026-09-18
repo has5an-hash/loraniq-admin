@@ -1,5 +1,7 @@
 "use client";
 
+import "../healthcare-premium.css";
+
 import { useState } from "react";
 import {
   Activity,
