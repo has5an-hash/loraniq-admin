@@ -1,5 +1,7 @@
 "use client";
 
+import "../chat-premium.css";
+
 import { useMemo, useState } from "react";
 import { CheckCheck, ChevronLeft, MessageCircle, MoreHorizontal, Paperclip, Phone, Search, Send, Smile, Video } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
