@@ -2,6 +2,28 @@
 
 All notable development milestones for Loraniq Admin are recorded here. This is a development changelog; it does not imply marketplace release readiness.
 
+## Unreleased — 2026-09-18
+
+### Added
+
+- Canonical Astra visual reference document at `docs/ASTRA-VISUAL-REFERENCE.md`.
+- Global Astra visual normalization layer at `app/astra-reference.css`.
+- Lazy-loaded command/help overlay module for lower first-load cost.
+
+### Changed
+
+- Restored the Windows Astra workspace shell across all application routes: dark 254px workspace sidebar, Astra monogram/workspace selector, 78px topbar, compact route context, quiet card hierarchy and Astra palette.
+- Kept the newer GitHub route breadth, RTL/LTR, Light/Dark, density, content-width, sidebar and reduced-motion behavior inside the Astra shell.
+- Scoped route-specific premium CSS to its own route instead of shipping every app stylesheet from the root layout.
+- Reduced eager marketing-preview competition so only the first above-fold preview receives high fetch priority.
+- Kept GitHub `main` as the live development source while making the user-provided Astra handoff the canonical visual/UI reference.
+
+### Performance work in progress
+
+- Previous throttled baseline failed around 4.7–5.1s FCP on representative routes and 14.7–18.7s LCP on Landing/Demos.
+- Current changes target the causes rather than relaxing budgets: global CSS over-shipping, interaction-only overlays in the initial bundle, and preview-image fetch priority.
+- A fresh full CI/browser/performance verification is required before these changes are marked verified.
+
 ## Unreleased — 2026-09-17
 
 ### Added
