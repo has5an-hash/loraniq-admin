@@ -1,5 +1,7 @@
 "use client";
 
+import "../search-premium.css";
+
 import { useMemo, useState } from "react";
 import { ArrowUpLeft, Clock3, Command, FileText, FolderKanban, Search, Settings, Sparkles, UserRound, X } from "lucide-react";
 import { LoraniqShell } from "@/components/loraniq-shell";
