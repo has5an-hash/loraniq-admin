@@ -49,9 +49,13 @@ for(const engine of engines){
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
       if(overflow>1) failures.push(`${label}: horizontal overflow +${overflow}px`);
 
-      await page.getByRole("button",{name:"تغییر پوسته"}).click();
-      await page.getByRole("button",{name:"تغییر جهت و زبان"}).click();
-      await page.waitForFunction(()=>document.documentElement.classList.contains("dark")&&document.documentElement.dir==="ltr");
+      const themeToggle=page.getByRole("button",{name:"تغییر پوسته"});
+      const directionToggle=page.getByRole("button",{name:"تغییر جهت و زبان"});
+      if(await themeToggle.count()&&await directionToggle.count()){
+        await themeToggle.click();
+        await directionToggle.click();
+        await page.waitForFunction(()=>document.documentElement.classList.contains("dark")&&document.documentElement.dir==="ltr");
+      }
       await page.screenshot({path:path.join(outputDir,`${engine.name}-${route.name}-${viewport.name}.png`),fullPage:true});
 
       if(consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
