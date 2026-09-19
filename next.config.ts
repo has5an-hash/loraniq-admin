@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         trailingSlash: true,
         basePath: pagesBasePath,
         assetPrefix: pagesBasePath,
-        images: { unoptimized: true, localPatterns: [{ pathname: "/**" }] },
+        images: { unoptimized: true, localPatterns: [{ pathname: "/**", search: "?v=premium-2" }] },
       }
     : {}),
 };
