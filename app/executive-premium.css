@@ -1,4 +1,4 @@
-html, body, .app-shell, .app-body { max-width: 100%; overflow-x: clip; }
+html, body, .app-shell, .app-body { max-width: 100%; overflow-x: hidden; }
 .main-content, .exec-hero > *, .exec-main-grid > *, .exec-lower-grid > * { min-width: 0; }
 
 .exec-hero {
