@@ -126,6 +126,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid color-mix(in srgb, va
   .app-body { margin-inline-start: 220px; }.sidebar { width: 220px; }.profile-copy { display: none; }.kpi-grid { grid-template-columns: repeat(2, 1fr); }.lower-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
+  html, body { overflow-x: hidden; }
   .app-body { margin-inline-start: 0; }.sidebar { width: 258px; transform: translateX(calc(var(--dir-factor, 1) * 105%)); box-shadow: 0 0 40px rgba(10,12,24,.15); }.sidebar.is-open { transform: none; }.sidebar-backdrop { position: fixed; z-index: 39; inset: 0; display: block; border: 0; background: rgba(15,17,30,.42); backdrop-filter: blur(2px); }.mobile-close, .menu-button { display: grid !important; }.dashboard-grid { grid-template-columns: 1fr; }.target-panel { display: grid; grid-template-columns: 1fr auto; }.target-panel .panel-head, .target-panel .team-stats, .target-panel .text-action { grid-column: 1; }.target-panel .radial-wrap { grid-column: 2; grid-row: 1 / 4; padding: 0 15px; }.search-trigger { width: min(360px, 45vw); }
 }
 @media (max-width: 680px) {
