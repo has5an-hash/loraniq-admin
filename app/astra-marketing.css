@@ -127,3 +127,4 @@
   .landing-hero h1{font-size:38px!important}
   .marketing-nav{min-height:64px!important}
 }
+/* Keep the simplified hero frame light. */.landing-stage{background:transparent!important;background-image:none!important;box-shadow:none!important}.landing-stage .stage-window.main{background:#fff!important;background-image:none!important}
