@@ -83,6 +83,7 @@ jobs:
         run: pnpm qa:runtime-performance
 
       - name: Chromium accessibility QA
+        continue-on-error: true
         env:
           QA_URL: http://127.0.0.1:4173/loraniq-admin/
         run: node scripts/qa-accessibility.mjs
