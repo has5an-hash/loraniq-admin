@@ -47,7 +47,7 @@ for(const engine of engines){
       if(!response?.ok()) failures.push(`${label}: response ${response?.status()??"none"}`);
       await page.locator(route.ready).first().waitFor({state:"visible"});
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-      if(overflow>1) failures.push(`${label}: horizontal overflow +${overflow}px`);
+      if(overflow>1){const overflowDetails=await page.evaluate(()=>{const viewportWidth=document.documentElement.clientWidth;return [...document.querySelectorAll("*")].map(element=>{const rect=element.getBoundingClientRect();return {tag:element.tagName,className:typeof element.className==="string"?element.className:"",scrollWidth:element.scrollWidth,left:Math.round(rect.left),right:Math.round(rect.right),width:Math.round(rect.width)}}).filter(item=>item.right>viewportWidth+1||item.left<-1).slice(0,12)});console.error(label+": overflow details "+JSON.stringify(overflowDetails));failures.push(label+": horizontal overflow +"+overflow+"px");}
 
       const themeToggle=page.getByRole("button",{name:"تغییر پوسته"});
       const directionToggle=page.getByRole("button",{name:"تغییر جهت و زبان"});
