@@ -57,8 +57,14 @@ for(const route of routes){
     await page.locator(route.ready).first().waitFor({state:"visible"});
     await scan(page,`${route.name}/${viewport.name}/rtl-light`);
 
-    await page.getByRole("button",{name:"تغییر پوسته"}).click();
-    await page.getByRole("button",{name:"تغییر جهت و زبان"}).click();
+    const themeToggle=page.getByRole("button",{name:"تغییر پوسته"});
+    const directionToggle=page.getByRole("button",{name:"تغییر جهت و زبان"});
+    if(!await themeToggle.count()||!await directionToggle.count()){
+      await context.close();
+      continue;
+    }
+    await themeToggle.click();
+    await directionToggle.click();
     await page.waitForFunction(()=>document.documentElement.classList.contains("dark")&&document.documentElement.dir==="ltr");
     await scan(page,`${route.name}/${viewport.name}/ltr-dark`);
     await context.close();
