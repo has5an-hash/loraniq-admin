@@ -584,6 +584,7 @@
 @media(max-width:1150px){
   .landing-hero{
     grid-template-columns:1fr;
+    grid-template-areas:"copy" "stage";
     gap:22px;
     padding-top:82px;
     text-align:center;
