@@ -104,14 +104,7 @@
   background:var(--accent)!important;
   color:var(--primary)!important;
 }
-.landing-cta{
-  border:1px solid var(--border)!important;
-  border-radius:13px!important;
-  background:var(--card)!important;
-  background-image:none!important;
-  color:var(--foreground)!important;
-  box-shadow:var(--shadow-card)!important;
-}
+.landing-cta{border:1px solid var(--border)!important;border-radius:13px!important;background:linear-gradient(110deg,#2d3047,#41355e)!important;background-image:linear-gradient(110deg,#2d3047,#41355e)!important;color:#fff!important;box-shadow:var(--shadow-card)!important}
 .landing-cta.invert{background:#202131!important;color:#f0eff7!important;border-color:#35364b!important}
 .landing-cta.invert p{color:#b3b4c7!important}
 .demos-grid{gap:18px!important}
