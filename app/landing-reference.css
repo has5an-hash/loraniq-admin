@@ -299,3 +299,18 @@ html[dir="rtl"] .landing-vuexy-band .marketing-cta, html[dir="ltr"] .landing-vue
 @media (max-width: 680px) {
   .landing-stage .float-one { top: 140px; right: 0; width: 38%; }.landing-stage .float-two { top: 176px; right: 20%; width: 33%; }.landing-stage .stage-chip { min-height: 23px; padding-inline: 7px; font-size: 7px; }.landing-stage .stage-chip svg { width: 9px; }.landing-stage .chip-one { top: 35px; }.landing-stage .chip-two { top: 64px; }.landing-stage .stage-live-card { right: 8%; bottom: 3px; padding: 7px 9px; }.landing-stage .stage-live-card b { font-size: 7px; }.landing-stage .stage-live-card small { font-size: 6px; }.landing-spotlight, .landing-role-wall, .landing-package-band { padding: 68px 16px; }.spotlight-visual { min-height: 230px; }.spotlight-metric { right: 3%; bottom: 13px; min-width: 145px; padding: 9px 10px; }.spotlight-avatars { left: 5%; }.spotlight-avatars img, .spotlight-avatars b { width: 38px; height: 38px; border-width: 2px; }.role-grid { grid-template-columns: 1fr; }.role-grid article { min-height: 150px; }.package-rows { gap: 5px; }.package-rows span { padding: 9px 6px; }.package-rows b { font-size: 16px; }.package-rows small { font-size: 7px; }.package-panel { padding: 16px; }
 }
+
+/* Keep preview controls and motion usable above the existing visual polish layers. */
+.demo-direction button { padding: 5px 8px; border: 0; border-inline-start: 1px solid rgba(115, 103, 240, .12); background: transparent; color: var(--landing-purple); font: inherit; font-size: 9px; font-weight: 900; cursor: pointer; }
+.demo-direction button:first-child { border-inline-start: 0; }
+.demo-direction button.is-active { background: var(--landing-purple); color: #fff; }
+.demo-direction button:focus-visible { outline: 2px solid #ff816f; outline-offset: -2px; }
+.landing-demo-card .demo-shot { overflow: hidden; }
+.landing-demo-card .demo-shot > img { transform-origin: center top; transition: transform 900ms cubic-bezier(.2,.7,.2,1), filter 300ms ease; }
+.landing-demo-card:hover .demo-shot > img { transform: scale(1.14) translateY(-7%); filter: saturate(1.04); }
+.landing-stage .stage-cursor { position: absolute; z-index: 6; top: 42%; left: 43%; display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(255, 255, 255, .9); border-radius: 50%; background: rgba(115, 103, 240, .9); color: #fff; box-shadow: 0 10px 24px rgba(56, 48, 112, .22); animation: landing-cursor-drift 5.5s ease-in-out infinite; pointer-events: none; }
+.landing-stage .stage-cursor svg { width: 16px; }
+.landing-stage .stage-window.main { animation: landing-window-in 820ms cubic-bezier(.2,.7,.2,1) both !important; }
+@keyframes landing-cursor-drift { 0%, 100% { transform: translate(0, 0) scale(1); } 35% { transform: translate(32px, 18px) scale(1.08); } 68% { transform: translate(-18px, 42px) scale(.94); } }
+@media (max-width: 680px) { .landing-stage .stage-cursor { top: 41%; left: 45%; width: 28px; height: 28px; } .landing-stage .stage-cursor svg { width: 13px; } }
+@media (prefers-reduced-motion: reduce) { .landing-demo-card .demo-shot > img, .landing-stage .stage-cursor { animation: none !important; transition: none !important; } .landing-demo-card:hover .demo-shot > img { transform: none; } }
