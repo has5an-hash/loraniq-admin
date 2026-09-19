@@ -8,7 +8,7 @@ import { MarketingShell } from "@/components/marketing-shell";
 import { useUiPreferences } from "@/components/ui-preferences-provider";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-const assetVersion = "premium-2";
+
 const avatars = ["nila", "armin", "sara", "yara", "omid", "parsa"];
 const faNumber = (value: number) => String(value).replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
 const demos = [
@@ -114,8 +114,8 @@ export default function LandingPage() {
     label: "Complete product kit", title: "From the first route to the last interface detail", body: "A complete foundation for building, presenting and evolving your admin product with real routes and original assets.", cta: "Start with demos", rows: [["+20", "Ready routes"], ["6", "Real dashboards"], ["2", "Languages and directions"]],
   };
   const preview = (slug: string, art: string, direction = preferences.direction) => direction === "rtl"
-    ? `${basePath}/demo-previews/${slug}.jpg?v=${assetVersion}`
-    : `${basePath}/illustrations/${art}?v=${assetVersion}`;
+    ? `${basePath}/demo-previews/${slug}-premium.jpg`
+    : `${basePath}/illustrations/${art}`;
   const previewAlt = (label: string) => rtl ? `${text.preview} ${label}` : `${label} workspace preview`;
 
   return <MarketingShell landing><main id="main-content" className="landing-page">
