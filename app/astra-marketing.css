@@ -7,7 +7,7 @@
   backdrop-filter:blur(14px)!important;
   box-shadow:none!important;
 }
-.marketing-brand{color:var(--foreground)!important;font-weight:750!important;letter-spacing:-.5px!important}
+.marketing-brand{color:#fff!important;font-weight:750!important;letter-spacing:-.5px!important}
 .marketing-brand em{color:var(--primary)!important;font-style:normal!important}
 .marketing-primary,.marketing-cta{
   min-height:39px!important;
@@ -22,7 +22,7 @@
   min-height:39px!important;
   border:1px solid var(--border)!important;
   border-radius:8px!important;
-  background:var(--card)!important;
+  background:linear-gradient(110deg,#2d3047,#41355e)!important;
   color:var(--foreground)!important;
   box-shadow:none!important;
 }
@@ -58,7 +58,7 @@
   border:1px solid var(--border)!important;
   border-radius:13px!important;
   background:var(--card)!important;
-  background-image:none!important;
+  background-image:linear-gradient(110deg,#2d3047,#41355e)!important;
   box-shadow:var(--shadow-card)!important;
   backdrop-filter:none!important;
 }
