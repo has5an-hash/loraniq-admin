@@ -1,4 +1,4 @@
-import "../marketing-premium.css";
+id="main-content" className="landing-page"<section id="top" className="landing-hero">import "../marketing-premium.css";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Blocks, CalendarDays, Check, Code2, Command, FileText, Gauge, Languages, Layers3, LayoutDashboard, Mail, MessageSquare, MoonStar, MousePointer2, PanelsTopLeft, Settings, ShieldCheck, ShoppingCart, Sparkles, SwatchBook, Table2, Users, WandSparkles } from "lucide-react";
