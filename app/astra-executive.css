@@ -128,6 +128,7 @@
 @media(max-width:640px){
   .orders-surface{min-width:0!important;overflow:hidden!important}
   .orders-table-wrap{
+    direction:ltr;
     width:100%!important;
     max-width:100%!important;
     margin-inline:0!important;
@@ -136,7 +137,7 @@
     overscroll-behavior-x:contain;
     -webkit-overflow-scrolling:touch;
   }
-  .orders-table{width:520px!important;min-width:520px!important}
+  .orders-table{direction:rtl;width:520px!important;min-width:520px!important}
   .table-toolbar{max-width:100%!important;min-width:0!important}
   .table-search{min-width:0!important}
 }
