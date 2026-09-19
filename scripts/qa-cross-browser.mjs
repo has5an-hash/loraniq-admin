@@ -32,8 +32,16 @@ for(const engine of engines){
       const page=await context.newPage();
       const consoleErrors=[];
       const failedRequests=[];
+      const badResponses=[];
       const externalRequests=[];
       page.on("console",(message)=>{if(message.type()==="error")consoleErrors.push(message.text())});
+      page.on("response",(response)=>{
+        if(response.status()<400)return;
+        try{
+          const u=new URL(response.url());
+          if(u.origin===allowedOrigin) badResponses.push(`${response.status()} ${response.url()}`);
+        }catch{}
+      });
       page.on("request",(request)=>{
         try{
           const u=new URL(request.url());
@@ -47,18 +55,20 @@ for(const engine of engines){
       if(!response?.ok()) failures.push(`${label}: response ${response?.status()??"none"}`);
       await page.locator(route.ready).first().waitFor({state:"visible"});
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-      if(overflow>1) failures.push(label+": horizontal overflow +"+overflow+"px");
-      const themeToggle=page.getByRole("button",{name:"تغییر پوسته"});
-      const directionToggle=page.getByRole("button",{name:"تغییر جهت و زبان"});
-      if(await themeToggle.count()&&await directionToggle.count()){
-        await themeToggle.click();
-        await directionToggle.click();
-        await page.waitForFunction(()=>document.documentElement.classList.contains("dark")&&document.documentElement.dir==="ltr");
-      }
+       if(overflow>1) failures.push(label+": horizontal overflow +"+overflow+"px");
+
+       const themeToggle=page.getByRole("button",{name:"تغییر پوسته"});
+       const directionToggle=page.getByRole("button",{name:"تغییر جهت و زبان"});
+       if(await themeToggle.count()&&await directionToggle.count()){
+         await themeToggle.click();
+         await directionToggle.click();
+         await page.waitForFunction(()=>document.documentElement.classList.contains("dark")&&document.documentElement.dir==="ltr");
+       }
       await page.screenshot({path:path.join(outputDir,`${engine.name}-${route.name}-${viewport.name}.png`),fullPage:true});
 
-      if(consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
-      if(failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
+       if(consoleErrors.length) failures.push(`${label}: console errors: ${consoleErrors.join(" | ")}`);
+       if(badResponses.length) failures.push(`${label}: bad responses: ${[...new Set(badResponses)].join(" | ")}`);
+       if(failedRequests.length) failures.push(`${label}: failed requests: ${failedRequests.join(" | ")}`);
       if(externalRequests.length) failures.push(`${label}: external requests: ${[...new Set(externalRequests)].join(" | ")}`);
       await context.close();
     }
