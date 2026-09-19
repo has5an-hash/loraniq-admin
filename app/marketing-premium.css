@@ -5,3 +5,7 @@
     grid-template-areas: "copy" "stage";
   }
 }
+
+.landing-cta { background: linear-gradient(110deg, #2d3047, #41355e) !important; color: #fff !important; }
+.landing-cta h2 { color: #fff !important; }
+.landing-cta p { color: rgba(255, 255, 255, .68) !important; }
