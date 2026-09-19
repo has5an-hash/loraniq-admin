@@ -7,4 +7,62 @@ import { ArrowLeft, Languages, Moon, Sparkles, Sun } from "lucide-react";
 import { type ReactNode } from "react";
 import { useUiPreferences } from "@/components/ui-preferences-provider";
 
-export function MarketingShell({children}:{children:ReactNode}){const{preferences,resolvedTheme,updatePreferences}=useUiPreferences();const rtl=preferences.direction==="rtl";const dark=resolvedTheme==="dark";return <div className="marketing-shell"><header className="marketing-nav"><Link className="marketing-brand" href="/landing/"><span><i/><i/><i/></span><b>لورانیک <em>ادمین</em></b></Link><nav aria-label="ناوبری صفحه معرفی"><a href="#features">ویژگی‌ها</a><Link href="/demos/">دموها</Link><a href="#architecture">معماری</a><Link href="/components/">کامپوننت‌ها</Link></nav><div className="marketing-actions"><button onClick={()=>updatePreferences({direction:rtl?"ltr":"rtl"})} aria-label="تغییر جهت و زبان"><Languages/></button><button onClick={()=>updatePreferences({theme:dark?"light":"dark"})} aria-label="تغییر پوسته">{dark?<Sun/>:<Moon/>}</button><Link className="marketing-primary" href="/" aria-label="ورود به پنل لورانیک"><span>ورود به پنل</span><ArrowLeft/></Link></div></header>{children}<footer className="marketing-footer"><div className="marketing-brand"><span><i/><i/><i/></span><b>لورانیک <em>ادمین</em></b></div><p>قالب مدیریت فارسی‌اول، RTL/LTR و مستقل؛ ساخته‌شده برای توسعه واقعی، نه فقط اسکرین‌شات فروش.</p><div><Link href="/demos/">دموها</Link><Link href="/components/">کامپوننت‌ها</Link><Link href="/login/">Auth</Link></div><small><Sparkles/> ۲۰۲۶ · Loraniq Admin</small></footer></div>}
+export function MarketingShell({ children, landing = false }: { children: ReactNode; landing?: boolean }) {
+  const { preferences, resolvedTheme, updatePreferences } = useUiPreferences();
+  const rtl = preferences.direction === "rtl";
+  const dark = resolvedTheme === "dark";
+
+  return (
+    <div className={`marketing-shell${landing ? " landing-marketing-shell" : ""}`}>
+      <header className="marketing-nav">
+        <Link className="marketing-brand" href="/landing/">
+          <span><i /><i /><i /></span>
+          <b>لورانیک <em>ادمین</em></b>
+        </Link>
+        {landing ? (
+          <nav aria-label="ناوبری صفحه معرفی">
+            <a href="#demos">دموها</a>
+            <a href="#features">امکانات</a>
+            <a href="#apps">برنامه‌ها</a>
+            <a href="#pages">صفحات</a>
+            <a href="#top">لندینگ</a>
+            <a href="#cards">کارت‌ها</a>
+            <a href="#components">اجزاء</a>
+            <a href="#faq">سوالات</a>
+            <a href="#architecture">مستندات</a>
+            <a href="#support">پشتیبانی</a>
+          </nav>
+        ) : (
+          <nav aria-label="ناوبری صفحه معرفی">
+            <a href="#features">ویژگی‌ها</a>
+            <Link href="/demos/">دموها</Link>
+            <a href="#architecture">معماری</a>
+            <Link href="/components/">کامپوننت‌ها</Link>
+          </nav>
+        )}
+        <div className="marketing-actions">
+          <button onClick={() => updatePreferences({ direction: rtl ? "ltr" : "rtl" })} aria-label="تغییر جهت و زبان">
+            <Languages />
+          </button>
+          <button onClick={() => updatePreferences({ theme: dark ? "light" : "dark" })} aria-label="تغییر پوسته">
+            {dark ? <Sun /> : <Moon />}
+          </button>
+          <Link className="marketing-primary" href="/" aria-label="ورود به پنل لورانیک">
+            <span>ورود به پنل</span>
+            <ArrowLeft />
+          </Link>
+        </div>
+      </header>
+      {children}
+      <footer className="marketing-footer" id="support">
+        <div className="marketing-brand">
+          <span><i /><i /><i /></span>
+          <b>لورانیک <em>ادمین</em></b>
+        </div>
+        <p>قالب مدیریت فارسی‌اول، RTL/LTR و مستقل؛ ساخته‌شده برای توسعه واقعی، نه فقط اسکرین‌شات فروش.</p>
+        <div><Link href="/demos/">دموها</Link><Link href="/components/">کامپوننت‌ها</Link><Link href="/login/">Auth</Link></div>
+        <small><Sparkles /> ۲۰۲۶ · Loraniq Admin</small>
+      </footer>
+    </div>
+  );
+}
