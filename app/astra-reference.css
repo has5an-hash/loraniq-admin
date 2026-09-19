@@ -1688,12 +1688,12 @@ html[data-sidebar="compact"] .sidebar-status span{display:none!important}
 }
 @media(max-width:800px){
   .sidebar{
-    display:flex!important;
+    display:none!important;
     width:254px!important;
     transform:translateX(105%)!important;
   }
   [dir="ltr"] .sidebar{transform:translateX(-105%)!important}
-  .sidebar.is-open{transform:translateX(0)!important}
+  .sidebar.is-open{display:flex!important;transform:translateX(0)!important}
   .app-body{margin-inline-start:0!important}
   .topbar{padding-inline:15px!important}
   .mobile-menu{display:grid!important}
