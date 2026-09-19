@@ -111,6 +111,9 @@ function applyPreferences(preferences: UiPreferences) {
   root.style.colorScheme = theme;
   root.dir = preferences.direction;
   root.lang = preferences.direction === "rtl" ? "fa" : "en";
+  document.title = preferences.direction === "rtl"
+    ? "لورانیک ادمین | فضای کاری مدیریتی حرفه‌ای"
+    : "Loraniq Admin | Professional workspace";
   root.dataset.themeMode = preferences.theme;
   root.dataset.density = preferences.density;
   root.dataset.skin = preferences.skin;
