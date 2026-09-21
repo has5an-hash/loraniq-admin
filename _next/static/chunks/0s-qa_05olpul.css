@@ -10,3 +10,18 @@
 @media (max-width: 680px) {
   .landing-marketing-shell .marketing-primary { min-height: 36px; padding-inline: 11px; font-size: 11px; }
 }
+
+/* Keep dark-mode surfaces readable without changing the light skin. */
+.dark .landing-page .stage-chip,
+.dark .landing-page .tech-pill,
+.dark .landing-page .puzzle-grid a,
+.dark .landing-page .simple-page-grid a,
+.dark .landing-page .selector-tags span { border-color: #4b4d65 !important; background: #2a2c40 !important; color: #eeeafa !important; }
+.dark .landing-page .tech-pill small,
+.dark .landing-page .puzzle-grid a span,
+.dark .landing-page .simple-page-grid a span { color: #eeeafa !important; }
+.dark .landing-page .tech-pill b { color: #b9aeff !important; }
+.dark .landing-page .simple-page-grid a small { color: #c0bbd0 !important; }
+.dark .landing-page .architecture-stack article { border-color: #4b4d65 !important; background: #2a2c40 !important; }
+.dark .landing-page .architecture-stack b { color: #eeeafa !important; }
+.dark .landing-page .architecture-stack small { color: #c0bbd0 !important; }
