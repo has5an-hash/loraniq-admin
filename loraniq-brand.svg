@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 72" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">لورانیک ادمین</title>
+  <desc id="desc">نشان و نام فارسی لورانیک ادمین</desc>
+  <rect x="4" y="4" width="64" height="64" rx="19" fill="#7258E6"/>
+  <path d="M18 18h10v34H18zm13 13h10v21H31zm13-8h10v29H44z" fill="#fff"/>
+  <circle cx="53" cy="17" r="7" fill="#70E0C4"/>
+  <path d="M53 13.5v7M49.5 17h7" stroke="#7258E6" stroke-width="1.8" stroke-linecap="round"/>
+  <g direction="rtl" text-anchor="end" font-family="Vazirmatn, Tahoma, sans-serif">
+    <text x="348" y="34" fill="#1E2134" font-size="25" font-weight="800">لورانیک</text>
+    <text x="348" y="57" fill="#7258E6" font-size="17" font-weight="700">ادمین</text>
+  </g>
+</svg>
