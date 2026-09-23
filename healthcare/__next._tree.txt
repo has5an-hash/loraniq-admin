@@ -5,4 +5,4 @@
 :HL["/loraniq-admin/_next/static/media/Vazirmatn-s.p.3knf6dhh8xxk6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/loraniq-admin/_next/static/chunks/1uccdkx3laapm.css","style"]
 :HL["/loraniq-admin/_next/static/chunks/3s4kjnk1_x90f.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"healthcare","param":null,"prefetchHints":4192,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}},"staleTime":300,"buildId":"M1iRXMrDr12vrei1Varoz"}
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"healthcare","param":null,"prefetchHints":4192,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}}}},"staleTime":300,"buildId":"ekF8b061gVbWJMfUWErCE"}
