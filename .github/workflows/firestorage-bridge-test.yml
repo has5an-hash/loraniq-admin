@@ -1,0 +1,21 @@
+name: Firestorage Bridge Test
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/firestorage-bridge-test.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect temporary share page
+        run: |
+          set -e
+          curl -fsSL 'https://firestorage.ai/ja/f/S0O8n6Ll-ywQ' -o /tmp/share.html
+          echo "HTML_BYTES=$(wc -c </tmp/share.html)"
+          grep -Eo 'https?://[^"'"'"' <>]+|href="[^"]+"|src="[^"]+"' /tmp/share.html | head -n 120 || true
+          grep -Ei 'download|public_id|file_id|uw9bjWlVHpFZtE8N|bridge-test' /tmp/share.html | head -n 80 || true
