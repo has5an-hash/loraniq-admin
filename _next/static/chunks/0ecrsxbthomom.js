@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,84073,i=>{"use strict";i.i(82321);var o=i.i(82096);i.s(["default",0,function(){return(0,o.useEffect)(()=>{window.location.replace("/loraniq-admin/login/")},[]),null}])}]);
